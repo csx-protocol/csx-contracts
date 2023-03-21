@@ -3,7 +3,7 @@ pragma solidity 0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract SkinsMarketCoin is ERC20 {
+contract CSXToken is ERC20 {
     // ONE HUNDERED MILLION SMC
     uint256 public constant maxSupply = 100000000 ether;
     IERC20 public stakedCSX;
