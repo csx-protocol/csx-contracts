@@ -6,7 +6,7 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-contract SkinsMarketCoinOLD is Ownable, ReentrancyGuard, ERC20 {
+contract CSXOLD is Ownable, ReentrancyGuard, ERC20 {
     using SafeMath for uint256;
     uint256 public constant MAX_SUPPLY = 100000000 ether;
     uint256 private constant PRECISION = 10**30; // in gwei
