@@ -1,0 +1,329 @@
+//SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.8.17;
+
+ import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "../Trade/Trade.sol";
+
+contract TradeFactory is ReentrancyGuard {
+    mapping(address => bool) isTradeContract;
+    event TradeContractStatusChange(
+        address contractAddress,
+        TradeStatus,
+        string data
+    );
+
+    modifier onlyTradeContracts() {
+        require(isTradeContract[msg.sender], "non trade contract");
+        _;
+    }
+
+    function isThisTradeContract(address contractAddress) external view returns (bool) {
+        return isTradeContract[contractAddress];
+    }
+
+    function onStatusChange(TradeStatus status, string memory data)
+        external
+        onlyTradeContracts
+    {
+        emit TradeContractStatusChange(msg.sender, status, data);
+    }
+
+    uint256 public totalContracts;
+
+    mapping(address => Trade[]) sellersTradeContracts;
+
+    mapping(uint256 => address) contractIndexToSellerAddress;
+    mapping(uint256 => uint256) contractIndexToSellerIndex;
+
+    mapping(address => uint256) contractAddressToSellerIndex;
+
+    IKeepers public keepersContract;
+    IUsers public usersContract;
+
+    constructor(address _keepers, address _users) {
+        keepersContract = IKeepers(_keepers);
+        usersContract = IUsers(_users);
+    }
+
+    function getAllTradeContractsByAddress(address _userAddress)
+        external
+        view
+        returns (Trade[] memory)
+    {
+        return sellersTradeContracts[_userAddress];
+    }
+
+    function getTradeContractsByAddressAndIndex(
+        address _userAddress,
+        uint256 _index
+    ) external view returns (Trade) {
+        return sellersTradeContracts[_userAddress][_index];
+    }
+
+    function getTotalTradeContractsByAddress(address _userAddress)
+        external
+        view
+        returns (uint256)
+    {
+        return sellersTradeContracts[_userAddress].length;
+    }
+
+    // struct TradeInfo {
+    //     address contractAddress;
+    //     address seller;
+    //     address buyer;
+    //     string itemMarketName;
+    //     string inspectLink;
+    //     string tradeUrl;
+    //     string itemImageUrl;
+    //     uint256 weiPrice;
+    //     uint256 averageSellerDeliveryTime;
+    //     FloatInfo float;
+    //     uint256 nextIndex;
+    // }
+
+    function getContractsFromToAll(uint256 _indexFrom, uint256 _indexTo)
+        external
+        view
+        returns (TradeInfo[] memory)
+    {
+        require(_indexFrom <= _indexTo, "Invalid index range");
+        require(_indexFrom < totalContracts, "Start index out of range");
+        require(_indexTo < totalContracts, "End index out of range");
+
+        TradeInfo[] memory result = new TradeInfo[](_indexTo - _indexFrom + 1);
+
+        uint256 resultIndex = 0;
+
+        for (uint256 i = _indexFrom; i <= _indexTo; i++) {
+            Trade _contract = sellersTradeContracts[
+                contractIndexToSellerAddress[i]
+            ][contractIndexToSellerIndex[i]];
+
+            result[resultIndex].contractAddress = address(_contract);
+            result[resultIndex].seller = _contract.seller();
+            result[resultIndex].buyer = _contract.buyer();
+            result[resultIndex].itemMarketName = _contract.itemMarketName();
+            result[resultIndex].inspectLink = _contract.inspectLink();
+            //result[resultIndex].tradeUrl = _contract.sellerTradeUrl();
+            result[resultIndex].weiPrice = _contract.weiPrice();
+            result[resultIndex].itemImageUrl = _contract.itemImageUrl();
+            result[resultIndex].averageSellerDeliveryTime = usersContract.getAverageDeliveryTime(result[resultIndex].seller);
+            FloatInfo memory _float;
+            (_float.value, _float.min, _float.max) = _contract.float();
+            result[resultIndex].float = _float;
+            ++resultIndex;
+        }
+
+        return result;
+    }
+
+    function getPendingContractsFromToAll(uint256 _indexFrom, uint256 maxResults)
+        external
+        view
+        returns (TradeInfo[] memory)
+    {
+        uint256 resultIndex = 0;
+        uint256 i = _indexFrom;
+        TradeInfo[] memory result = new TradeInfo[](maxResults);
+        while (resultIndex < maxResults && i < totalContracts) {
+            Trade _contract = sellersTradeContracts[
+                contractIndexToSellerAddress[i]
+            ][contractIndexToSellerIndex[i]];
+            if (_contract.status() == TradeStatus.Pending) {
+                result[resultIndex].contractAddress = address(_contract);
+                result[resultIndex].seller = _contract.seller();
+                result[resultIndex].itemMarketName = _contract.itemMarketName();
+                result[resultIndex].inspectLink = _contract.inspectLink();
+               // result[resultIndex].tradeUrl = _contract.sellerTradeUrl();
+                result[resultIndex].weiPrice = _contract.weiPrice();
+                result[resultIndex].itemImageUrl = _contract.itemImageUrl();
+                result[resultIndex].averageSellerDeliveryTime = usersContract.getAverageDeliveryTime(result[resultIndex].seller);
+                FloatInfo memory _float;
+                (_float.value, _float.min, _float.max) = _contract.float();
+                result[resultIndex].float = _float;
+                result[resultIndex].nextIndex = i + 1;
+                ++resultIndex;
+            }
+            ++i;
+        }
+        return result;
+    }
+
+    function getContractsFromToStatusByUser(uint256 _indexFrom, uint256 maxResults, TradeStatus _status, address _user)
+        external
+        view
+        returns (TradeInfo[] memory)
+    {
+        uint256 resultIndex = 0;
+        uint256 i = _indexFrom;
+        TradeInfo[] memory result = new TradeInfo[](maxResults);
+        while (resultIndex < maxResults && i < totalContracts) {
+            Trade _contract = sellersTradeContracts[
+                contractIndexToSellerAddress[i]
+            ][contractIndexToSellerIndex[i]];
+            if (_contract.status() == _status && _user == _contract.seller() || _contract.status() == _status && _user == _contract.buyer()) {
+                result[resultIndex].contractAddress = address(_contract);
+                result[resultIndex].seller = _contract.seller();
+                result[resultIndex].buyer = _contract.buyer();
+                result[resultIndex].itemMarketName = _contract.itemMarketName();
+                result[resultIndex].inspectLink = _contract.inspectLink();
+                result[resultIndex].tradeUrl = _contract.sellerTradeUrl();
+                result[resultIndex].weiPrice = _contract.weiPrice();
+                result[resultIndex].itemImageUrl = _contract.itemImageUrl();
+                result[resultIndex].averageSellerDeliveryTime = usersContract.getAverageDeliveryTime(result[resultIndex].seller);
+                FloatInfo memory _float;
+                (_float.value, _float.min, _float.max) = _contract.float();
+                result[resultIndex].float = _float;
+                result[resultIndex].nextIndex = i + 1;
+                ++resultIndex;
+            }
+            ++i;
+        }
+        return result;
+    }
+
+    mapping(string => mapping(address => address))
+        public tradeIdFromUserToTradeAddress;
+
+    function createListingContract(
+        string memory _itemMarketName,
+        string memory _tradeUrl,
+        string memory _assetId,
+        string memory _inspectLink,
+        string memory _itemImageUrl,
+        uint256 _weiPrice,
+        FloatInfo memory _float
+    ) public nonReentrant {
+        require(usersContract.isBanned(msg.sender) == false, "User banned");
+        require(
+            tradeIdFromUserToTradeAddress[_assetId][msg.sender] == address(0),
+            "Trade contract with the same asset ID already exists"
+        );
+
+        sellersTradeContracts[msg.sender].push(
+            new Trade(
+                address(this),
+                address(keepersContract),
+                address(usersContract),
+                msg.sender,
+                _weiPrice,
+                _itemMarketName,
+                _tradeUrl,
+                _assetId,
+                _inspectLink,
+                _itemImageUrl,
+                _float
+            )
+        );
+        contractIndexToSellerAddress[totalContracts] = address(msg.sender);
+        uint256 index = sellersTradeContracts[msg.sender].length - 1;
+        contractIndexToSellerIndex[totalContracts] = index;
+        ++totalContracts;
+
+        address newAddress = address(sellersTradeContracts[msg.sender][index]);
+        isTradeContract[newAddress] = true;
+        contractAddressToSellerIndex[newAddress] = index;
+        tradeIdFromUserToTradeAddress[_assetId][msg.sender] = newAddress;
+
+        string memory data = string(
+            abi.encodePacked(_itemMarketName, "||", _tradeUrl, "||", _assetId)
+        );
+        emit TradeContractStatusChange(newAddress, TradeStatus.Pending, data);
+    }
+
+    function hasAlreadyListedItem(string memory _assetId, address userAddress)
+        external
+        view
+        returns (bool)
+    {
+        if (
+            tradeIdFromUserToTradeAddress[_assetId][userAddress] == address(0)
+        ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function removeTradeIdUsed(string memory _assetId) external returns (bool) {
+        require(
+            tradeIdFromUserToTradeAddress[_assetId][tx.origin] == msg.sender,
+            "not contract calling"
+        );
+        tradeIdFromUserToTradeAddress[_assetId][tx.origin] = address(0);
+        return true;
+    }
+
+    mapping(address => mapping(address => mapping(bool => bool))) sellerAdrsToContractAdrsToBuyerOrSellerToHasRep;
+
+    function repAfterTrade(address _contractAddress, bool _isPositive)
+        external
+        nonReentrant
+    {
+        address _sellerAddress = contractIndexToSellerAddress[
+            contractAddressToSellerIndex[_contractAddress]
+        ];
+        Trade _tradeContract = sellersTradeContracts[_sellerAddress][
+            contractAddressToSellerIndex[_contractAddress]
+        ];
+
+        TradeStatus _tradeStatus = _tradeContract.status();
+        require(_tradeStatus >= TradeStatus.Completed, "trade not complete");
+
+        address _buyer = _tradeContract.buyer();
+        address _seller = _tradeContract.seller();
+        require(
+            msg.sender == _buyer || msg.sender == _seller,
+            "not part of trade"
+        );
+
+        if (msg.sender == _buyer) {
+            require(
+                sellerAdrsToContractAdrsToBuyerOrSellerToHasRep[_sellerAddress][
+                    _contractAddress
+                ][false] == false,
+                "already voted as buyer"
+            );
+            sellerAdrsToContractAdrsToBuyerOrSellerToHasRep[_sellerAddress][
+                _contractAddress
+            ][false] = true;
+            usersContract.repAfterTrade(_seller, _isPositive);
+        } else if (msg.sender == _seller) {
+            require(
+                sellerAdrsToContractAdrsToBuyerOrSellerToHasRep[_sellerAddress][
+                    _contractAddress
+                ][true] == false,
+                "already voted as seller"
+            );
+            sellerAdrsToContractAdrsToBuyerOrSellerToHasRep[_sellerAddress][
+                _contractAddress
+            ][true] = true;
+            usersContract.repAfterTrade(_buyer, _isPositive);
+        }
+    }
+
+    function hasMadeRepOnTrade(address _contractAddress)
+        external
+        view
+        returns (
+            bool hasBuyer,
+            bool hasSeller,
+            bool isTime
+        )
+    {
+        address _sellerAddress = contractIndexToSellerAddress[
+            contractAddressToSellerIndex[_contractAddress]
+        ];
+        TradeStatus _tradeStatus = sellersTradeContracts[_sellerAddress][
+            contractAddressToSellerIndex[_contractAddress]
+        ].status();
+        isTime = (_tradeStatus >= TradeStatus.Completed);
+        hasBuyer = sellerAdrsToContractAdrsToBuyerOrSellerToHasRep[
+            _sellerAddress
+        ][_contractAddress][false];
+        hasSeller = sellerAdrsToContractAdrsToBuyerOrSellerToHasRep[
+            _sellerAddress
+        ][_contractAddress][true];
+    }
+}
