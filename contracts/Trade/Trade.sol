@@ -106,12 +106,13 @@ contract SMTrade {
         _;
     }
 
-    // Seller can cancel the listing before any buyer has committed ETH.
+    // Seller can cancel the listing up til any buyer has committed ETH.
     function sellerCancel() external onlyAddress(seller) {
-        require(status <= TradeStatus.Committed, "st !pen");
+        require(status == TradeStatus.Committed || status == TradeStatus.Pending, "st !pen");
+        TradeStatus oldStatus = status;
         status = TradeStatus.SellerCancelled;
         usersContract.changeUserInteractionStatus(address(this), seller, status);
-        if(status == TradeStatus.Committed) {
+        if(oldStatus == TradeStatus.Committed) {
             usersContract.changeUserInteractionStatus(address(this), buyer, status);
             (bool sent, ) = buyer.call{value: buyerDeposited}("");
             require(sent, "!Eth");
