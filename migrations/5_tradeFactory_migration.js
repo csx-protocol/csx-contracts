@@ -1,12 +1,13 @@
 const TradeFactory = artifacts.require("SMTradeFactory");
 const Keepers = artifacts.require("Keepers");
 const Users = artifacts.require("Users");
+const TradeFactoryBaseStorage = artifacts.require("TradeFactoryBaseStorage");
 
 //mock
 const Web3 = require('web3');
 
 module.exports = async function (deployer, accounts) {
-  await deployer.deploy(TradeFactory, Keepers.address, Users.address);
+  await deployer.deploy(TradeFactory, Keepers.address, Users.address, TradeFactoryBaseStorage.address);
   console.log("TradeFactory", TradeFactory.address);
   console.log("Keepers", Keepers.address);
   console.log("Users", Users.address);

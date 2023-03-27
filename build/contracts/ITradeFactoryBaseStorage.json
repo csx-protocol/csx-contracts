@@ -1,0 +1,1496 @@
+{
+  "contractName": "ITradeFactoryBaseStorage",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "totalContracts",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_itemMarketName",
+          "type": "string"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "partner",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "token",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct TradeUrl",
+          "name": "_tradeUrl",
+          "type": "tuple"
+        },
+        {
+          "internalType": "string",
+          "name": "_assetId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_inspectLink",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_itemImageUrl",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_weiPrice",
+          "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "value",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "min",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "max",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct FloatInfo",
+          "name": "_float",
+          "type": "tuple"
+        }
+      ],
+      "name": "newTradeContract",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "getTradeContractByIndex",
+      "outputs": [
+        {
+          "internalType": "contract SMTrade",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "tradeAddress",
+          "type": "address"
+        }
+      ],
+      "name": "getTradeContractByAddress",
+      "outputs": [
+        {
+          "internalType": "contract SMTrade",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getLastTradeContractAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"getLastTradeContractAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tradeAddress\",\"type\":\"address\"}],\"name\":\"getTradeContractByAddress\",\"outputs\":[{\"internalType\":\"contract SMTrade\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getTradeContractByIndex\",\"outputs\":[{\"internalType\":\"contract SMTrade\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_itemMarketName\",\"type\":\"string\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"partner\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"token\",\"type\":\"string\"}],\"internalType\":\"struct TradeUrl\",\"name\":\"_tradeUrl\",\"type\":\"tuple\"},{\"internalType\":\"string\",\"name\":\"_assetId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_inspectLink\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_itemImageUrl\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"_weiPrice\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"string\",\"name\":\"value\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"min\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"max\",\"type\":\"string\"}],\"internalType\":\"struct FloatInfo\",\"name\":\"_float\",\"type\":\"tuple\"}],\"name\":\"newTradeContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalContracts\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/TradeFactory/storage/ITradeFactoryBaseStorage.sol\":\"ITradeFactoryBaseStorage\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":0},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/security/ReentrancyGuard.sol\":{\"keccak256\":\"0x190dd6f8d592b7e4e930feb7f4313aeb8e1c4ad3154c27ce1cf6a512fc30d8cc\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4ce8dfb62d0c4fa260d6eec8f1cd47f5f2a044e11bde5b31d18072fa6e7d9010\",\"dweb:/ipfs/QmTyFztU3tLEcEDnqqiaW4UJetqsU77LXc6pjc9oTXCK5u\"]},\"project:/contracts/Keepers/IKeepers.sol\":{\"keccak256\":\"0x1c5005c4f50b57ab1a51845cfce7ca957eead4ebb3a76e66ddb46a9486e96cd0\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://181e19ef7f758d62eb9d5000cd26bea27739f8b9afed89ff4ae6805b3ca5e97a\",\"dweb:/ipfs/QmcU3s3zhRbbx1rD6dWYi8Z81QLMmMQoHWEQe5aVTisnzr\"]},\"project:/contracts/Trade/Trade.sol\":{\"keccak256\":\"0x634941f834732428da46f3978c8f68c51e240dd1413be526891513c89f728e72\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://ae3e6a077a8b7849ef868c9b17f6818201de560ef16c6491eae0fb70257fa2c0\",\"dweb:/ipfs/QmQzuvpPT8ztkwuKmMYJoQUPN4ufHur1G8LJXCpU9AbsR1\"]},\"project:/contracts/TradeFactory/ITradeFactory.sol\":{\"keccak256\":\"0xde84d04e677a4cffa61725361fb13482895123006be94210455ac5e2418f1b91\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://5a8de4a58d1145cd7f5f504734a6e065d00d4f4fdc1d250bc13118b3237a22e7\",\"dweb:/ipfs/QmPgDaLqWfGwggjdtHZMSKQNKv3jLKKBLGc47rj5PbZxA4\"]},\"project:/contracts/TradeFactory/storage/ITradeFactoryBaseStorage.sol\":{\"keccak256\":\"0x889782b2e509636c2ab697f81c473c54c9618cb78779964ef9125608755bf714\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://48541bd19eaea371dea9c28e6990c5187290a07787e8d08eb8d52ac263c41940\",\"dweb:/ipfs/QmattCw6HaEbanevwS2xxpmCPr8d3xCYhpNbveYMW3xQyy\"]},\"project:/contracts/Users/IUsers.sol\":{\"keccak256\":\"0x42ac648e6846ff12fa45ddaf83bd644e042a9a9019dc5727884d9307693d2f49\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://de6c4e286459509a8e9cb60eeedb5dd6e5b6c26be829f57274d5adfedc6245b1\",\"dweb:/ipfs/QmUXDbYutr78rwCrYmJhdRLqtAFHcvffPTby5meCmxcPrW\"]},\"project:/contracts/utils/Strings.sol\":{\"keccak256\":\"0xb0112adf903226f1ac22a142fdc0ff730cb0fae1102be069d97e11cbac1056c9\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d37cc886f5cfde4afaa68c9b0ef924dad9af4461a973aac9f562b0000edce63b\",\"dweb:/ipfs/QmdvQZ7PmTkbSnjxkoSeADmPT2pbXUeQULQLVgXkDfx69x\"]},\"project:/contracts/utils/math/Math.sol\":{\"keccak256\":\"0xfc18275f00047f613f761247e4f3ec788843036f7f426b3fd3b74e251e45f7ae\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://acc7cebc92fed34db103599e2bde11669280f6e9062fc42d000969ee0e9e8443\",\"dweb:/ipfs/QmQh4ArebQ7tuHEEPyHfeZKctXbC6zPRRnZ7bZM5GNkgh7\"]},\"project:/contracts/utils/math/SignedMath.sol\":{\"keccak256\":\"0xb4a5f5f5222294665d6241a5c06558d4939617ebd0a49d1eb9c0e193fd19bdfe\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://be7f6a069d156446211053299916948102d357d813be42c5f1614885e71d81b3\",\"dweb:/ipfs/QmfT2fs3cDWvfoekdfkUQ3ZMz4f8tc2hqnabipbfzW3Xqb\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// //SPDX-License-Identifier: UNLICENSED\r\npragma solidity 0.8.19;\r\n\r\nimport \"../../Trade/Trade.sol\";\r\nimport {ReentrancyGuard} from \"@openzeppelin/contracts/security/ReentrancyGuard.sol\";\r\n\r\ninterface ITradeFactoryBaseStorage {\r\n    // TODO: add functions\r\n\r\n    function totalContracts() external view returns (uint256);\r\n\r\n    function newTradeContract(\r\n        string memory _itemMarketName,\r\n        TradeUrl memory _tradeUrl,\r\n        string memory _assetId,\r\n        string memory _inspectLink,\r\n        string memory _itemImageUrl,\r\n        uint256 _weiPrice,\r\n        FloatInfo memory _float\r\n    ) external;\r\n\r\n    function getTradeContractByIndex(\r\n        uint256 index\r\n    ) external view returns (SMTrade);\r\n\r\n    function getTradeContractByAddress(\r\n        address tradeAddress\r\n    ) external view returns (SMTrade);\r\n\r\n    function getLastTradeContractAddress() external view returns (address);\r\n}\r\n",
+  "sourcePath": "C:\\Users\\Charl\\Documents\\Projects\\SteamMarket\\CSX\\csx-contracts\\contracts\\TradeFactory\\storage\\ITradeFactoryBaseStorage.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/TradeFactory/storage/ITradeFactoryBaseStorage.sol",
+    "exportedSymbols": {
+      "FloatInfo": [
+        3405
+      ],
+      "IKeepers": [
+        2115
+      ],
+      "ITradeFactory": [
+        3491
+      ],
+      "ITradeFactoryBaseStorage": [
+        4353
+      ],
+      "IUsers": [
+        4570
+      ],
+      "Math": [
+        6425
+      ],
+      "PriceType": [
+        3414
+      ],
+      "ReentrancyGuard": [
+        169
+      ],
+      "Role": [
+        4501
+      ],
+      "SMTrade": [
+        3384
+      ],
+      "SignedMath": [
+        6530
+      ],
+      "Sticker": [
+        3398
+      ],
+      "Strings": [
+        5559
+      ],
+      "TradeInfo": [
+        3458
+      ],
+      "TradeStatus": [
+        4498
+      ],
+      "TradeUrl": [
+        3410
+      ],
+      "UserInteraction": [
+        3423
+      ]
+    },
+    "id": 4354,
+    "license": "UNLICENSED",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 4304,
+        "literals": [
+          "solidity",
+          "0.8",
+          ".19"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "42:23:19"
+      },
+      {
+        "absolutePath": "project:/contracts/Trade/Trade.sol",
+        "file": "../../Trade/Trade.sol",
+        "id": 4305,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 4354,
+        "sourceUnit": 3385,
+        "src": "69:31:19",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "@openzeppelin/contracts/security/ReentrancyGuard.sol",
+        "file": "@openzeppelin/contracts/security/ReentrancyGuard.sol",
+        "id": 4307,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 4354,
+        "sourceUnit": 170,
+        "src": "102:85:19",
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 4306,
+              "name": "ReentrancyGuard",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 169,
+              "src": "110:15:19",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "ITradeFactoryBaseStorage",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 4353,
+        "linearizedBaseContracts": [
+          4353
+        ],
+        "name": "ITradeFactoryBaseStorage",
+        "nameLocation": "201:24:19",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "a09037a9",
+            "id": 4312,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "totalContracts",
+            "nameLocation": "272:14:19",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4308,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "286:2:19"
+            },
+            "returnParameters": {
+              "id": 4311,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4310,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4312,
+                  "src": "312:7:19",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4309,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "312:7:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "311:9:19"
+            },
+            "scope": 4353,
+            "src": "263:58:19",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "14add240",
+            "id": 4331,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "newTradeContract",
+            "nameLocation": "338:16:19",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4329,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4314,
+                  "mutability": "mutable",
+                  "name": "_itemMarketName",
+                  "nameLocation": "379:15:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4331,
+                  "src": "365:29:19",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 4313,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "365:6:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4317,
+                  "mutability": "mutable",
+                  "name": "_tradeUrl",
+                  "nameLocation": "421:9:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4331,
+                  "src": "405:25:19",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_TradeUrl_$3410_memory_ptr",
+                    "typeString": "struct TradeUrl"
+                  },
+                  "typeName": {
+                    "id": 4316,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 4315,
+                      "name": "TradeUrl",
+                      "nameLocations": [
+                        "405:8:19"
+                      ],
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 3410,
+                      "src": "405:8:19"
+                    },
+                    "referencedDeclaration": 3410,
+                    "src": "405:8:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_TradeUrl_$3410_storage_ptr",
+                      "typeString": "struct TradeUrl"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4319,
+                  "mutability": "mutable",
+                  "name": "_assetId",
+                  "nameLocation": "455:8:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4331,
+                  "src": "441:22:19",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 4318,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "441:6:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4321,
+                  "mutability": "mutable",
+                  "name": "_inspectLink",
+                  "nameLocation": "488:12:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4331,
+                  "src": "474:26:19",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 4320,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "474:6:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4323,
+                  "mutability": "mutable",
+                  "name": "_itemImageUrl",
+                  "nameLocation": "525:13:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4331,
+                  "src": "511:27:19",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 4322,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "511:6:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4325,
+                  "mutability": "mutable",
+                  "name": "_weiPrice",
+                  "nameLocation": "557:9:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4331,
+                  "src": "549:17:19",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4324,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "549:7:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4328,
+                  "mutability": "mutable",
+                  "name": "_float",
+                  "nameLocation": "594:6:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4331,
+                  "src": "577:23:19",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_FloatInfo_$3405_memory_ptr",
+                    "typeString": "struct FloatInfo"
+                  },
+                  "typeName": {
+                    "id": 4327,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 4326,
+                      "name": "FloatInfo",
+                      "nameLocations": [
+                        "577:9:19"
+                      ],
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 3405,
+                      "src": "577:9:19"
+                    },
+                    "referencedDeclaration": 3405,
+                    "src": "577:9:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_FloatInfo_$3405_storage_ptr",
+                      "typeString": "struct FloatInfo"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "354:253:19"
+            },
+            "returnParameters": {
+              "id": 4330,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "616:0:19"
+            },
+            "scope": 4353,
+            "src": "329:288:19",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "4eb9c034",
+            "id": 4339,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getTradeContractByIndex",
+            "nameLocation": "634:23:19",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4334,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4333,
+                  "mutability": "mutable",
+                  "name": "index",
+                  "nameLocation": "676:5:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4339,
+                  "src": "668:13:19",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4332,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "668:7:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "657:31:19"
+            },
+            "returnParameters": {
+              "id": 4338,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4337,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4339,
+                  "src": "712:7:19",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_SMTrade_$3384",
+                    "typeString": "contract SMTrade"
+                  },
+                  "typeName": {
+                    "id": 4336,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 4335,
+                      "name": "SMTrade",
+                      "nameLocations": [
+                        "712:7:19"
+                      ],
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 3384,
+                      "src": "712:7:19"
+                    },
+                    "referencedDeclaration": 3384,
+                    "src": "712:7:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_SMTrade_$3384",
+                      "typeString": "contract SMTrade"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "711:9:19"
+            },
+            "scope": 4353,
+            "src": "625:96:19",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "87e6e331",
+            "id": 4347,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getTradeContractByAddress",
+            "nameLocation": "738:25:19",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4342,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4341,
+                  "mutability": "mutable",
+                  "name": "tradeAddress",
+                  "nameLocation": "782:12:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4347,
+                  "src": "774:20:19",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4340,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "774:7:19",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "763:38:19"
+            },
+            "returnParameters": {
+              "id": 4346,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4345,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4347,
+                  "src": "825:7:19",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_SMTrade_$3384",
+                    "typeString": "contract SMTrade"
+                  },
+                  "typeName": {
+                    "id": 4344,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 4343,
+                      "name": "SMTrade",
+                      "nameLocations": [
+                        "825:7:19"
+                      ],
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 3384,
+                      "src": "825:7:19"
+                    },
+                    "referencedDeclaration": 3384,
+                    "src": "825:7:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_SMTrade_$3384",
+                      "typeString": "contract SMTrade"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "824:9:19"
+            },
+            "scope": 4353,
+            "src": "729:105:19",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "94a792e1",
+            "id": 4352,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getLastTradeContractAddress",
+            "nameLocation": "851:27:19",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4348,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "878:2:19"
+            },
+            "returnParameters": {
+              "id": 4351,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4350,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4352,
+                  "src": "904:7:19",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4349,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "904:7:19",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "903:9:19"
+            },
+            "scope": 4353,
+            "src": "842:71:19",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 4354,
+        "src": "191:725:19",
+        "usedErrors": []
+      }
+    ],
+    "src": "42:876:19"
+  },
+  "legacyAST": {
+    "absolutePath": "project:/contracts/TradeFactory/storage/ITradeFactoryBaseStorage.sol",
+    "exportedSymbols": {
+      "FloatInfo": [
+        3405
+      ],
+      "IKeepers": [
+        2115
+      ],
+      "ITradeFactory": [
+        3491
+      ],
+      "ITradeFactoryBaseStorage": [
+        4353
+      ],
+      "IUsers": [
+        4570
+      ],
+      "Math": [
+        6425
+      ],
+      "PriceType": [
+        3414
+      ],
+      "ReentrancyGuard": [
+        169
+      ],
+      "Role": [
+        4501
+      ],
+      "SMTrade": [
+        3384
+      ],
+      "SignedMath": [
+        6530
+      ],
+      "Sticker": [
+        3398
+      ],
+      "Strings": [
+        5559
+      ],
+      "TradeInfo": [
+        3458
+      ],
+      "TradeStatus": [
+        4498
+      ],
+      "TradeUrl": [
+        3410
+      ],
+      "UserInteraction": [
+        3423
+      ]
+    },
+    "id": 4354,
+    "license": "UNLICENSED",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 4304,
+        "literals": [
+          "solidity",
+          "0.8",
+          ".19"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "42:23:19"
+      },
+      {
+        "absolutePath": "project:/contracts/Trade/Trade.sol",
+        "file": "../../Trade/Trade.sol",
+        "id": 4305,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 4354,
+        "sourceUnit": 3385,
+        "src": "69:31:19",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "@openzeppelin/contracts/security/ReentrancyGuard.sol",
+        "file": "@openzeppelin/contracts/security/ReentrancyGuard.sol",
+        "id": 4307,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 4354,
+        "sourceUnit": 170,
+        "src": "102:85:19",
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 4306,
+              "name": "ReentrancyGuard",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 169,
+              "src": "110:15:19",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "ITradeFactoryBaseStorage",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 4353,
+        "linearizedBaseContracts": [
+          4353
+        ],
+        "name": "ITradeFactoryBaseStorage",
+        "nameLocation": "201:24:19",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "a09037a9",
+            "id": 4312,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "totalContracts",
+            "nameLocation": "272:14:19",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4308,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "286:2:19"
+            },
+            "returnParameters": {
+              "id": 4311,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4310,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4312,
+                  "src": "312:7:19",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4309,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "312:7:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "311:9:19"
+            },
+            "scope": 4353,
+            "src": "263:58:19",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "14add240",
+            "id": 4331,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "newTradeContract",
+            "nameLocation": "338:16:19",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4329,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4314,
+                  "mutability": "mutable",
+                  "name": "_itemMarketName",
+                  "nameLocation": "379:15:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4331,
+                  "src": "365:29:19",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 4313,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "365:6:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4317,
+                  "mutability": "mutable",
+                  "name": "_tradeUrl",
+                  "nameLocation": "421:9:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4331,
+                  "src": "405:25:19",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_TradeUrl_$3410_memory_ptr",
+                    "typeString": "struct TradeUrl"
+                  },
+                  "typeName": {
+                    "id": 4316,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 4315,
+                      "name": "TradeUrl",
+                      "nameLocations": [
+                        "405:8:19"
+                      ],
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 3410,
+                      "src": "405:8:19"
+                    },
+                    "referencedDeclaration": 3410,
+                    "src": "405:8:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_TradeUrl_$3410_storage_ptr",
+                      "typeString": "struct TradeUrl"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4319,
+                  "mutability": "mutable",
+                  "name": "_assetId",
+                  "nameLocation": "455:8:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4331,
+                  "src": "441:22:19",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 4318,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "441:6:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4321,
+                  "mutability": "mutable",
+                  "name": "_inspectLink",
+                  "nameLocation": "488:12:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4331,
+                  "src": "474:26:19",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 4320,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "474:6:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4323,
+                  "mutability": "mutable",
+                  "name": "_itemImageUrl",
+                  "nameLocation": "525:13:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4331,
+                  "src": "511:27:19",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 4322,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "511:6:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4325,
+                  "mutability": "mutable",
+                  "name": "_weiPrice",
+                  "nameLocation": "557:9:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4331,
+                  "src": "549:17:19",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4324,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "549:7:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4328,
+                  "mutability": "mutable",
+                  "name": "_float",
+                  "nameLocation": "594:6:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4331,
+                  "src": "577:23:19",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_FloatInfo_$3405_memory_ptr",
+                    "typeString": "struct FloatInfo"
+                  },
+                  "typeName": {
+                    "id": 4327,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 4326,
+                      "name": "FloatInfo",
+                      "nameLocations": [
+                        "577:9:19"
+                      ],
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 3405,
+                      "src": "577:9:19"
+                    },
+                    "referencedDeclaration": 3405,
+                    "src": "577:9:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_FloatInfo_$3405_storage_ptr",
+                      "typeString": "struct FloatInfo"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "354:253:19"
+            },
+            "returnParameters": {
+              "id": 4330,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "616:0:19"
+            },
+            "scope": 4353,
+            "src": "329:288:19",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "4eb9c034",
+            "id": 4339,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getTradeContractByIndex",
+            "nameLocation": "634:23:19",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4334,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4333,
+                  "mutability": "mutable",
+                  "name": "index",
+                  "nameLocation": "676:5:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4339,
+                  "src": "668:13:19",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4332,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "668:7:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "657:31:19"
+            },
+            "returnParameters": {
+              "id": 4338,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4337,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4339,
+                  "src": "712:7:19",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_SMTrade_$3384",
+                    "typeString": "contract SMTrade"
+                  },
+                  "typeName": {
+                    "id": 4336,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 4335,
+                      "name": "SMTrade",
+                      "nameLocations": [
+                        "712:7:19"
+                      ],
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 3384,
+                      "src": "712:7:19"
+                    },
+                    "referencedDeclaration": 3384,
+                    "src": "712:7:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_SMTrade_$3384",
+                      "typeString": "contract SMTrade"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "711:9:19"
+            },
+            "scope": 4353,
+            "src": "625:96:19",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "87e6e331",
+            "id": 4347,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getTradeContractByAddress",
+            "nameLocation": "738:25:19",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4342,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4341,
+                  "mutability": "mutable",
+                  "name": "tradeAddress",
+                  "nameLocation": "782:12:19",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4347,
+                  "src": "774:20:19",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4340,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "774:7:19",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "763:38:19"
+            },
+            "returnParameters": {
+              "id": 4346,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4345,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4347,
+                  "src": "825:7:19",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_SMTrade_$3384",
+                    "typeString": "contract SMTrade"
+                  },
+                  "typeName": {
+                    "id": 4344,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 4343,
+                      "name": "SMTrade",
+                      "nameLocations": [
+                        "825:7:19"
+                      ],
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 3384,
+                      "src": "825:7:19"
+                    },
+                    "referencedDeclaration": 3384,
+                    "src": "825:7:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_SMTrade_$3384",
+                      "typeString": "contract SMTrade"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "824:9:19"
+            },
+            "scope": 4353,
+            "src": "729:105:19",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "94a792e1",
+            "id": 4352,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getLastTradeContractAddress",
+            "nameLocation": "851:27:19",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4348,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "878:2:19"
+            },
+            "returnParameters": {
+              "id": 4351,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4350,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4352,
+                  "src": "904:7:19",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4349,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "904:7:19",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "903:9:19"
+            },
+            "scope": 4353,
+            "src": "842:71:19",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 4354,
+        "src": "191:725:19",
+        "usedErrors": []
+      }
+    ],
+    "src": "42:876:19"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.19+commit.7dd6d404.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.3",
+  "updatedAt": "2023-03-27T15:20:14.025Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

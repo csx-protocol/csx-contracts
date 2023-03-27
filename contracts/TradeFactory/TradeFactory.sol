@@ -12,11 +12,18 @@ struct TradeIndex {
     uint256 nextIndex;
 }
 
+struct ExtraTest {
+    string tradeUrlPartner;
+    string weiPriceStringed;
+    string sellerAddress;
+}
+
 contract SMTradeFactory is TradeFactoryBase {
     constructor(
         address _keepers,
-        address _users
-    ) TradeFactoryBase(_keepers, _users) {}
+        address _users,
+        address _tradeFactoryBaseStorage
+    ) TradeFactoryBase(_keepers, _users, _tradeFactoryBaseStorage) {}
 
     function createListingContract(
         string memory _itemMarketName,
@@ -29,50 +36,75 @@ contract SMTradeFactory is TradeFactoryBase {
         Sticker[] memory _stickers,
         string memory _weaponType
     ) external nonReentrant {
-        require(usersContract.isBanned(msg.sender) == false, "banned");
+        require(usersContract.isBanned(msg.sender) == false, "bnd");
         require(
             assetIdFromUserAddrssToTradeAddrss[_assetId][msg.sender] ==
                 address(0),
-            "ID exists"
+            "id"
         );
-        tradeContracts[totalContracts] = new SMTrade(
-            address(this),
-            address(keepersContract),
-            address(usersContract),
-            msg.sender,
-            _weiPrice,
+        // tradeContracts[totalContracts] = new SMTrade(
+        //     address(this),
+        //     address(keepersContract),
+        //     address(usersContract),
+        //     msg.sender,
+        //     _weiPrice,
+        //     _itemMarketName,
+        //     _tradeUrl,
+        //     _assetId,
+        //     _inspectLink,
+        //     _itemImageUrl,
+        //     _float
+        // );
+        //++totalContracts;
+
+        tradeFactoryBaseStorage.newTradeContract(
             _itemMarketName,
             _tradeUrl,
             _assetId,
             _inspectLink,
             _itemImageUrl,
+            _weiPrice,
             _float
-        );
-        ++totalContracts;
+        );       
 
-        address newAddress = address(tradeContracts[totalContracts - 1]);
+        //address newAddress = address(tradeContracts[totalContracts - 1]);
+        address newAddress = tradeFactoryBaseStorage.getLastTradeContractAddress();
+
+        uint256 totalContracts = tradeFactoryBaseStorage.totalContracts();
 
         isTradeContract[newAddress] = true;
-        tradeContracts[totalContracts - 1].initExtraInfo(
+
+        SMTrade _contract = tradeFactoryBaseStorage.getTradeContractByIndex(totalContracts - 1);
+
+        _contract.initExtraInfo(
             _stickers,
             _weaponType
-        );
+        );        
 
         contractAddressToIndex[newAddress] = totalContracts - 1;
         assetIdFromUserAddrssToTradeAddrss[_assetId][msg.sender] = newAddress;
 
-        string memory _tradeUrlPartner = Strings.toString(_tradeUrl.partner);
+        ExtraTest memory _extraTest;
+
+        _extraTest.tradeUrlPartner = Strings.toString(_tradeUrl.partner);
+        _extraTest.weiPriceStringed = Strings.toString(_weiPrice);
+        _extraTest.sellerAddress = Strings.toHexString(msg.sender);
+
         string memory data = string(
             abi.encodePacked(
                 _itemMarketName,
                 "||",
                 _assetId,
                 "||",
-                _tradeUrlPartner,
+                _extraTest.tradeUrlPartner,
                 "+",
                 _tradeUrl.token,
                 "||",
-                _float.value
+                _float.value,
+                "||",
+                _extraTest.weiPriceStringed,
+                "||",
+                _extraTest.sellerAddress
             )
         );
         emit TradeContractStatusChange(newAddress, TradeStatus.Pending, data);
@@ -82,7 +114,8 @@ contract SMTradeFactory is TradeFactoryBase {
         uint256 index
     ) public view returns (TradeInfo memory result) {
         uint256 i = index;
-        SMTrade _contract = tradeContracts[i];
+        //SMTrade _contract = tradeContracts[i];
+        SMTrade _contract = tradeFactoryBaseStorage.getTradeContractByIndex(i);
 
         result.contractAddress = address(_contract);
         result.seller = _contract.seller();
@@ -141,6 +174,7 @@ contract SMTradeFactory is TradeFactoryBase {
         TradeIndex[] memory tradeIndexes = new TradeIndex[](maxResults);
         uint256 resultIndex;
         uint256 i = indexFrom;
+        uint256 totalContracts = tradeFactoryBaseStorage.totalContracts();
         while (resultIndex < maxResults && i < totalContracts) {
             TradeInfo memory _trade = getTradeDetailsByIndex(i);
 
@@ -164,6 +198,7 @@ contract SMTradeFactory is TradeFactoryBase {
     ) external view returns (uint256) {
         uint256 count;
         uint256 i = 0;
+        uint256 totalContracts = tradeFactoryBaseStorage.totalContracts();
         while (i < totalContracts) {
             TradeInfo memory _trade = getTradeDetailsByIndex(i);
             if (_trade.status == status) {

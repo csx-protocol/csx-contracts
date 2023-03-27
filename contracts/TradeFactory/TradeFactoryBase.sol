@@ -3,23 +3,27 @@ pragma solidity 0.8.19;
 
 import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
+import {ITradeFactoryBaseStorage} from "./storage/ITradeFactoryBaseStorage.sol";
 import "./ITradeFactory.sol";
 import "../Keepers/IKeepers.sol";
 import "../Users/IUsers.sol";
 
+
 abstract contract TradeFactoryBase is ReentrancyGuard {
-    uint256 public totalContracts;
+    //uint256 public totalContracts;
     mapping(address => uint256) contractAddressToIndex;
 
-    mapping(uint256 => SMTrade) tradeContracts;
+    // mapping(uint256 => SMTrade) tradeContracts;
     mapping(address => bool) isTradeContract;
 
     IKeepers public keepersContract;
     IUsers public usersContract;
+    ITradeFactoryBaseStorage tradeFactoryBaseStorage;
 
-    constructor(address _keepers, address _users) {
+    constructor(address _keepers, address _users, address _tradeFactoryBaseStorage) {
         keepersContract = IKeepers(_keepers);
         usersContract = IUsers(_users);
+        tradeFactoryBaseStorage = ITradeFactoryBaseStorage(_tradeFactoryBaseStorage);
     }
 
     event TradeContractStatusChange(
@@ -29,7 +33,7 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
     );
 
     modifier onlyTradeContracts() {
-        require(isTradeContract[msg.sender], "!trade-c");
+        require(isTradeContract[msg.sender], "!tc");
         _;
     }
 
