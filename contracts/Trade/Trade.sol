@@ -117,7 +117,14 @@ contract SMTrade {
             (bool sent, ) = buyer.call{value: buyerDeposited}("");
             require(sent, "!Eth");
         }
-        factoryContract.onStatusChange(status, "");
+     
+        string memory data = string(
+            abi.encodePacked(
+                Strings.toString(weiPrice) /*,
+                "||", */
+            )
+        );
+        factoryContract.onStatusChange(status, data);
         factoryContract.removeAssetIdUsed(itemSellerAssetId, seller);
     }
 
@@ -133,25 +140,21 @@ contract SMTrade {
 
         buyerDeposited = msg.value;
         buyerCommittedTimestamp = block.timestamp;
-
-        string memory weiPriceString = Strings.toString(weiPrice);
-    
-        string memory sellerPartnerString = Strings.toString(sellerTradeUrl.partner);
-        string memory buyerPartnerString = Strings.toString(_buyerTradeUrl.partner);
         
         string memory data = string(
             abi.encodePacked(
-                sellerPartnerString,
+                Strings.toString(sellerTradeUrl.partner),
                 "+",
                 sellerTradeUrl.token,
                 "||",
-                buyerPartnerString,
+                Strings.toString(_buyerTradeUrl.partner),
                 "+",
                 _buyerTradeUrl.token,
                 "||",
-                weiPriceString
+                Strings.toHexString(msg.sender)
             )
         );
+        
         usersContract.changeUserInteractionStatus(address(this), seller, status);
         usersContract.addUserInteractionStatus(address(this), Role.BUYER, buyer, status);
         factoryContract.onStatusChange(status, data);
