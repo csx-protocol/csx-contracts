@@ -12,7 +12,18 @@ module.exports = async function (deployer, accounts) {
   console.log("Keepers", Keepers.address);
   console.log("Users", Users.address);
 
-  // Run Mock Data
+
+  const tradeFactory = await TradeFactory.at(TradeFactory.address);
+  const users = await Users.at(Users.address);
+
+  const setFactoryAddressOnUsersContract = await users.setFactoryAddress(TradeFactory.address);
+  console.log('setFactoryAddressOnUsersContract complete');
+
+  const tradeFactoryBaseStorage = await TradeFactoryBaseStorage.at(TradeFactoryBaseStorage.address);
+  const setInitOnTradeFactoryBaseStorage = await tradeFactoryBaseStorage.init(TradeFactory.address);
+  console.log('setInitOnTradeFactoryBaseStorage complete');
+
+  // MOCK DATA
 
   const web3 = new Web3(deployer.provider);
 
@@ -39,13 +50,6 @@ module.exports = async function (deployer, accounts) {
     value: etherToSend,
     gas: gasEstimate
   });
-  //
-
-  const tradeFactory = await TradeFactory.at(TradeFactory.address);
-  const users = await Users.at(Users.address);
-
-  const setFactoryAddressOnUsersContract = await users.setFactoryAddress(TradeFactory.address);
-  console.log('setFactoryAddressOnUsersContract complete');
 
   console.log(">>>RUNNING MOCK-DATA...");
 

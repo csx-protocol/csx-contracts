@@ -8,11 +8,20 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
     mapping(uint256 => SMTrade) tradeContracts;
     IKeepers public keepersContract;
     IUsers public usersContract;
+    address factoryAddress;
+    bool hasInit;
 
     constructor(address _keepers, address _users) {
         // TODO
         keepersContract = IKeepers(_keepers);
         usersContract = IUsers(_users);
+    }
+
+    function init(address _factoryAddress) external {
+        require(keepersContract.isCouncil(msg.sender));
+        require(!hasInit, "init");
+        hasInit = true;
+        factoryAddress = _factoryAddress;
     }
 
     function getTradeContract(uint256 index) external view returns (SMTrade) {
@@ -27,12 +36,13 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
         string memory _itemImageUrl,
         uint256 _weiPrice,
         FloatInfo memory _float
-    ) external {
+    ) external nonReentrant {
+        require(factoryAddress == msg.sender, "!fact");
         tradeContracts[totalContracts] = new SMTrade(
             address(msg.sender),
             address(keepersContract),
             address(usersContract),
-            msg.sender,
+            tx.origin,
             _weiPrice,
             _itemMarketName,
             _tradeUrl,
