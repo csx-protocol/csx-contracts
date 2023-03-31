@@ -151,10 +151,12 @@ contract SMTrade {
                 "+",
                 _buyerTradeUrl.token,
                 "||",
-                Strings.toHexString(msg.sender)
+                Strings.toHexString(msg.sender),
+                "||",
+                Strings.toString(weiPrice)
             )
         );
-        
+
         usersContract.changeUserInteractionStatus(address(this), seller, status);
         usersContract.addUserInteractionStatus(address(this), Role.BUYER, buyer, status);
         factoryContract.onStatusChange(status, data);
@@ -221,7 +223,12 @@ contract SMTrade {
             usersContract.changeUserInteractionStatus(address(this), buyer, status);
             (bool sS, ) = seller.call{value: buyerDeposited}("");
             require(sS, "!sntEth");
-            factoryContract.onStatusChange(status, "KO TRADE");
+            string memory data = string(
+                abi.encodePacked(
+                    Strings.toString(weiPrice)
+                )
+            );
+            factoryContract.onStatusChange(status, data);
         } else {
             TradeStatus oldStatus = status;
             status = TradeStatus.Clawbacked;
@@ -262,7 +269,14 @@ contract SMTrade {
         require(sent, "Failure, ether not sent!");
         usersContract.changeUserInteractionStatus(address(this), seller, status);
         usersContract.changeUserInteractionStatus(address(this), buyer, status); 
-        factoryContract.onStatusChange(status, "");
+        string memory data = string(
+            abi.encodePacked(
+                Strings.toString(weiPrice),
+                "||",
+                "MANUAL"
+            )
+        );
+        factoryContract.onStatusChange(status, data);
     }
 
     // Or Buyer/Seller opens dispute in any state.
