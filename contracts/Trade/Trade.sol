@@ -5,7 +5,7 @@ import "../Keepers/IKeepers.sol";
 import "../Users/IUsers.sol";
 import "../TradeFactory/ITradeFactory.sol";
 
-contract SMTrade {
+contract CSXTrade {
 
     address payable public seller;
     address payable public buyer;

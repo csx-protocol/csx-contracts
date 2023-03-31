@@ -5,7 +5,7 @@ import "./ITradeFactoryBaseStorage.sol";
 
 contract TradeFactoryBaseStorage is ReentrancyGuard {
     uint256 public totalContracts;
-    mapping(uint256 => SMTrade) tradeContracts;
+    mapping(uint256 => CSXTrade) tradeContracts;
     IKeepers public keepersContract;
     IUsers public usersContract;
     address factoryAddress;
@@ -24,7 +24,7 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
         factoryAddress = _factoryAddress;
     }
 
-    function getTradeContract(uint256 index) external view returns (SMTrade) {
+    function getTradeContract(uint256 index) external view returns (CSXTrade) {
         return tradeContracts[index];
     }
 
@@ -38,7 +38,7 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
         FloatInfo memory _float
     ) external nonReentrant {
         require(factoryAddress == msg.sender, "!fact");
-        tradeContracts[totalContracts] = new SMTrade(
+        tradeContracts[totalContracts] = new CSXTrade(
             address(msg.sender),
             address(keepersContract),
             address(usersContract),
@@ -57,7 +57,7 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
     function getTradeContractByIndex(uint256 index)
         external
         view
-        returns (SMTrade)
+        returns (CSXTrade)
     {
         return tradeContracts[index];
     }

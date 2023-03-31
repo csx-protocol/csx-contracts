@@ -74,7 +74,7 @@ contract SMTradeFactory is TradeFactoryBase {
 
         isTradeContract[newAddress] = true;
 
-        SMTrade _contract = tradeFactoryBaseStorage.getTradeContractByIndex(totalContracts - 1);
+        CSXTrade _contract = tradeFactoryBaseStorage.getTradeContractByIndex(totalContracts - 1);
 
         _contract.initExtraInfo(
             _stickers,
@@ -115,7 +115,7 @@ contract SMTradeFactory is TradeFactoryBase {
     ) public view returns (TradeInfo memory result) {
         uint256 i = index;
         //SMTrade _contract = tradeContracts[i];
-        SMTrade _contract = tradeFactoryBaseStorage.getTradeContractByIndex(i);
+        CSXTrade _contract = tradeFactoryBaseStorage.getTradeContractByIndex(i);
 
         result.contractAddress = address(_contract);
         result.seller = _contract.seller();
