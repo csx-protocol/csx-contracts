@@ -31,22 +31,29 @@ module.exports = async function (deployer, accounts) {
   // Replace these values with the desired sender and recipient addresses
   console.log('???',accounts[0]);
   const [sender] = await web3.eth.getAccounts();
-  const recipient = web3.utils.toChecksumAddress('0x4E48D90085B3CDE260f91b2863718bc28282dF8f');
-
+  const UserTest = web3.utils.toChecksumAddress('0x4E48D90085B3CDE260f91b2863718bc28282dF8f');
+  const OracleTest = web3.utils.toChecksumAddress('0xD9dDCdD3100630ac357f63fB9353f576fD3C9533');
   // Set the amount of Ether you want to send (in wei)
-  const etherToSend = web3.utils.toWei('25', 'ether');
+  const etherToSend = web3.utils.toWei('1', 'ether');
 
   // Estimate the gas required for the transaction
   const gasEstimate = await web3.eth.estimateGas({
     from: sender,
-    to: recipient,
+    to: UserTest,
     value: etherToSend
   });
 
   // Send the Ether
   await web3.eth.sendTransaction({
     from: sender,
-    to: recipient,
+    to: UserTest,
+    value: etherToSend,
+    gas: gasEstimate
+  });
+
+  await web3.eth.sendTransaction({
+    from: sender,
+    to: OracleTest,
     value: etherToSend,
     gas: gasEstimate
   });
