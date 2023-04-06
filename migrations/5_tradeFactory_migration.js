@@ -1,4 +1,4 @@
-const TradeFactory = artifacts.require("SMTradeFactory");
+const TradeFactory = artifacts.require("CSXTradeFactory");
 const Keepers = artifacts.require("Keepers");
 const Users = artifacts.require("Users");
 const TradeFactoryBaseStorage = artifacts.require("TradeFactoryBaseStorage");
