@@ -18,7 +18,7 @@ struct ExtraTest {
     string sellerAddress;
 }
 
-contract SMTradeFactory is TradeFactoryBase {
+contract CSXTradeFactory is TradeFactoryBase {
     constructor(
         address _keepers,
         address _users,
@@ -42,20 +42,6 @@ contract SMTradeFactory is TradeFactoryBase {
                 address(0),
             "id"
         );
-        // tradeContracts[totalContracts] = new SMTrade(
-        //     address(this),
-        //     address(keepersContract),
-        //     address(usersContract),
-        //     msg.sender,
-        //     _weiPrice,
-        //     _itemMarketName,
-        //     _tradeUrl,
-        //     _assetId,
-        //     _inspectLink,
-        //     _itemImageUrl,
-        //     _float
-        // );
-        //++totalContracts;
 
         tradeFactoryBaseStorage.newTradeContract(
             _itemMarketName,
@@ -67,7 +53,6 @@ contract SMTradeFactory is TradeFactoryBase {
             _float
         );       
 
-        //address newAddress = address(tradeContracts[totalContracts - 1]);
         address newAddress = tradeFactoryBaseStorage.getLastTradeContractAddress();
 
         uint256 totalContracts = tradeFactoryBaseStorage.totalContracts();
@@ -107,7 +92,7 @@ contract SMTradeFactory is TradeFactoryBase {
                 _extraTest.sellerAddress
             )
         );
-        emit TradeContractStatusChange(newAddress, TradeStatus.Pending, data);
+        emit TradeContractStatusChange(newAddress, TradeStatus.ForSale, data);
     }
 
     function getTradeDetailsByIndex(
