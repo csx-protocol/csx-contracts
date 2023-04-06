@@ -16,6 +16,7 @@ contract Users is ReentrancyGuard {
     }
 
     struct DeliveryTimes {
+        uint256 totalStarts;
         uint256 totalDeliveryTime;
         uint256 numberOfDeliveries;
         uint256 averageDeliveryTime;
@@ -101,6 +102,7 @@ contract Users is ReentrancyGuard {
     {
         UserToContractDeliveryStartTime[user][contractAddress] = block
             .timestamp;
+        ++users[user].deliveryInfo.totalStarts;
     }
 
     function endDeliveryTimer(address contractAddress, address user)
@@ -122,6 +124,14 @@ contract Users is ReentrancyGuard {
         returns (uint256)
     {
         return users[user].deliveryInfo.averageDeliveryTime;
+    }
+
+    function getDeliveryInfo(address user)
+        external
+        view
+        returns (DeliveryTimes memory)
+    {
+        return users[user].deliveryInfo;
     }
 
     //User to Trades
