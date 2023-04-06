@@ -1,14 +1,27 @@
 // //SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.19;
+// enum TradeStatus {
+//     Pending,
+//     SellerCancelled,
+//     Committed,
+//     Accepted,
+//     Completed,
+//     Disputed,
+//     Resolved,
+//     Clawbacked
+// }
+
 enum TradeStatus {
-    Pending,
-    SellerCancelled,
-    Committed,
-    Accepted,
-    Completed,
-    Disputed,
-    Resolved,
-    Clawbacked
+    ForSale, // Seller Lists Item
+    SellerCancelled, // Seller Cancels Item
+    BuyerCommitted, // Buyer Commits coins to Buy
+    BuyerCancelled, // Buyer Cancels Commitment
+    SellerCommitted, // Seller Commits to Sell
+    SellerCancelledAfterBuyerCommitted, // Seller Cancels After Buyer Commits (refunds buyer)
+    Completed, // Trade Completed
+    Disputed, // Trade Disputed
+    Resolved, // Trade Resolved
+    Clawbacked // Trade Clawbacked
 }
 
 enum Role {

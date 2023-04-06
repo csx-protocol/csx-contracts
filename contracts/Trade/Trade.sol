@@ -24,7 +24,7 @@ contract CSXTrade {
 
     uint256 public buyerDeposited;
     uint256 public weiPrice;
-    uint256 public buyerCommittedTimestamp;
+    uint256 public sellerAcceptedTimestamp;
 
     FloatInfo public float;
 
@@ -56,7 +56,7 @@ contract CSXTrade {
         usersContract = IUsers(_users);
         seller = payable(_seller);
         weiPrice = _weiPrice;
-        status = TradeStatus.Pending;
+        status = TradeStatus.ForSale;
         itemMarketName = _itemMarketName;
         sellerTradeUrl = _sellerTradeUrl;
         itemSellerAssetId = _sellerAssetId;
@@ -74,7 +74,7 @@ contract CSXTrade {
         for (uint256 i = 0; i < _stickers.length; i++) {
             stickers.push(_stickers[i]);
         }
-        usersContract.addUserInteractionStatus(address(this), Role.SELLER, seller, TradeStatus.Pending);
+        usersContract.addUserInteractionStatus(address(this), Role.SELLER, seller, TradeStatus.ForSale);
         weaponType = _weaponType;
     }
 
@@ -106,18 +106,11 @@ contract CSXTrade {
         _;
     }
 
-    // Seller can cancel the listing up til any buyer has committed ETH.
+    // Seller can cancel the listing up til any buyer has committed tokens.
     function sellerCancel() external onlyAddress(seller) {
-        require(status == TradeStatus.Committed || status == TradeStatus.Pending, "st !pen");
-        TradeStatus oldStatus = status;
+        require(status == TradeStatus.ForSale, "st !pen");
         status = TradeStatus.SellerCancelled;
         usersContract.changeUserInteractionStatus(address(this), seller, status);
-        if(oldStatus == TradeStatus.Committed) {
-            usersContract.changeUserInteractionStatus(address(this), buyer, status);
-            (bool sent, ) = buyer.call{value: buyerDeposited}("");
-            require(sent, "!Eth");
-        }
-     
         string memory data = string(
             abi.encodePacked(
                 Strings.toString(weiPrice) /*,
@@ -128,18 +121,17 @@ contract CSXTrade {
         factoryContract.removeAssetIdUsed(itemSellerAssetId, seller);
     }
 
-    // Buyer commits ETH to buy if status-state allows & Sends trade-offer to sellers trade-link off-chain.
+    // Buyer commits tokens to buy if status-state allows & Sends trade-offer to sellers trade-link off-chain.
     function commitBuy(TradeUrl memory _buyerTradeUrl) public payable {
-        require(status == TradeStatus.Pending, "trd st !pen.");
+        require(status == TradeStatus.ForSale, "trd st !pen.");
         require(msg.value >= weiPrice, "!value");
         require(msg.sender != seller, "!seller");
-        status = TradeStatus.Committed;
+        status = TradeStatus.BuyerCommitted;
         usersContract.startDeliveryTimer(address(this), seller);
         buyer = payable(msg.sender);
         buyerTradeUrl = _buyerTradeUrl;
 
         buyerDeposited = msg.value;
-        buyerCommittedTimestamp = block.timestamp;
         
         string memory data = string(
             abi.encodePacked(
@@ -162,103 +154,40 @@ contract CSXTrade {
         factoryContract.onStatusChange(status, data);
     }
 
-    // If automated Keeper-oracle can identify item has been successfully trade from seller to buyer, it will release here.
-    // function keeperNodeConfirmsTradeMade() external onlyKeeperNode {
-    //     require(
-    //         status >= TradeStatus.Committed,
-    //         "trdsts!>comm"
-    //     );
-    //     require(
-    //         status < TradeStatus.Completed,
-    //         "trdsts<comp"
-    //     );
-    //     status = TradeStatus.Completed;
-    //     usersContract.endDeliveryTimer(address(this), seller);
-    //     usersContract.changeUserInteractionStatus(address(this), seller, status);
-    //     usersContract.changeUserInteractionStatus(address(this), buyer, status);
-    //     bool success = factoryContract.removeAssetIdUsed(itemSellerAssetId, seller);
-    //     require(success, "!tradeId");
-    //     (bool sent, ) = seller.call{value: buyerDeposited}("");
-    //     require(sent, "!sntEth");
-    //     factoryContract.onStatusChange(status, "KEEPER-ORACLE CONFIRMED TRADE MADE");
-    // }
-
-    // Keeper-oracle recognizes wrong-doing and defaults the trade.
-    // function keeperNodeConfirmsDefault() external onlyKeeperNode {
-    //     require(
-    //         status >= TradeStatus.Committed,
-    //         "trdsts!>comm"
-    //     );
-    //     require(
-    //         status < TradeStatus.Completed,
-    //         "trdsts<comp"
-    //     );
-    //     TradeStatus oldStatus = status;
-    //     status = TradeStatus.Clawbacked;
-    //     usersContract.changeUserInteractionStatus(address(this), seller, status);        
-    //     if(oldStatus >= TradeStatus.Committed){
-    //         usersContract.changeUserInteractionStatus(address(this), buyer, status);
-    //     }       
-    //     bool success = factoryContract.removeAssetIdUsed(itemSellerAssetId, seller);
-    //     require(success, "!tradeId");
-    //     (bool sent, ) = buyer.call{value: buyerDeposited}("");
-    //     require(sent, "!sntEth");
-    //     factoryContract.onStatusChange(status, "KEEPER-ORACLE CONFIRMED DEFAULT");
-    // }
-
-    function keeperNodeConfirmsTrade(bool isTradeMade) external onlyKeeperNode {
-        require(
-            status >= TradeStatus.Committed,
-            "trdsts!>comm"
-        );
-        require(
-            status < TradeStatus.Completed,
-            "trdsts<comp"
-        );
-        
-        if (isTradeMade) {
-            status = TradeStatus.Completed;
-            usersContract.endDeliveryTimer(address(this), seller);
-            usersContract.changeUserInteractionStatus(address(this), seller, status);
-            usersContract.changeUserInteractionStatus(address(this), buyer, status);
-            (bool sS, ) = seller.call{value: buyerDeposited}("");
-            require(sS, "!sntEth");
-            string memory data = string(
-                abi.encodePacked(
-                    Strings.toString(weiPrice)
-                )
-            );
-            factoryContract.onStatusChange(status, data);
-        } else {
-            TradeStatus oldStatus = status;
-            status = TradeStatus.Clawbacked;
-            usersContract.changeUserInteractionStatus(address(this), seller, status);        
-            if(oldStatus >= TradeStatus.Committed){
-                usersContract.changeUserInteractionStatus(address(this), buyer, status);
-            }
-            (bool bS, ) = buyer.call{value: buyerDeposited}("");
-            require(bS, "!sntEth");
-            factoryContract.onStatusChange(status, "KO DEFAULT");
-        }
-        
-        bool raS = factoryContract.removeAssetIdUsed(itemSellerAssetId, seller);
-        require(raS, "!tradeId");
+    // Buyer can cancel the trade up til the seller has accepted the trade offer.
+    function buyerCancel() external onlyAddress(buyer) {
+        require(status == TradeStatus.BuyerCommitted, "trdsts!comm");
+        status = TradeStatus.BuyerCancelled;
+        usersContract.changeUserInteractionStatus(address(this), seller, status);
+        usersContract.changeUserInteractionStatus(address(this), buyer, status);
+        (bool sent, ) = buyer.call{value: buyerDeposited}("");
+        require(sent, "!Eth");
+        factoryContract.onStatusChange(status, "BU DEFAULT");
     }
 
-
-    // Seller Confirms they have accepted the trade offer.
-    function acceptTradeOffer() public onlyAddress(seller) {
-        require(status == TradeStatus.Committed, "trdsts!comm");
-        status = TradeStatus.Accepted;
-        usersContract.changeUserInteractionStatus(address(this), seller, status);
-        usersContract.changeUserInteractionStatus(address(this), buyer, status);   
-        factoryContract.onStatusChange(status, "");
+    // Seller Confirms or deny they have accepted the trade offer.
+    function sellerTradeVeridict(bool sellerCommited) public onlyAddress(seller) {
+        require(status == TradeStatus.BuyerCommitted, "trdsts!comm");
+        if(sellerCommited) {
+            status = TradeStatus.SellerCommitted;
+            sellerAcceptedTimestamp = block.timestamp;
+            usersContract.changeUserInteractionStatus(address(this), seller, status);
+            usersContract.changeUserInteractionStatus(address(this), buyer, status);
+            factoryContract.onStatusChange(status, "");
+        } else {
+            status = TradeStatus.SellerCancelledAfterBuyerCommitted;
+            usersContract.changeUserInteractionStatus(address(this), seller, status);
+            usersContract.changeUserInteractionStatus(address(this), buyer, status);
+            (bool sent, ) = buyer.call{value: buyerDeposited}("");
+            require(sent, "!Eth");
+            factoryContract.onStatusChange(status, "SE DEFAULT");
+        }
     }
 
     // Buyer Confirms they have received the item.
-    function confirmReceived() public onlyAddress(buyer) {
+    function buyerConfirmReceived() public onlyAddress(buyer) {
         require(
-            status == TradeStatus.Committed || status == TradeStatus.Accepted,
+            status == TradeStatus.BuyerCommitted || status == TradeStatus.SellerCommitted,
             "trdsts!comm|act."
         );
         status = TradeStatus.Completed;
@@ -277,6 +206,65 @@ contract CSXTrade {
             )
         );
         factoryContract.onStatusChange(status, data);
+    }
+
+    // Seller confirms the trade has been made after 3 days from acceptance.
+    function sellerConfirmsTrade() external onlyAddress(seller) {
+        require(
+            status == TradeStatus.SellerCommitted,
+            "trdsts!comm"
+        );
+        require(
+            block.timestamp >= sellerAcceptedTimestamp + 3 days,
+            "3 days not passed"
+        );
+        status = TradeStatus.Completed;
+        usersContract.endDeliveryTimer(address(this), seller);
+        usersContract.changeUserInteractionStatus(address(this), seller, status);
+        usersContract.changeUserInteractionStatus(address(this), buyer, status);
+        (bool sS, ) = seller.call{value: buyerDeposited}("");
+        require(sS, "!sntEth");
+        string memory data = string(
+            abi.encodePacked(
+                Strings.toString(weiPrice)
+            )
+        );
+        factoryContract.onStatusChange(status, data);
+    }
+
+    // KeeperNode Confirms the trade has been made.
+    function keeperNodeConfirmsTrade(bool isTradeMade) external onlyKeeperNode {
+        require(
+            status == TradeStatus.BuyerCommitted || status == TradeStatus.SellerCommitted,
+            "trdsts!>comm"
+        );        
+        if (isTradeMade) {
+            status = TradeStatus.Completed;
+            usersContract.endDeliveryTimer(address(this), seller);
+            usersContract.changeUserInteractionStatus(address(this), seller, status);
+            usersContract.changeUserInteractionStatus(address(this), buyer, status);
+            (bool sS, ) = seller.call{value: buyerDeposited}("");
+            require(sS, "!sntEth");
+            string memory data = string(
+                abi.encodePacked(
+                    Strings.toString(weiPrice)
+                )
+            );
+            factoryContract.onStatusChange(status, data);
+        } else {
+            TradeStatus oldStatus = status;
+            status = TradeStatus.Clawbacked;
+            usersContract.changeUserInteractionStatus(address(this), seller, status);        
+            if(oldStatus >= TradeStatus.BuyerCommitted){
+                usersContract.changeUserInteractionStatus(address(this), buyer, status);
+            }
+            (bool bS, ) = buyer.call{value: buyerDeposited}("");
+            require(bS, "!sntEth");
+            factoryContract.onStatusChange(status, "KO DEFAULT");
+        }
+        
+        bool raS = factoryContract.removeAssetIdUsed(itemSellerAssetId, seller);
+        require(raS, "!tradeId");
     }
 
     // Or Buyer/Seller opens dispute in any state.
@@ -299,6 +287,7 @@ contract CSXTrade {
         factoryContract.onStatusChange(status, _complaint);
     }
 
+    // Keepers & KeeperNode resolves the dispute.
     function resolveDispute(
         bool isFavourOfBuyer,
         bool giveWarningToSeller,
