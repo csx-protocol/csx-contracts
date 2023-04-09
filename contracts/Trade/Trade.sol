@@ -160,7 +160,9 @@ contract CSXTrade {
     // Buyer can cancel the trade up til the seller has accepted the trade offer.
     function buyerCancel() external onlyAddress(buyer) {
         require(status == TradeStatus.BuyerCommitted, "trdsts!comm");
-        require(block.timestamp >= buyerCommitTimestamp + 24 hours, "!24hrs");
+        // require(block.timestamp >= buyerCommitTimestamp + 24 hours, "!24hrs");
+        // TODO: REMOVE THIS REQUIREMENT FOR TESTING
+        require(block.timestamp >= buyerCommitTimestamp + 5 minutes, "!5mnts"); // FOR TESTING
         status = TradeStatus.BuyerCancelled;
         usersContract.changeUserInteractionStatus(address(this), seller, status);
         usersContract.changeUserInteractionStatus(address(this), buyer, status);
