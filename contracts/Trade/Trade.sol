@@ -22,9 +22,11 @@ contract CSXTrade {
 
     string public weaponType;
 
-    uint256 public buyerDeposited;
+    uint256 public depositedValue;
     uint256 public weiPrice;
+
     uint256 public sellerAcceptedTimestamp;
+    uint256 public buyerCommitTimestamp;
 
     FloatInfo public float;
 
@@ -127,11 +129,12 @@ contract CSXTrade {
         require(msg.value >= weiPrice, "!value");
         require(msg.sender != seller, "!seller");
         status = TradeStatus.BuyerCommitted;
+        buyerCommitTimestamp = block.timestamp;
         usersContract.startDeliveryTimer(address(this), seller);
         buyer = payable(msg.sender);
         buyerTradeUrl = _buyerTradeUrl;
 
-        buyerDeposited = msg.value;
+        depositedValue = msg.value;
         
         string memory data = string(
             abi.encodePacked(
@@ -157,10 +160,11 @@ contract CSXTrade {
     // Buyer can cancel the trade up til the seller has accepted the trade offer.
     function buyerCancel() external onlyAddress(buyer) {
         require(status == TradeStatus.BuyerCommitted, "trdsts!comm");
+        require(block.timestamp >= buyerCommitTimestamp + 24 hours, "!24hrs");
         status = TradeStatus.BuyerCancelled;
         usersContract.changeUserInteractionStatus(address(this), seller, status);
         usersContract.changeUserInteractionStatus(address(this), buyer, status);
-        (bool sent, ) = buyer.call{value: buyerDeposited}("");
+        (bool sent, ) = buyer.call{value: depositedValue}("");
         require(sent, "!Eth");
         factoryContract.onStatusChange(status, "BU DEFAULT");
     }
@@ -178,7 +182,7 @@ contract CSXTrade {
             status = TradeStatus.SellerCancelledAfterBuyerCommitted;
             usersContract.changeUserInteractionStatus(address(this), seller, status);
             usersContract.changeUserInteractionStatus(address(this), buyer, status);
-            (bool sent, ) = buyer.call{value: buyerDeposited}("");
+            (bool sent, ) = buyer.call{value: depositedValue}("");
             require(sent, "!Eth");
             factoryContract.onStatusChange(status, "SE DEFAULT");
         }
@@ -194,7 +198,7 @@ contract CSXTrade {
         usersContract.endDeliveryTimer(address(this), seller);
         bool success = factoryContract.removeAssetIdUsed(itemSellerAssetId, seller);
         require(success, "didn't remove tradeId");
-        (bool sent, ) = seller.call{value: buyerDeposited}("");
+        (bool sent, ) = seller.call{value: depositedValue}("");
         require(sent, "Failure, ether not sent!");
         usersContract.changeUserInteractionStatus(address(this), seller, status);
         usersContract.changeUserInteractionStatus(address(this), buyer, status); 
@@ -222,7 +226,7 @@ contract CSXTrade {
         usersContract.endDeliveryTimer(address(this), seller);
         usersContract.changeUserInteractionStatus(address(this), seller, status);
         usersContract.changeUserInteractionStatus(address(this), buyer, status);
-        (bool sS, ) = seller.call{value: buyerDeposited}("");
+        (bool sS, ) = seller.call{value: depositedValue}("");
         require(sS, "!sntEth");
         string memory data = string(
             abi.encodePacked(
@@ -243,7 +247,7 @@ contract CSXTrade {
             usersContract.endDeliveryTimer(address(this), seller);
             usersContract.changeUserInteractionStatus(address(this), seller, status);
             usersContract.changeUserInteractionStatus(address(this), buyer, status);
-            (bool sS, ) = seller.call{value: buyerDeposited}("");
+            (bool sS, ) = seller.call{value: depositedValue}("");
             require(sS, "!sntEth");
             string memory data = string(
                 abi.encodePacked(
@@ -258,7 +262,7 @@ contract CSXTrade {
             if(oldStatus >= TradeStatus.BuyerCommitted){
                 usersContract.changeUserInteractionStatus(address(this), buyer, status);
             }
-            (bool bS, ) = buyer.call{value: buyerDeposited}("");
+            (bool bS, ) = buyer.call{value: depositedValue}("");
             require(bS, "!sntEth");
             factoryContract.onStatusChange(status, "KO DEFAULT");
         }
@@ -300,13 +304,13 @@ contract CSXTrade {
         if (isFavourOfBuyer) {
             status == TradeStatus.Clawbacked;
             if (isWithValue) {
-                (bool sent, ) = buyer.call{value: buyerDeposited}("");
+                (bool sent, ) = buyer.call{value: depositedValue}("");
                 require(sent, "!snt");
             }
         } else {
             status = TradeStatus.Resolved;
             if (isWithValue) {
-                (bool sent, ) = seller.call{value: buyerDeposited}("");
+                (bool sent, ) = seller.call{value: depositedValue}("");
                 require(sent, "!snt2");
             }
         }
