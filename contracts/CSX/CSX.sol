@@ -1,9 +1,9 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity 0.8.19;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
-contract CSXToken is ERC20 {
+contract CSXToken is ERC20Burnable {
     // ONE HUNDERED MILLION SMC
     uint256 public constant maxSupply = 100000000 ether;
     IERC20 public stakedCSX;
