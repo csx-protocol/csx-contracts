@@ -79,6 +79,8 @@ contract stakedCSX is Ownable, ReentrancyGuard, ERC20 {
         USDT = IERC20(_usdt);
     }
 
+    //=================================== EXTERNAL ==============================================
+
     /// @notice Function to reward stakers.
     function depositDividend(address token, uint256 amount) external {
         require(totalSupply() != 0, "No tokens minted");
