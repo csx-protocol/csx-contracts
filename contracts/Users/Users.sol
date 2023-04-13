@@ -126,12 +126,12 @@ contract Users is ReentrancyGuard {
         return users[user].deliveryInfo.averageDeliveryTime;
     }
 
-    function getDeliveryInfo(address user)
+    function getUserData(address user)
         external
         view
-        returns (DeliveryTimes memory)
+        returns (User memory)
     {
-        return users[user].deliveryInfo;
+        return users[user];
     }
 
     //User to Trades
@@ -213,15 +213,6 @@ contract Users is ReentrancyGuard {
         }
         return tradeUIs;
     }
-
-
-    // function getUserAllTradeUIs(address userAddrss)
-    //     external
-    //     view
-    //     returns (UserInteraction[] memory)
-    // {
-    //     return userTrades[userAddrss];
-    // }
     
     mapping(address => mapping(Role => bool)) tradeAdrsToRoleToHasRep;
 
