@@ -62,11 +62,6 @@ contract stakedCSX is Ownable, ReentrancyGuard, ERC20 {
         _;
     }
 
-    modifier onlyAddress(address _address) {
-        require(msg.sender == _address, "Incorrect party.");
-        _;
-    }
-
     constructor(
         address _csxAddress,
         address _weth,
