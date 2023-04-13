@@ -32,7 +32,7 @@ contract CSXTradeFactory is TradeFactoryBase {
         string memory _inspectLink,
         string memory _itemImageUrl,
         uint256 _weiPrice,
-        FloatInfo memory _float,
+        SkinInfo memory _skinInfo,
         Sticker[] memory _stickers,
         string memory _weaponType
     ) external nonReentrant {
@@ -50,7 +50,7 @@ contract CSXTradeFactory is TradeFactoryBase {
             _inspectLink,
             _itemImageUrl,
             _weiPrice,
-            _float
+            _skinInfo
         );       
 
         address newAddress = tradeFactoryBaseStorage.getLastTradeContractAddress();
@@ -85,14 +85,14 @@ contract CSXTradeFactory is TradeFactoryBase {
                 "+",
                 _tradeUrl.token,
                 "||",
-                _float.value,
+                _skinInfo.floatValues, // "[0.00, 0.00, 0.000000]" (max, min, value)
                 "||",
                 _extraTest.weiPriceStringed,
                 "||",
                 _extraTest.sellerAddress
             )
         );
-        emit TradeContractStatusChange(newAddress, TradeStatus.ForSale, data);
+        emit TradeContractStatusChange(newAddress, TradeStatus.ForSale, data, msg.sender, address(0));
     }
 
     function getTradeDetailsByIndex(
@@ -121,9 +121,9 @@ contract CSXTradeFactory is TradeFactoryBase {
         result.averageSellerDeliveryTime = usersContract.getAverageDeliveryTime(
             result.seller
         );
-        FloatInfo memory _float;
-        (_float.value, _float.min, _float.max) = _contract.float();
-        result.float = _float;
+        SkinInfo memory _skinInfo;
+        (_skinInfo.floatValues, _skinInfo.paintSeed, _skinInfo.paintIndex) = _contract.skinInfo();
+        result.skinInfo = _skinInfo;
         result.status = _contract.status();
 
         uint256 lengthOfStickersArray = _contract.stickerLength();

@@ -16,7 +16,7 @@ interface ITradeFactoryBaseStorage {
         string memory _inspectLink,
         string memory _itemImageUrl,
         uint256 _weiPrice,
-        FloatInfo memory _float
+        SkinInfo memory _skinInfo
     ) external;
 
     function getTradeContractByIndex(

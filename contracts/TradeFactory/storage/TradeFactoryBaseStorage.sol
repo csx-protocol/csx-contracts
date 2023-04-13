@@ -35,7 +35,7 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
         string memory _inspectLink,
         string memory _itemImageUrl,
         uint256 _weiPrice,
-        FloatInfo memory _float
+        SkinInfo memory _skinInfo
     ) external nonReentrant {
         require(factoryAddress == msg.sender, "!fact");
         tradeContracts[totalContracts] = new CSXTrade(
@@ -49,7 +49,7 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
             _assetId,
             _inspectLink,
             _itemImageUrl,
-            _float
+            _skinInfo
         );
         ++totalContracts;
     }

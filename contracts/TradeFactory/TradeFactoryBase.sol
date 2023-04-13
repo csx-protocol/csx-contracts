@@ -29,7 +29,9 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
     event TradeContractStatusChange(
         address contractAddress,
         TradeStatus,
-        string data
+        string data,
+        address sellerAddress,
+        address buyerAddress
     );
 
     modifier onlyTradeContracts() {
@@ -45,11 +47,11 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
         return isTradeContract[contractAddress];
     }
 
-    function onStatusChange(TradeStatus status, string memory data)
+    function onStatusChange(TradeStatus status, string memory data, address sellerAddress, address buyerAddress)
         external
         onlyTradeContracts
     {
-        emit TradeContractStatusChange(msg.sender, status, data);
+        emit TradeContractStatusChange(msg.sender, status, data, sellerAddress, buyerAddress);
     }
 
     /* 

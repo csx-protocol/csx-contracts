@@ -12,10 +12,16 @@ struct Sticker {
     string imageLink;
 }
 
-struct FloatInfo {
-    string value;
-    string min;
-    string max;
+// struct FloatInfo {
+//     string value;
+//     string min;
+//     string max;
+// }
+
+struct SkinInfo {
+    string floatValues; // "[0.00, 0.00, 0.000000]" (max, min, value)
+    uint256 paintSeed; // ranging from 1 to 1000, determines the unique pattern of a skin, such as the placement of the artwork, wear, and color distribution.
+    uint256 paintIndex; // Paint index is a fixed value for each skin and does not change across different instances of the same skin. Ex. the AWP Dragon Lore has a paint index of 344. 
 }
 
 struct TradeUrl {
@@ -47,7 +53,7 @@ struct TradeInfo {
     string itemImageUrl;
     uint256 weiPrice;
     uint256 averageSellerDeliveryTime;
-    FloatInfo float;
+    SkinInfo skinInfo;
     TradeStatus status;
     Sticker[] stickers;
     string weaponType;
@@ -57,7 +63,7 @@ interface ITradeFactory {
     // Trade Contract
     function removeAssetIdUsed(string memory _assetId, address sellerAddrss) external returns (bool);
 
-    function onStatusChange(TradeStatus status, string memory data) external;
+    function onStatusChange(TradeStatus status, string memory data, address sellerAddress, address buyerAddress) external;
 
     //Users
     function isThisTradeContract(address contractAddress)
