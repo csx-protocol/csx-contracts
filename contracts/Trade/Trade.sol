@@ -28,7 +28,7 @@ contract CSXTrade {
     uint256 public sellerAcceptedTimestamp;
     uint256 public buyerCommitTimestamp;
 
-    FloatInfo public float;
+    SkinInfo public skinInfo;
 
     TradeStatus public status;
 
@@ -51,7 +51,7 @@ contract CSXTrade {
         string memory _sellerAssetId,
         string memory _inspectLink,
         string memory _itemImageUrl,
-        FloatInfo memory _float
+        SkinInfo memory _skinInfo
     ) {
         factoryContract = ITradeFactory(_factory);
         keepersContract = IKeepers(_keepers);
@@ -64,9 +64,10 @@ contract CSXTrade {
         itemSellerAssetId = _sellerAssetId;
         inspectLink = _inspectLink;
         itemImageUrl = _itemImageUrl;
-        float.value = _float.value;
-        float.min = _float.min;
-        float.max = _float.max;
+        // float.value = _float.value;
+        // float.min = _float.min;
+        // float.max = _float.max;
+        skinInfo = _skinInfo;
     }
 
     bool public hasInit;
@@ -119,7 +120,7 @@ contract CSXTrade {
                 "||", */
             )
         );
-        factoryContract.onStatusChange(status, data);
+        factoryContract.onStatusChange(status, data, seller, buyer);
         factoryContract.removeAssetIdUsed(itemSellerAssetId, seller);
     }
 
@@ -154,7 +155,7 @@ contract CSXTrade {
 
         usersContract.changeUserInteractionStatus(address(this), seller, status);
         usersContract.addUserInteractionStatus(address(this), Role.BUYER, buyer, status);
-        factoryContract.onStatusChange(status, data);
+        factoryContract.onStatusChange(status, data, seller, buyer);
     }
 
     // Buyer can cancel the trade up til the seller has accepted the trade offer.
@@ -162,13 +163,13 @@ contract CSXTrade {
         require(status == TradeStatus.BuyerCommitted, "trdsts!comm");
         // require(block.timestamp >= buyerCommitTimestamp + 24 hours, "!24hrs");
         // TODO: REMOVE THIS REQUIREMENT FOR TESTING
-        require(block.timestamp >= buyerCommitTimestamp + 5 minutes, "!5mnts"); // FOR TESTING
+        // require(block.timestamp >= buyerCommitTimestamp + 5 minutes, "!5mnts"); // FOR TESTING
         status = TradeStatus.BuyerCancelled;
         usersContract.changeUserInteractionStatus(address(this), seller, status);
         usersContract.changeUserInteractionStatus(address(this), buyer, status);
         (bool sent, ) = buyer.call{value: depositedValue}("");
         require(sent, "!Eth");
-        factoryContract.onStatusChange(status, "BU DEFAULT");
+        factoryContract.onStatusChange(status, "BU DEFAULT", seller, buyer);
     }
 
     // Seller Confirms or deny they have accepted the trade offer.
@@ -179,14 +180,14 @@ contract CSXTrade {
             sellerAcceptedTimestamp = block.timestamp;
             usersContract.changeUserInteractionStatus(address(this), seller, status);
             usersContract.changeUserInteractionStatus(address(this), buyer, status);
-            factoryContract.onStatusChange(status, "");
+            factoryContract.onStatusChange(status, "", seller, buyer);
         } else {
             status = TradeStatus.SellerCancelledAfterBuyerCommitted;
             usersContract.changeUserInteractionStatus(address(this), seller, status);
             usersContract.changeUserInteractionStatus(address(this), buyer, status);
             (bool sent, ) = buyer.call{value: depositedValue}("");
             require(sent, "!Eth");
-            factoryContract.onStatusChange(status, "SE DEFAULT");
+            factoryContract.onStatusChange(status, "SE DEFAULT", seller, buyer);
         }
     }
 
@@ -211,7 +212,7 @@ contract CSXTrade {
                 "MANUAL"
             )
         );
-        factoryContract.onStatusChange(status, data);
+        factoryContract.onStatusChange(status, data, seller, buyer);
     }
 
     // Seller confirms the trade has been made after 3 days from acceptance.
@@ -235,7 +236,7 @@ contract CSXTrade {
                 Strings.toString(weiPrice)
             )
         );
-        factoryContract.onStatusChange(status, data);
+        factoryContract.onStatusChange(status, data, seller, buyer);
     }
 
     // KeeperNode Confirms the trade has been made.
@@ -256,7 +257,7 @@ contract CSXTrade {
                     Strings.toString(weiPrice)
                 )
             );
-            factoryContract.onStatusChange(status, data);
+            factoryContract.onStatusChange(status, data, seller, buyer);
         } else {
             TradeStatus oldStatus = status;
             status = TradeStatus.Clawbacked;
@@ -266,7 +267,7 @@ contract CSXTrade {
             }
             (bool bS, ) = buyer.call{value: depositedValue}("");
             require(bS, "!sntEth");
-            factoryContract.onStatusChange(status, "KO DEFAULT");
+            factoryContract.onStatusChange(status, "KO DEFAULT", seller, buyer);
         }
         
         bool raS = factoryContract.removeAssetIdUsed(itemSellerAssetId, seller);
@@ -290,7 +291,7 @@ contract CSXTrade {
         disputeComplaint = _complaint;
         usersContract.changeUserInteractionStatus(address(this), seller, status);
         usersContract.changeUserInteractionStatus(address(this), buyer, status); 
-        factoryContract.onStatusChange(status, _complaint);
+        factoryContract.onStatusChange(status, _complaint, seller, buyer);
     }
 
     // Keepers & KeeperNode resolves the dispute.
@@ -324,6 +325,6 @@ contract CSXTrade {
         }
         usersContract.changeUserInteractionStatus(address(this), seller, status);
         usersContract.changeUserInteractionStatus(address(this), buyer, status);
-        factoryContract.onStatusChange(status, "");
+        factoryContract.onStatusChange(status, "", seller, buyer);
     }
 }
