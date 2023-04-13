@@ -4,7 +4,7 @@ pragma solidity 0.8.19;
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
 contract CSXToken is ERC20Burnable {
-    // ONE HUNDERED MILLION SMC
+    // ONE HUNDERED MILLION CSX
     uint256 public constant maxSupply = 100000000 ether;
     IERC20 public stakedCSX;
 
