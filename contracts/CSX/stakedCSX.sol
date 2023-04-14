@@ -3,19 +3,9 @@
 
 pragma solidity 0.8.19;
 
-import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
+import {IERC20, IWETH, ReentrancyGuard, ERC20} from "./Interfaces.sol";
 
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-
-interface IWETH is IERC20 {
-    function deposit() external payable;
-    function transfer(address to, uint value) external returns (bool);
-    function withdraw(uint) external;
-}
-
-contract stakedCSX is Ownable, ReentrancyGuard, ERC20 {
+contract StakedCSX is ReentrancyGuard, ERC20 {
     IERC20 public CSX;
     IWETH public WETH;
     IERC20 public USDC;
@@ -76,6 +66,26 @@ contract stakedCSX is Ownable, ReentrancyGuard, ERC20 {
 
     //=================================== EXTERNAL ==============================================
 
+    /// @notice Function to getClaimableAmount
+    /// @param _account address of the user
+    /// @return usdcAmount
+    /// @return usdtAmount
+    /// @return wethAmount
+    function getClaimableAmount(
+        address _account
+    ) external view returns (uint256 usdcAmount, uint256 usdtAmount, uint256 wethAmount) {
+        uint256 recipientBalance = balanceOf(_account);
+        usdcAmount = (((dividendPerToken[address(USDC)] -
+            xDividendPerToken[address(USDC)][_account]) * recipientBalance) /
+            PRECISION);
+        usdtAmount = (((dividendPerToken[address(USDT)] -
+            xDividendPerToken[address(USDT)][_account]) * recipientBalance) /
+            PRECISION);
+        wethAmount = (((dividendPerToken[address(WETH)] -
+            xDividendPerToken[address(WETH)][_account]) * recipientBalance) /
+            PRECISION);
+    }
+
     /// @notice Function to reward stakers.
     function depositDividend(address token, uint256 amount) external {
         require(totalSupply() != 0, "No tokens minted");
@@ -133,6 +143,7 @@ contract stakedCSX is Ownable, ReentrancyGuard, ERC20 {
         address to,
         uint256 amount
     ) internal override {
+        super._beforeTokenTransfer(from, to, amount);
         if (from == address(0) || to == address(0)) return;
         // receiver first withdraw funds to credit
         _claimToCredit(to);
