@@ -5,9 +5,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-interface IERC20Burnable is IERC20 {
-    function burn(uint256 amount) external;
-}
+import { IERC20Burnable } from "../CSX/Interfaces.sol";
 
 contract UserProfileLevel {
     // Event to be emitted when a user levels up their profile
@@ -49,9 +47,8 @@ contract UserProfileLevel {
 
         require(_tokenAmount >= totalCost, "Not enough tokens sent to level up.");
 
-        // Transfer tokens from user and burn the cost amount
-        csxToken.transferFrom(msg.sender, address(this), _tokenAmount);
-        csxToken.burn(totalCost);
+        // Burn the _tokenAmount
+        csxToken.burnFrom(msg.sender, _tokenAmount);
 
         // Update the user's level
         user.level += _levels;
