@@ -6,7 +6,7 @@ pragma solidity 0.8.19;
 import {ERC20, IERC20, ReentrancyGuard, IWETH, IERC20Burnable} from "./Interfaces.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
-import "./StakedCSXContract.sol";
+import "./VestedStaking.sol";
 
 contract VestedCSX is ReentrancyGuard, ERC20Burnable {
     IERC20Burnable public EscrowedCSX;
@@ -44,7 +44,7 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
 
     //=================================== EXTERNAL ==============================================
 
-    mapping(address => VestedCSXStakingContract) public stakingContracts;
+    mapping(address => VestedStaking) public vestedStakingContractPerUser;
 
     function vest(uint256 amount) external mintable(amount) nonReentrant {
         require(amount > 0, "Amount must be greater than 0"); // To prevent users wasting gas
@@ -52,12 +52,12 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
         // Burn the deposited escrow tokens
         EscrowedCSX.burnFrom(msg.sender, amount);
 
-        // Mint vCSX tokens
+        // Mint vCSX tokens to the user
         _mint(msg.sender, amount);
 
-        // Create Staking Contract if not created for user
-        if (address(stakingContracts[msg.sender]) == address(0)) {
-            stakingContracts[msg.sender] = new VestedCSXStakingContract(
+        // Create VestedStaking Contract if it doesn't exist
+        if (address(vestedStakingContractPerUser[msg.sender]) == address(0)) {
+            vestedStakingContractPerUser[msg.sender] = new VestedStaking(
                 address(msg.sender),
                 address(StakedCSX),
                 address(this),
@@ -68,11 +68,11 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
             );
         } 
 
-        // Approve Staking Contract to transfer CSX
-        CSX.approve(address(stakingContracts[msg.sender]), amount);
+        // Approve VestedStaking Contract to transfer CSX tokens
+        CSX.approve(address(vestedStakingContractPerUser[msg.sender]), amount);
 
-        // Deposit CSX into Staking Contract
-        stakingContracts[msg.sender].deposit(amount);
+        // Deposit CSX tokens to VestedStaking Contract for the user
+        vestedStakingContractPerUser[msg.sender].deposit(amount);
     }
 
     //=================================== INTERNAL ==============================================

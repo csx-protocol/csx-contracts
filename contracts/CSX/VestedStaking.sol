@@ -10,7 +10,7 @@ struct Vesting {
     uint256 startTime;
 }
 
-contract VestedCSXStakingContract {
+contract VestedStaking {
     Vesting public vesting;
 
     uint256 public constant VESTING_PERIOD = 24 * 30 days; // 24 months
