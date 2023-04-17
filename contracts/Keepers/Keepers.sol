@@ -9,7 +9,7 @@ contract Keepers {
 
     constructor(address _council, address _keeperNodeAddress) {
         council = _council;
-        // Mocks index 0
+        // Mocks index 0 to require(indexOf(_keeper) == 0)
         keepers.push(address(0));
         keeperNodeAddress = _keeperNodeAddress;
     }
