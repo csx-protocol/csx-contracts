@@ -10,6 +10,7 @@ import "../Users/IUsers.sol";
 
 
 abstract contract TradeFactoryBase is ReentrancyGuard {
+    uint256 public baseFee;
     //uint256 public totalContracts;
     mapping(address => uint256) contractAddressToIndex;
 
@@ -20,10 +21,11 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
     IUsers public usersContract;
     ITradeFactoryBaseStorage tradeFactoryBaseStorage;
 
-    constructor(address _keepers, address _users, address _tradeFactoryBaseStorage) {
+    constructor(address _keepers, address _users, address _tradeFactoryBaseStorage, uint256 _baseFee) {
         keepersContract = IKeepers(_keepers);
         usersContract = IUsers(_users);
         tradeFactoryBaseStorage = ITradeFactoryBaseStorage(_tradeFactoryBaseStorage);
+        baseFee = _baseFee;
     }
 
     event TradeContractStatusChange(
@@ -37,6 +39,11 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
     modifier onlyTradeContracts() {
         require(isTradeContract[msg.sender], "!tc");
         _;
+    }
+
+    function changeBaseFee(uint256 _baseFee) external {
+        require(keepersContract.isCouncil(msg.sender));
+        baseFee = _baseFee;
     }
 
     function isThisTradeContract(address contractAddress)
@@ -53,6 +60,8 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
     {
         emit TradeContractStatusChange(msg.sender, status, data, sellerAddress, buyerAddress);
     }
+
+
 
     /* 
     Move to Users Contract to free up space if needed
