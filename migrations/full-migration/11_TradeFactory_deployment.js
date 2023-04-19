@@ -2,25 +2,45 @@ const TradeFactory = artifacts.require("CSXTradeFactory");
 const Keepers = artifacts.require("Keepers");
 const Users = artifacts.require("Users");
 const TradeFactoryBaseStorage = artifacts.require("TradeFactoryBaseStorage");
+const ReferralRegistry = artifacts.require("ReferralRegistry");
 
 //mock
 const Web3 = require('web3');
+const StakedCSX = artifacts.require("StakedCSX");
+const USDCToken = artifacts.require("USDCToken");
+const USDTToken = artifacts.require("USDTToken");
+const WETH9Mock = artifacts.require("WETH9Mock");
 
-module.exports = async function (deployer, accounts) {
-  await deployer.deploy(TradeFactory, Keepers.address, Users.address, TradeFactoryBaseStorage.address);
+module.exports = async function (deployer, network, accounts) {
+  console.log('network', network);
+  if (network === 'ganache') {
+    const weth = WETH9Mock.address;
+    const usdc = USDCToken.address;
+    const usdt = USDTToken.address;
+    await deployer.deploy(TradeFactory, Keepers.address, Users.address, TradeFactoryBaseStorage.address, '2', {weth, usdc, usdt}, ReferralRegistry.address);
+  } else {
+    const weth = 'addyHere';
+    const usdc = 'addyHere';
+    const usdt = 'addyHere';
+    await deployer.deploy(TradeFactory, Keepers.address, Users.address, TradeFactoryBaseStorage.address, '2', {weth, usdc, usdt}, ReferralRegistry.address);
+  }
+
 
   const tradeFactory = await TradeFactory.at(TradeFactory.address);
   const users = await Users.at(Users.address);
 
   const setFactoryAddressOnUsersContract = await users.setFactoryAddress(TradeFactory.address);
-  console.log('setFactoryAddressOnUsersContract complete');
+  console.log('users: setFactoryAddressOnUsersContract complete');
 
   const tradeFactoryBaseStorage = await TradeFactoryBaseStorage.at(TradeFactoryBaseStorage.address);
   const setInitOnTradeFactoryBaseStorage = await tradeFactoryBaseStorage.init(TradeFactory.address);
-  console.log('setInitOnTradeFactoryBaseStorage complete');
+  console.log('tradeFactoryBaseStorage: setInitOnTradeFactoryBaseStorage complete');
+
+  const setInitOnReferralRegistry = await ReferralRegistry.at(ReferralRegistry.address);
+  const setInitOnReferralRegistryComplete = await setInitOnReferralRegistry.initFactory(TradeFactory.address);
+  console.log('ReferralRegistry: setInitOnReferralRegistryComplete complete');
 
   // MOCK DATA
-
   const web3 = new Web3(deployer.provider);
 
   // Send Ether to another account
@@ -173,11 +193,25 @@ module.exports = async function (deployer, accounts) {
     },
   ]
 
+
+
   //const result = await tradeFactory.createListingContract(names[0], _tradeUrl, '112', inspctLink[0], imgs[0], prices[0], floatInfo[0], stickers[0]);
   // console.log('>>>COMPLETED',result);
 
   for (let i = 0; i < prices.length; i++) {
-    const result = await tradeFactory.createListingContract(names[i], _tradeUrl, '112' + i, inspctLink[i], imgs[i], prices[i], skinInfo[i], stickers[i], weaponTypes[i]);
+    const params = {
+      itemMarketName: names[i],
+      tradeUrl: _tradeUrl,
+      assetId: '112' + i,
+      inspectLink: inspctLink[i],
+      itemImageUrl: imgs[i],
+      weiPrice: prices[i],
+      skinInfo: skinInfo[i],
+      stickers: stickers[i],
+      weaponType: weaponTypes[i],
+      priceType: 0
+    }
+    const result = await tradeFactory.createListingContract(params);
     console.log('>>>COMPLETED ' + (i + 1) + " out of " + prices.length);
   }
 };
