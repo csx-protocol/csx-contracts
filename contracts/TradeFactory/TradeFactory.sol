@@ -15,84 +15,132 @@ struct TradeIndex {
 struct ExtraTest {
     string tradeUrlPartner;
     string weiPriceStringed;
-    string sellerAddress;
+}
+
+struct ListingParams {
+    string itemMarketName;
+    TradeUrl tradeUrl;
+    string assetId;
+    string inspectLink;
+    string itemImageUrl;
+    uint256 weiPrice;
+    SkinInfo skinInfo;
+    Sticker[] stickers;
+    string weaponType;
+    PriceType priceType;
+}
+
+struct PaymentTokens {
+    address weth;
+    address usdc;
+    address usdt;
 }
 
 contract CSXTradeFactory is TradeFactoryBase {
+    PaymentTokens paymentTokens;
+    IReferralRegistry public referralRegistryContract;
+
     constructor(
         address _keepers,
         address _users,
-        address _tradeFactoryBaseStorage
-    ) TradeFactoryBase(_keepers, _users, _tradeFactoryBaseStorage) {}
+        address _tradeFactoryBaseStorage,
+        uint256 _baseFee,
+        PaymentTokens memory _paymentTokens,
+        address _referralRegistryContract
+    ) TradeFactoryBase(_keepers, _users, _tradeFactoryBaseStorage, _baseFee) {
+        paymentTokens = _paymentTokens;
+        referralRegistryContract = IReferralRegistry(_referralRegistryContract);
+    }
 
     function createListingContract(
-        string memory _itemMarketName,
-        TradeUrl memory _tradeUrl,
-        string memory _assetId,
-        string memory _inspectLink,
-        string memory _itemImageUrl,
-        uint256 _weiPrice,
-        SkinInfo memory _skinInfo,
-        Sticker[] memory _stickers,
-        string memory _weaponType
+        ListingParams memory params
     ) external nonReentrant {
         require(usersContract.isBanned(msg.sender) == false, "bnd");
         require(
-            assetIdFromUserAddrssToTradeAddrss[_assetId][msg.sender] ==
+            assetIdFromUserAddrssToTradeAddrss[params.assetId][msg.sender] ==
                 address(0),
             "id"
         );
 
         tradeFactoryBaseStorage.newTradeContract(
-            _itemMarketName,
-            _tradeUrl,
-            _assetId,
-            _inspectLink,
-            _itemImageUrl,
-            _weiPrice,
-            _skinInfo
-        );       
+            params.itemMarketName,
+            params.tradeUrl,
+            params.assetId,
+            params.inspectLink,
+            params.itemImageUrl,
+            params.weiPrice,
+            params.skinInfo
+        );
 
-        address newAddress = tradeFactoryBaseStorage.getLastTradeContractAddress();
+        address newAddress = tradeFactoryBaseStorage
+            .getLastTradeContractAddress();
 
         uint256 totalContracts = tradeFactoryBaseStorage.totalContracts();
 
         isTradeContract[newAddress] = true;
 
-        CSXTrade _contract = tradeFactoryBaseStorage.getTradeContractByIndex(totalContracts - 1);
+        CSXTrade _contract = tradeFactoryBaseStorage.getTradeContractByIndex(
+            totalContracts - 1
+        );
 
-        _contract.initExtraInfo(
-            _stickers,
-            _weaponType
-        );        
+        if(params.priceType == PriceType.WETH) {
+            _contract.initExtraInfo(
+                params.stickers,
+                params.weaponType,
+                paymentTokens.weth,
+                params.priceType,
+                address(referralRegistryContract)
+            );
+        } else if(params.priceType == PriceType.USDC) {
+            _contract.initExtraInfo(
+                params.stickers,
+                params.weaponType,
+                paymentTokens.usdc,
+                params.priceType,
+                address(referralRegistryContract)
+            );
+        } else if(params.priceType == PriceType.USDT) {
+            _contract.initExtraInfo(
+                params.stickers,
+                params.weaponType,
+                paymentTokens.usdt,
+                params.priceType,
+                address(referralRegistryContract)
+            );
+        } else {
+            revert("priceType");
+        }
 
         contractAddressToIndex[newAddress] = totalContracts - 1;
-        assetIdFromUserAddrssToTradeAddrss[_assetId][msg.sender] = newAddress;
+        assetIdFromUserAddrssToTradeAddrss[params.assetId][msg.sender] = newAddress;
 
         ExtraTest memory _extraTest;
 
-        _extraTest.tradeUrlPartner = Strings.toString(_tradeUrl.partner);
-        _extraTest.weiPriceStringed = Strings.toString(_weiPrice);
-        _extraTest.sellerAddress = Strings.toHexString(msg.sender);
+        _extraTest.tradeUrlPartner = Strings.toString(params.tradeUrl.partner);
+        _extraTest.weiPriceStringed = Strings.toString(params.weiPrice);
 
         string memory data = string(
             abi.encodePacked(
-                _itemMarketName,
+                params.itemMarketName,
                 "||",
-                _assetId,
+                params.assetId,
                 "||",
                 _extraTest.tradeUrlPartner,
                 "+",
-                _tradeUrl.token,
+                params.tradeUrl.token,
                 "||",
-                _skinInfo.floatValues, // "[0.00, 0.00, 0.000000]" (max, min, value)
+                params.skinInfo.floatValues, // "[0.00, 0.00, 0.000000]" (max, min, value)
                 "||",
-                _extraTest.weiPriceStringed,
-                "||",
-                _extraTest.sellerAddress
+                _extraTest.weiPriceStringed
             )
         );
-        emit TradeContractStatusChange(newAddress, TradeStatus.ForSale, data, msg.sender, address(0));
+        emit TradeContractStatusChange(
+            newAddress,
+            TradeStatus.ForSale,
+            data,
+            msg.sender,
+            address(0)
+        );
     }
 
     function getTradeDetailsByIndex(
@@ -122,7 +170,11 @@ contract CSXTradeFactory is TradeFactoryBase {
             result.seller
         );
         SkinInfo memory _skinInfo;
-        (_skinInfo.floatValues, _skinInfo.paintSeed, _skinInfo.paintIndex) = _contract.skinInfo();
+        (
+            _skinInfo.floatValues,
+            _skinInfo.paintSeed,
+            _skinInfo.paintIndex
+        ) = _contract.skinInfo();
         result.skinInfo = _skinInfo;
         result.status = _contract.status();
 
@@ -141,6 +193,8 @@ contract CSXTradeFactory is TradeFactoryBase {
 
         result.weaponType = _contract.weaponType();
 
+        result.priceType = _contract.priceType();
+
         return result;
     }
 
@@ -152,9 +206,9 @@ contract CSXTradeFactory is TradeFactoryBase {
     }
 
     function getTradeIndexesByStatus(
-    TradeStatus status,
-    uint256 indexFrom,
-    uint256 maxResults
+        TradeStatus status,
+        uint256 indexFrom,
+        uint256 maxResults
     ) external view returns (TradeIndex[] memory) {
         TradeIndex[] memory tradeIndexes = new TradeIndex[](maxResults);
         uint256 resultIndex;
@@ -166,9 +220,10 @@ contract CSXTradeFactory is TradeFactoryBase {
             if (_trade.status == status) {
                 tradeIndexes[resultIndex].index = i;
                 tradeIndexes[resultIndex].weiPrice = _trade.weiPrice;
-                tradeIndexes[resultIndex].priceType = PriceType.ETHER;
+                tradeIndexes[resultIndex].priceType = _trade.priceType;
                 tradeIndexes[resultIndex].weaponType = _trade.weaponType;
-                tradeIndexes[resultIndex].itemMarketName = _trade.itemMarketName;
+                tradeIndexes[resultIndex].itemMarketName = _trade
+                    .itemMarketName;
                 tradeIndexes[resultIndex].nextIndex = i + 1;
                 ++resultIndex;
             }
