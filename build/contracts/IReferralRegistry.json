@@ -1,0 +1,2519 @@
+{
+  "contractName": "IReferralRegistry",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "referralCode",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "ownerRatio",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "buyerRatio",
+          "type": "uint256"
+        }
+      ],
+      "name": "ReferralCodeRegistered",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "referralCode",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "ownerRatio",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "buyerRatio",
+          "type": "uint256"
+        }
+      ],
+      "name": "emitReferralCodeRegistered",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "referralCode",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "ownerRatio",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "buyerRatio",
+          "type": "uint256"
+        }
+      ],
+      "name": "registerReferralCode",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "referralCode",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getReferralInfo",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "ownerRatio",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "buyerRatio",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IReferralRegistry.ReferralInfo",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "referralCode",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getReferralCodeOwner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "referralCode",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getReferralCodeRatios",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "ownerRatio",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "buyerRatio",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "referralCode",
+          "type": "bytes32"
+        }
+      ],
+      "name": "isReferralCodeRegistered",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "transactionValue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "isBuyerAffiliated",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "baseFeePercent",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "discountRatio",
+          "type": "uint256"
+        }
+      ],
+      "name": "calculateNetValue",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "buyerNetValue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "affililatorRebate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "holdersAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "discountedFee",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"referralCode\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"ownerRatio\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"buyerRatio\",\"type\":\"uint256\"}],\"name\":\"ReferralCodeRegistered\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"transactionValue\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isBuyerAffiliated\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"baseFeePercent\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"discountRatio\",\"type\":\"uint256\"}],\"name\":\"calculateNetValue\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"buyerNetValue\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"affililatorRebate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"holdersAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"discountedFee\",\"type\":\"uint256\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"referralCode\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"ownerRatio\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"buyerRatio\",\"type\":\"uint256\"}],\"name\":\"emitReferralCodeRegistered\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"referralCode\",\"type\":\"bytes32\"}],\"name\":\"getReferralCodeOwner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"referralCode\",\"type\":\"bytes32\"}],\"name\":\"getReferralCodeRatios\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"ownerRatio\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"buyerRatio\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"referralCode\",\"type\":\"bytes32\"}],\"name\":\"getReferralInfo\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"ownerRatio\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"buyerRatio\",\"type\":\"uint256\"}],\"internalType\":\"struct IReferralRegistry.ReferralInfo\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"referralCode\",\"type\":\"bytes32\"}],\"name\":\"isReferralCodeRegistered\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"referralCode\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"ownerRatio\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"buyerRatio\",\"type\":\"uint256\"}],\"name\":\"registerReferralCode\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/Referrals/IReferralRegistry.sol\":\"IReferralRegistry\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":0},\"remappings\":[]},\"sources\":{\"project:/contracts/Referrals/IReferralRegistry.sol\":{\"keccak256\":\"0x8e285537d619faa9a4b6a0a84a56ee835f0b428d8adf45b3f95bafd5e09f0c29\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b720667042753c95c70651d0cdddcfad630f210f3e2ede5d5b62aca294123e16\",\"dweb:/ipfs/QmcBQ9JMDFxX79HhmXN2jZ28ZtHeiLkxh8f4H1wX6DoQ1J\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.19;\r\n\r\ninterface IReferralRegistry {\r\n    struct ReferralInfo {\r\n        address owner;\r\n        uint256 ownerRatio;\r\n        uint256 buyerRatio;\r\n    }\r\n\r\n    event ReferralCodeRegistered(\r\n        bytes32 indexed referralCode,\r\n        address indexed owner,\r\n        uint256 ownerRatio,\r\n        uint256 buyerRatio\r\n    );\r\n\r\n    function emitReferralCodeRegistered(\r\n        bytes32 referralCode,\r\n        address owner,\r\n        uint256 ownerRatio,\r\n        uint256 buyerRatio\r\n    ) external;\r\n\r\n    function registerReferralCode(\r\n        bytes32 referralCode,\r\n        uint256 ownerRatio,\r\n        uint256 buyerRatio\r\n    ) external;\r\n\r\n    function getReferralInfo(\r\n        bytes32 referralCode\r\n    ) external view returns (ReferralInfo memory);\r\n\r\n    function getReferralCodeOwner(\r\n        bytes32 referralCode\r\n    ) external view returns (address);\r\n\r\n    function getReferralCodeRatios(\r\n        bytes32 referralCode\r\n    ) external view returns (uint256 ownerRatio, uint256 buyerRatio);\r\n\r\n    function isReferralCodeRegistered(\r\n        bytes32 referralCode\r\n    ) external view returns (bool);\r\n\r\n     function calculateNetValue(\r\n        uint256 transactionValue,\r\n        bool isBuyerAffiliated,\r\n        uint256 baseFeePercent,\r\n        uint256 discountRatio // Ratio between the discount and rebate percentages\r\n    )\r\n        external\r\n        pure\r\n        returns (\r\n            uint256 buyerNetValue, // Net value for the buyer\r\n            uint256 affililatorRebate, // Rebate for the affililator\r\n            uint256 holdersAmount, // Remaining amount for token holders\r\n            uint256 discountedFee // Discounted fee for the buyer if they are affiliated\r\n        );\r\n}\r\n",
+  "sourcePath": "C:\\Users\\Charl\\Documents\\Projects\\SteamMarket\\CSX\\csx-contracts\\contracts\\Referrals\\IReferralRegistry.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/Referrals/IReferralRegistry.sol",
+    "exportedSymbols": {
+      "IReferralRegistry": [
+        3140
+      ]
+    },
+    "id": 3141,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 3052,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".19"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:24:20"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IReferralRegistry",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 3140,
+        "linearizedBaseContracts": [
+          3140
+        ],
+        "name": "IReferralRegistry",
+        "nameLocation": "71:17:20",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "IReferralRegistry.ReferralInfo",
+            "id": 3059,
+            "members": [
+              {
+                "constant": false,
+                "id": 3054,
+                "mutability": "mutable",
+                "name": "owner",
+                "nameLocation": "135:5:20",
+                "nodeType": "VariableDeclaration",
+                "scope": 3059,
+                "src": "127:13:20",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 3053,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "127:7:20",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 3056,
+                "mutability": "mutable",
+                "name": "ownerRatio",
+                "nameLocation": "159:10:20",
+                "nodeType": "VariableDeclaration",
+                "scope": 3059,
+                "src": "151:18:20",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 3055,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "151:7:20",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 3058,
+                "mutability": "mutable",
+                "name": "buyerRatio",
+                "nameLocation": "188:10:20",
+                "nodeType": "VariableDeclaration",
+                "scope": 3059,
+                "src": "180:18:20",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 3057,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "180:7:20",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "ReferralInfo",
+            "nameLocation": "103:12:20",
+            "nodeType": "StructDefinition",
+            "scope": 3140,
+            "src": "96:110:20",
+            "visibility": "public"
+          },
+          {
+            "anonymous": false,
+            "eventSelector": "390e3781b8eca6d1aa475fb7ff2575b00bf1acdbc5e05c02707a408a48170108",
+            "id": 3069,
+            "name": "ReferralCodeRegistered",
+            "nameLocation": "220:22:20",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 3068,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3061,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "referralCode",
+                  "nameLocation": "269:12:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3069,
+                  "src": "253:28:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3060,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "253:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3063,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "owner",
+                  "nameLocation": "308:5:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3069,
+                  "src": "292:21:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 3062,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "292:7:20",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3065,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "ownerRatio",
+                  "nameLocation": "332:10:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3069,
+                  "src": "324:18:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3064,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "324:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3067,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "buyerRatio",
+                  "nameLocation": "361:10:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3069,
+                  "src": "353:18:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3066,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "353:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "242:136:20"
+            },
+            "src": "214:165:20"
+          },
+          {
+            "functionSelector": "3347603d",
+            "id": 3080,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "emitReferralCodeRegistered",
+            "nameLocation": "396:26:20",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3078,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3071,
+                  "mutability": "mutable",
+                  "name": "referralCode",
+                  "nameLocation": "441:12:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3080,
+                  "src": "433:20:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3070,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "433:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3073,
+                  "mutability": "mutable",
+                  "name": "owner",
+                  "nameLocation": "472:5:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3080,
+                  "src": "464:13:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 3072,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "464:7:20",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3075,
+                  "mutability": "mutable",
+                  "name": "ownerRatio",
+                  "nameLocation": "496:10:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3080,
+                  "src": "488:18:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3074,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "488:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3077,
+                  "mutability": "mutable",
+                  "name": "buyerRatio",
+                  "nameLocation": "525:10:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3080,
+                  "src": "517:18:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3076,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "517:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "422:120:20"
+            },
+            "returnParameters": {
+              "id": 3079,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "551:0:20"
+            },
+            "scope": 3140,
+            "src": "387:165:20",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "f7c7d6c5",
+            "id": 3089,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "registerReferralCode",
+            "nameLocation": "569:20:20",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3087,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3082,
+                  "mutability": "mutable",
+                  "name": "referralCode",
+                  "nameLocation": "608:12:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3089,
+                  "src": "600:20:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3081,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "600:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3084,
+                  "mutability": "mutable",
+                  "name": "ownerRatio",
+                  "nameLocation": "639:10:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3089,
+                  "src": "631:18:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3083,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "631:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3086,
+                  "mutability": "mutable",
+                  "name": "buyerRatio",
+                  "nameLocation": "668:10:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3089,
+                  "src": "660:18:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3085,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "660:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "589:96:20"
+            },
+            "returnParameters": {
+              "id": 3088,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "694:0:20"
+            },
+            "scope": 3140,
+            "src": "560:135:20",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "f2dbc32c",
+            "id": 3097,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getReferralInfo",
+            "nameLocation": "712:15:20",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3092,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3091,
+                  "mutability": "mutable",
+                  "name": "referralCode",
+                  "nameLocation": "746:12:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3097,
+                  "src": "738:20:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3090,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "738:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "727:38:20"
+            },
+            "returnParameters": {
+              "id": 3096,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3095,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3097,
+                  "src": "789:19:20",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_ReferralInfo_$3059_memory_ptr",
+                    "typeString": "struct IReferralRegistry.ReferralInfo"
+                  },
+                  "typeName": {
+                    "id": 3094,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 3093,
+                      "name": "ReferralInfo",
+                      "nameLocations": [
+                        "789:12:20"
+                      ],
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 3059,
+                      "src": "789:12:20"
+                    },
+                    "referencedDeclaration": 3059,
+                    "src": "789:12:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_ReferralInfo_$3059_storage_ptr",
+                      "typeString": "struct IReferralRegistry.ReferralInfo"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "788:21:20"
+            },
+            "scope": 3140,
+            "src": "703:107:20",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "ed0fc5a9",
+            "id": 3104,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getReferralCodeOwner",
+            "nameLocation": "827:20:20",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3100,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3099,
+                  "mutability": "mutable",
+                  "name": "referralCode",
+                  "nameLocation": "866:12:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3104,
+                  "src": "858:20:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3098,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "858:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "847:38:20"
+            },
+            "returnParameters": {
+              "id": 3103,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3102,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3104,
+                  "src": "909:7:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 3101,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "909:7:20",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "908:9:20"
+            },
+            "scope": 3140,
+            "src": "818:100:20",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "f3c7c931",
+            "id": 3113,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getReferralCodeRatios",
+            "nameLocation": "935:21:20",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3107,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3106,
+                  "mutability": "mutable",
+                  "name": "referralCode",
+                  "nameLocation": "975:12:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3113,
+                  "src": "967:20:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3105,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "967:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "956:38:20"
+            },
+            "returnParameters": {
+              "id": 3112,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3109,
+                  "mutability": "mutable",
+                  "name": "ownerRatio",
+                  "nameLocation": "1026:10:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3113,
+                  "src": "1018:18:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3108,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1018:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3111,
+                  "mutability": "mutable",
+                  "name": "buyerRatio",
+                  "nameLocation": "1046:10:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3113,
+                  "src": "1038:18:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3110,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1038:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1017:40:20"
+            },
+            "scope": 3140,
+            "src": "926:132:20",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "aa05c9e7",
+            "id": 3120,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "isReferralCodeRegistered",
+            "nameLocation": "1075:24:20",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3116,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3115,
+                  "mutability": "mutable",
+                  "name": "referralCode",
+                  "nameLocation": "1118:12:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3120,
+                  "src": "1110:20:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3114,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1110:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1099:38:20"
+            },
+            "returnParameters": {
+              "id": 3119,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3118,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3120,
+                  "src": "1161:4:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 3117,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1161:4:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1160:6:20"
+            },
+            "scope": 3140,
+            "src": "1066:101:20",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "42ba2f24",
+            "id": 3139,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "calculateNetValue",
+            "nameLocation": "1185:17:20",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3129,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3122,
+                  "mutability": "mutable",
+                  "name": "transactionValue",
+                  "nameLocation": "1221:16:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3139,
+                  "src": "1213:24:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3121,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1213:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3124,
+                  "mutability": "mutable",
+                  "name": "isBuyerAffiliated",
+                  "nameLocation": "1253:17:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3139,
+                  "src": "1248:22:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 3123,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1248:4:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3126,
+                  "mutability": "mutable",
+                  "name": "baseFeePercent",
+                  "nameLocation": "1289:14:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3139,
+                  "src": "1281:22:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3125,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1281:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3128,
+                  "mutability": "mutable",
+                  "name": "discountRatio",
+                  "nameLocation": "1322:13:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3139,
+                  "src": "1314:21:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3127,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1314:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1202:193:20"
+            },
+            "returnParameters": {
+              "id": 3138,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3131,
+                  "mutability": "mutable",
+                  "name": "buyerNetValue",
+                  "nameLocation": "1468:13:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3139,
+                  "src": "1460:21:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3130,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1460:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3133,
+                  "mutability": "mutable",
+                  "name": "affililatorRebate",
+                  "nameLocation": "1531:17:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3139,
+                  "src": "1523:25:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3132,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1523:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3135,
+                  "mutability": "mutable",
+                  "name": "holdersAmount",
+                  "nameLocation": "1601:13:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3139,
+                  "src": "1593:21:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3134,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1593:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3137,
+                  "mutability": "mutable",
+                  "name": "discountedFee",
+                  "nameLocation": "1675:13:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3139,
+                  "src": "1667:21:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3136,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1667:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1445:309:20"
+            },
+            "scope": 3140,
+            "src": "1176:579:20",
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 3141,
+        "src": "61:1697:20",
+        "usedErrors": []
+      }
+    ],
+    "src": "33:1727:20"
+  },
+  "legacyAST": {
+    "absolutePath": "project:/contracts/Referrals/IReferralRegistry.sol",
+    "exportedSymbols": {
+      "IReferralRegistry": [
+        3140
+      ]
+    },
+    "id": 3141,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 3052,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".19"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:24:20"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IReferralRegistry",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 3140,
+        "linearizedBaseContracts": [
+          3140
+        ],
+        "name": "IReferralRegistry",
+        "nameLocation": "71:17:20",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "IReferralRegistry.ReferralInfo",
+            "id": 3059,
+            "members": [
+              {
+                "constant": false,
+                "id": 3054,
+                "mutability": "mutable",
+                "name": "owner",
+                "nameLocation": "135:5:20",
+                "nodeType": "VariableDeclaration",
+                "scope": 3059,
+                "src": "127:13:20",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 3053,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "127:7:20",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 3056,
+                "mutability": "mutable",
+                "name": "ownerRatio",
+                "nameLocation": "159:10:20",
+                "nodeType": "VariableDeclaration",
+                "scope": 3059,
+                "src": "151:18:20",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 3055,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "151:7:20",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 3058,
+                "mutability": "mutable",
+                "name": "buyerRatio",
+                "nameLocation": "188:10:20",
+                "nodeType": "VariableDeclaration",
+                "scope": 3059,
+                "src": "180:18:20",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 3057,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "180:7:20",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "ReferralInfo",
+            "nameLocation": "103:12:20",
+            "nodeType": "StructDefinition",
+            "scope": 3140,
+            "src": "96:110:20",
+            "visibility": "public"
+          },
+          {
+            "anonymous": false,
+            "eventSelector": "390e3781b8eca6d1aa475fb7ff2575b00bf1acdbc5e05c02707a408a48170108",
+            "id": 3069,
+            "name": "ReferralCodeRegistered",
+            "nameLocation": "220:22:20",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 3068,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3061,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "referralCode",
+                  "nameLocation": "269:12:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3069,
+                  "src": "253:28:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3060,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "253:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3063,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "owner",
+                  "nameLocation": "308:5:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3069,
+                  "src": "292:21:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 3062,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "292:7:20",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3065,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "ownerRatio",
+                  "nameLocation": "332:10:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3069,
+                  "src": "324:18:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3064,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "324:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3067,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "buyerRatio",
+                  "nameLocation": "361:10:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3069,
+                  "src": "353:18:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3066,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "353:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "242:136:20"
+            },
+            "src": "214:165:20"
+          },
+          {
+            "functionSelector": "3347603d",
+            "id": 3080,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "emitReferralCodeRegistered",
+            "nameLocation": "396:26:20",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3078,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3071,
+                  "mutability": "mutable",
+                  "name": "referralCode",
+                  "nameLocation": "441:12:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3080,
+                  "src": "433:20:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3070,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "433:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3073,
+                  "mutability": "mutable",
+                  "name": "owner",
+                  "nameLocation": "472:5:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3080,
+                  "src": "464:13:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 3072,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "464:7:20",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3075,
+                  "mutability": "mutable",
+                  "name": "ownerRatio",
+                  "nameLocation": "496:10:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3080,
+                  "src": "488:18:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3074,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "488:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3077,
+                  "mutability": "mutable",
+                  "name": "buyerRatio",
+                  "nameLocation": "525:10:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3080,
+                  "src": "517:18:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3076,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "517:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "422:120:20"
+            },
+            "returnParameters": {
+              "id": 3079,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "551:0:20"
+            },
+            "scope": 3140,
+            "src": "387:165:20",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "f7c7d6c5",
+            "id": 3089,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "registerReferralCode",
+            "nameLocation": "569:20:20",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3087,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3082,
+                  "mutability": "mutable",
+                  "name": "referralCode",
+                  "nameLocation": "608:12:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3089,
+                  "src": "600:20:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3081,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "600:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3084,
+                  "mutability": "mutable",
+                  "name": "ownerRatio",
+                  "nameLocation": "639:10:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3089,
+                  "src": "631:18:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3083,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "631:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3086,
+                  "mutability": "mutable",
+                  "name": "buyerRatio",
+                  "nameLocation": "668:10:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3089,
+                  "src": "660:18:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3085,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "660:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "589:96:20"
+            },
+            "returnParameters": {
+              "id": 3088,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "694:0:20"
+            },
+            "scope": 3140,
+            "src": "560:135:20",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "f2dbc32c",
+            "id": 3097,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getReferralInfo",
+            "nameLocation": "712:15:20",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3092,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3091,
+                  "mutability": "mutable",
+                  "name": "referralCode",
+                  "nameLocation": "746:12:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3097,
+                  "src": "738:20:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3090,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "738:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "727:38:20"
+            },
+            "returnParameters": {
+              "id": 3096,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3095,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3097,
+                  "src": "789:19:20",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_ReferralInfo_$3059_memory_ptr",
+                    "typeString": "struct IReferralRegistry.ReferralInfo"
+                  },
+                  "typeName": {
+                    "id": 3094,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 3093,
+                      "name": "ReferralInfo",
+                      "nameLocations": [
+                        "789:12:20"
+                      ],
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 3059,
+                      "src": "789:12:20"
+                    },
+                    "referencedDeclaration": 3059,
+                    "src": "789:12:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_ReferralInfo_$3059_storage_ptr",
+                      "typeString": "struct IReferralRegistry.ReferralInfo"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "788:21:20"
+            },
+            "scope": 3140,
+            "src": "703:107:20",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "ed0fc5a9",
+            "id": 3104,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getReferralCodeOwner",
+            "nameLocation": "827:20:20",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3100,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3099,
+                  "mutability": "mutable",
+                  "name": "referralCode",
+                  "nameLocation": "866:12:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3104,
+                  "src": "858:20:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3098,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "858:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "847:38:20"
+            },
+            "returnParameters": {
+              "id": 3103,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3102,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3104,
+                  "src": "909:7:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 3101,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "909:7:20",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "908:9:20"
+            },
+            "scope": 3140,
+            "src": "818:100:20",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "f3c7c931",
+            "id": 3113,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getReferralCodeRatios",
+            "nameLocation": "935:21:20",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3107,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3106,
+                  "mutability": "mutable",
+                  "name": "referralCode",
+                  "nameLocation": "975:12:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3113,
+                  "src": "967:20:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3105,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "967:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "956:38:20"
+            },
+            "returnParameters": {
+              "id": 3112,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3109,
+                  "mutability": "mutable",
+                  "name": "ownerRatio",
+                  "nameLocation": "1026:10:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3113,
+                  "src": "1018:18:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3108,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1018:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3111,
+                  "mutability": "mutable",
+                  "name": "buyerRatio",
+                  "nameLocation": "1046:10:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3113,
+                  "src": "1038:18:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3110,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1038:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1017:40:20"
+            },
+            "scope": 3140,
+            "src": "926:132:20",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "aa05c9e7",
+            "id": 3120,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "isReferralCodeRegistered",
+            "nameLocation": "1075:24:20",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3116,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3115,
+                  "mutability": "mutable",
+                  "name": "referralCode",
+                  "nameLocation": "1118:12:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3120,
+                  "src": "1110:20:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3114,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1110:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1099:38:20"
+            },
+            "returnParameters": {
+              "id": 3119,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3118,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3120,
+                  "src": "1161:4:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 3117,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1161:4:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1160:6:20"
+            },
+            "scope": 3140,
+            "src": "1066:101:20",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "42ba2f24",
+            "id": 3139,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "calculateNetValue",
+            "nameLocation": "1185:17:20",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3129,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3122,
+                  "mutability": "mutable",
+                  "name": "transactionValue",
+                  "nameLocation": "1221:16:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3139,
+                  "src": "1213:24:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3121,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1213:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3124,
+                  "mutability": "mutable",
+                  "name": "isBuyerAffiliated",
+                  "nameLocation": "1253:17:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3139,
+                  "src": "1248:22:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 3123,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1248:4:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3126,
+                  "mutability": "mutable",
+                  "name": "baseFeePercent",
+                  "nameLocation": "1289:14:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3139,
+                  "src": "1281:22:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3125,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1281:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3128,
+                  "mutability": "mutable",
+                  "name": "discountRatio",
+                  "nameLocation": "1322:13:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3139,
+                  "src": "1314:21:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3127,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1314:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1202:193:20"
+            },
+            "returnParameters": {
+              "id": 3138,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3131,
+                  "mutability": "mutable",
+                  "name": "buyerNetValue",
+                  "nameLocation": "1468:13:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3139,
+                  "src": "1460:21:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3130,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1460:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3133,
+                  "mutability": "mutable",
+                  "name": "affililatorRebate",
+                  "nameLocation": "1531:17:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3139,
+                  "src": "1523:25:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3132,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1523:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3135,
+                  "mutability": "mutable",
+                  "name": "holdersAmount",
+                  "nameLocation": "1601:13:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3139,
+                  "src": "1593:21:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3134,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1593:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3137,
+                  "mutability": "mutable",
+                  "name": "discountedFee",
+                  "nameLocation": "1675:13:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3139,
+                  "src": "1667:21:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3136,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1667:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1445:309:20"
+            },
+            "scope": 3140,
+            "src": "1176:579:20",
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 3141,
+        "src": "61:1697:20",
+        "usedErrors": []
+      }
+    ],
+    "src": "33:1727:20"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.19+commit.7dd6d404.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.3",
+  "updatedAt": "2023-04-19T09:26:27.726Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}
