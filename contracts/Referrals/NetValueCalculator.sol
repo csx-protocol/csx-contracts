@@ -39,7 +39,7 @@ contract NetValueCalculator {
         uint256 baseFeePercent,
         uint256 discountRatio // Ratio between the discount and rebate percentages
     )
-        public
+        external
         pure
         returns (
             uint256 buyerNetValue, // Net value for the buyer
