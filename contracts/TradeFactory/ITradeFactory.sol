@@ -2,8 +2,10 @@
 pragma solidity 0.8.19;
 
 import "../Trade/Trade.sol";
-import "../utils/Strings.sol";
+import {Strings} from "../utils/Strings.sol";
 import "../Users/IUsers.sol";
+
+import {IReferralRegistry} from "../Referrals/IReferralRegistry.sol";
 
 struct Sticker {
     string name;
@@ -30,7 +32,7 @@ struct TradeUrl {
 }
 
 enum PriceType {
-    ETHER,
+    WETH,
     USDC,
     USDT
 }
@@ -57,6 +59,7 @@ struct TradeInfo {
     TradeStatus status;
     Sticker[] stickers;
     string weaponType;
+    PriceType priceType;
 }
 
 interface ITradeFactory {
@@ -75,4 +78,8 @@ interface ITradeFactory {
         external
         view
         returns (TradeInfo memory result);
+
+    
+    function baseFee() external view returns (uint256);
 }
+
