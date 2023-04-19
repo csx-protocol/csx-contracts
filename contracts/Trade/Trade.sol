@@ -153,7 +153,7 @@ contract CSXTrade {
         TradeUrl memory _buyerTradeUrl,
         bytes32 _affLink
     ) public {
-        require(status == TradeStatus.ForSale, "trd st !pen.");
+        require(status == TradeStatus.ForSale, "!fs");
         uint256 buyerNetValue;
         bool hasRefferal = referralRegistryContract.getReferralCodeOwner(
             _affLink
