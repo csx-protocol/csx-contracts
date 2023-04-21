@@ -162,7 +162,7 @@ contract CSXTrade {
         require(status == TradeStatus.ForSale, "!fs");
         require(msg.sender != seller, "!seller");
 
-        (uint256 buyerNetValue,,,) = _netValue(_affLink);
+        (uint256 buyerNetValue,,,) = getNetValue(_affLink);
 
         require(paymentToken.transferFrom(msg.sender, address(this), buyerNetValue), 'transfer failed');
 
@@ -277,13 +277,10 @@ contract CSXTrade {
         );
         require(success, "didn't remove tradeId");
         
-        // require(paymentToken.transfer(seller, depositedValue), "!snt");
         _distributeProceeds();
 
         usersContract.changeUserInteractionStatus(address(this), seller, status);
-        usersContract.emitNewTrade(seller, true);
         usersContract.changeUserInteractionStatus(address(this), buyer, status);
-        usersContract.emitNewTrade(buyer, false);
         string memory data = string(
             abi.encodePacked(Strings.toString(weiPrice), "||", "MANUAL")
         );
@@ -432,14 +429,15 @@ contract CSXTrade {
 
     // Private Functions
     function _distributeProceeds() private {
-        (/*uint256 buyerNetPrice*/, uint256 sellerNetProceeds, uint256 affiliatorNetReward, uint256 tokenHoldersNetReward) = _netValue(refferalCode);
+        (uint256 buyerNetPrice, uint256 sellerNetProceeds, uint256 affiliatorNetReward, uint256 tokenHoldersNetReward) = getNetValue(refferalCode);
         require(paymentToken.transfer(seller, sellerNetProceeds), "!ssnt");
         require(paymentToken.transfer(referralRegistryContract.getReferralCodeOwner(refferalCode), affiliatorNetReward), "!rsnt");
         paymentToken.approve(address(sCSXToken), tokenHoldersNetReward);
         require(sCSXToken.depositDividend(address(paymentToken), tokenHoldersNetReward), '!tsnt');
+        usersContract.emitNewTrade(seller, buyer, refferalCode, priceType, buyerNetPrice);
     }
 
-    function _netValue(bytes32 _affLink) private view returns (uint256 buyerNetPrice, uint256 sellerNetProceeds, uint256 affiliatorNetReward, uint256 tokenHoldersNetReward) {
+    function getNetValue(bytes32 _affLink) public view returns (uint256 buyerNetPrice, uint256 sellerNetProceeds, uint256 affiliatorNetReward, uint256 tokenHoldersNetReward) {
         bool hasRefferal = referralRegistryContract.getReferralCodeOwner(
             _affLink
         ) != address(0);
