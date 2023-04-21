@@ -29,6 +29,8 @@ enum Role {
     SELLER
 }
 
+import {PriceType} from "../TradeFactory/ITradeFactory.sol";
+
 interface IUsers {
     function warnUser(address _user) external;
 
@@ -47,4 +49,6 @@ interface IUsers {
     function addUserInteractionStatus(address tradeAddress, Role role,  address userAddress, TradeStatus status) external;
 
     function changeUserInteractionStatus(address tradeAddress, address userAddress, TradeStatus status) external;
+
+    function emitNewTrade(address seller, address buyer, bytes32 refCode, PriceType priceType, uint256 value) external;
 }
