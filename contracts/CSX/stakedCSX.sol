@@ -87,7 +87,7 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
     }
 
     /// @notice Function to reward stakers.
-    function depositDividend(address token, uint256 amount) external {
+    function depositDividend(address token, uint256 amount) external returns (bool) {
         require(totalSupply() != 0, "No tokens minted");
         require(
             token == address(WETH) ||
@@ -102,6 +102,8 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         dividendPerToken[token] += (amount * PRECISION) / totalSupply();
 
         emit FundsReceived(amount, dividendPerToken[token], token);
+
+        return true;
     }
 
     function stake(uint256 amount) external mintable(amount) nonReentrant {
