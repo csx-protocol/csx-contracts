@@ -13,6 +13,28 @@ contract Users is ReentrancyGuard {
         uint256 warnings;
         bool isBanned;
         DeliveryTimes deliveryInfo;
+        uint256 totalTradesAsSeller; // NEW
+        uint256 totalTradesAsBuyer; // NEW
+    }
+
+    event NewTrade(
+        address indexed seller,
+        address indexed buyer,
+        bytes32 indexed refCode,
+        PriceType priceType,
+        uint256 value
+    );
+
+    function emitNewTrade(
+        address seller,
+        address buyer,
+        bytes32 refCode,
+        PriceType priceType,
+        uint256 value
+    ) external onlyTradeContracts(msg.sender) {
+        ++users[seller].totalTradesAsSeller;
+        ++users[buyer].totalTradesAsBuyer;
+        emit NewTrade(seller, buyer, refCode, priceType, value);
     }
 
     struct DeliveryTimes {
@@ -96,19 +118,19 @@ contract Users is ReentrancyGuard {
         }
     }
 
-    function startDeliveryTimer(address contractAddress, address user)
-        external
-        onlyTradeContracts(contractAddress)
-    {
+    function startDeliveryTimer(
+        address contractAddress,
+        address user
+    ) external onlyTradeContracts(contractAddress) {
         UserToContractDeliveryStartTime[user][contractAddress] = block
             .timestamp;
         ++users[user].deliveryInfo.totalStarts;
     }
 
-    function endDeliveryTimer(address contractAddress, address user)
-        external
-        onlyTradeContracts(contractAddress)
-    {
+    function endDeliveryTimer(
+        address contractAddress,
+        address user
+    ) external onlyTradeContracts(contractAddress) {
         uint256 deliveryTime = block.timestamp -
             UserToContractDeliveryStartTime[user][contractAddress];
         users[user].deliveryInfo.totalDeliveryTime += deliveryTime;
@@ -118,19 +140,13 @@ contract Users is ReentrancyGuard {
             users[user].deliveryInfo.numberOfDeliveries;
     }
 
-    function getAverageDeliveryTime(address user)
-        external
-        view
-        returns (uint256)
-    {
+    function getAverageDeliveryTime(
+        address user
+    ) external view returns (uint256) {
         return users[user].deliveryInfo.averageDeliveryTime;
     }
 
-    function getUserData(address user)
-        external
-        view
-        returns (User memory)
-    {
+    function getUserData(address user) external view returns (User memory) {
         return users[user];
     }
 
@@ -163,19 +179,16 @@ contract Users is ReentrancyGuard {
         userTrades[userAddress][iIndex].status = status;
     }
 
-    function getUserTotalTradeUIs(address userAddrss)
-        external
-        view
-        returns (uint256)
-    {
+    function getUserTotalTradeUIs(
+        address userAddrss
+    ) external view returns (uint256) {
         return userTrades[userAddrss].length;
     }
 
-    function getUserTradeUIByIndex(address userAddrss, uint256 i)
-        external
-        view
-        returns (UserInteraction memory)
-    {
+    function getUserTradeUIByIndex(
+        address userAddrss,
+        uint256 i
+    ) external view returns (UserInteraction memory) {
         return userTrades[userAddrss][i];
     }
 
@@ -192,7 +205,7 @@ contract Users is ReentrancyGuard {
         return count;
     }
 
-     function getUserTradeUIsByStatus(
+    function getUserTradeUIsByStatus(
         address userAddress,
         TradeStatus status,
         uint256 indexFrom,
@@ -213,13 +226,13 @@ contract Users is ReentrancyGuard {
         }
         return tradeUIs;
     }
-    
+
     mapping(address => mapping(Role => bool)) tradeAdrsToRoleToHasRep;
 
-    function repAfterTrade(address tradeAddrs, bool isPositive)
-        external
-        nonReentrant
-    {
+    function repAfterTrade(
+        address tradeAddrs,
+        bool isPositive
+    ) external nonReentrant {
         TradeInfo memory _tradeContract = factory.getTradeDetailsByAddress(
             tradeAddrs
         );
@@ -252,15 +265,9 @@ contract Users is ReentrancyGuard {
         }
     }
 
-    function hasMadeRepOnTrade(address tradeAddrs)
-        external
-        view
-        returns (
-            bool hasBuyer,
-            bool hasSeller,
-            bool isTime
-        )
-    {
+    function hasMadeRepOnTrade(
+        address tradeAddrs
+    ) external view returns (bool hasBuyer, bool hasSeller, bool isTime) {
         TradeInfo memory _tradeContract = factory.getTradeDetailsByAddress(
             tradeAddrs
         );
