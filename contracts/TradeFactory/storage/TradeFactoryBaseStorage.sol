@@ -24,10 +24,6 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
         factoryAddress = _factoryAddress;
     }
 
-    function getTradeContract(uint256 index) external view returns (CSXTrade) {
-        return tradeContracts[index];
-    }
-
     function newTradeContract(
         string memory _itemMarketName,
         TradeUrl memory _tradeUrl,
