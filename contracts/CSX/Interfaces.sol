@@ -31,6 +31,8 @@ interface IStakedCSX {
         bool claimWeth,
         bool convertWethToEth
     ) external;
+
+    function depositDividend(address token, uint256 amount) external returns (bool);
 }
 
 interface IERC20Burnable is IERC20 {
@@ -54,4 +56,3 @@ interface IERC20Burnable is IERC20 {
      */
     function burnFrom(address account, uint256 amount) external;
 }
-
