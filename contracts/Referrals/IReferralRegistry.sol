@@ -45,17 +45,17 @@ interface IReferralRegistry {
     ) external view returns (bool);
 
      function calculateNetValue(
-        uint256 transactionValue,
+        uint256 fullItemPrice,
         bool isBuyerAffiliated,
         uint256 baseFeePercent,
-        uint256 discountRatio // Ratio between the discount and rebate percentages
+        uint256 discountRatio // Ratio between the discount and reward percentages
     )
         external
         pure
         returns (
-            uint256 buyerNetValue, // Net value for the buyer
-            uint256 affililatorRebate, // Rebate for the affililator
-            uint256 holdersAmount, // Remaining amount for token holders
-            uint256 discountedFee // Discounted fee for the buyer if they are affiliated
+            uint256 buyerNetPrice, // Net price for the buyer
+            uint256 sellerNetProceeds, // Net proceeds for the seller
+            uint256 affiliatorNetReward, // Net reward for the affiliator
+            uint256 tokenHoldersNetReward // Net reward for token holders
         );
 }
