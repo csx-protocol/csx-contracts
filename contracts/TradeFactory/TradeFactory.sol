@@ -37,8 +37,9 @@ struct PaymentTokens {
 }
 
 contract CSXTradeFactory is TradeFactoryBase {
-    PaymentTokens paymentTokens;
-    IReferralRegistry public referralRegistryContract;
+    PaymentTokens public paymentTokens;
+    address public referralRegistryAddress;
+    address public sCSXTokenAddress;
 
     constructor(
         address _keepers,
@@ -46,10 +47,12 @@ contract CSXTradeFactory is TradeFactoryBase {
         address _tradeFactoryBaseStorage,
         uint256 _baseFee,
         PaymentTokens memory _paymentTokens,
-        address _referralRegistryContract
+        address _referralRegistryAddress,
+        address _sCSXTokenAddress
     ) TradeFactoryBase(_keepers, _users, _tradeFactoryBaseStorage, _baseFee) {
         paymentTokens = _paymentTokens;
-        referralRegistryContract = IReferralRegistry(_referralRegistryContract);
+        referralRegistryAddress = _referralRegistryAddress;
+        sCSXTokenAddress = _sCSXTokenAddress;
     }
 
     function createListingContract(
@@ -89,7 +92,8 @@ contract CSXTradeFactory is TradeFactoryBase {
                 params.weaponType,
                 paymentTokens.weth,
                 params.priceType,
-                address(referralRegistryContract)
+                referralRegistryAddress,
+                sCSXTokenAddress
             );
         } else if(params.priceType == PriceType.USDC) {
             _contract.initExtraInfo(
@@ -97,7 +101,8 @@ contract CSXTradeFactory is TradeFactoryBase {
                 params.weaponType,
                 paymentTokens.usdc,
                 params.priceType,
-                address(referralRegistryContract)
+                referralRegistryAddress,
+                sCSXTokenAddress
             );
         } else if(params.priceType == PriceType.USDT) {
             _contract.initExtraInfo(
@@ -105,7 +110,8 @@ contract CSXTradeFactory is TradeFactoryBase {
                 params.weaponType,
                 paymentTokens.usdt,
                 params.priceType,
-                address(referralRegistryContract)
+                referralRegistryAddress,
+                sCSXTokenAddress
             );
         } else {
             revert("priceType");
