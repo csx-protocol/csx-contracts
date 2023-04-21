@@ -8,10 +8,13 @@ import "../Users/IUsers.sol";
 import {ITradeFactory, TradeUrl, Sticker, SkinInfo, PriceType } from "../TradeFactory/ITradeFactory.sol";
 import {Strings} from "../utils/Strings.sol";
 
+import {IStakedCSX} from "../CSX/Interfaces.sol";
+
 import "../Referrals/IReferralRegistry.sol";
 
 contract CSXTrade {
     IERC20 public paymentToken;
+    bytes32 public refferalCode;
     PriceType public priceType;
 
     address public seller;
@@ -44,6 +47,7 @@ contract CSXTrade {
     ITradeFactory public factoryContract;
 
     IReferralRegistry public referralRegistryContract;
+    IStakedCSX public sCSXToken;
 
     string public disputeComplaint;
     TradeStatus public disputedStatus;
@@ -82,7 +86,8 @@ contract CSXTrade {
         string memory _weaponType,
         address _paymentToken,
         PriceType _priceType,
-        address _referralRegistryContract
+        address _referralRegistryContract,
+        address _sCSXToken
     ) external {
         require(msg.sender == address(factoryContract) && !hasInit, "!factory");
         hasInit = true;
@@ -99,6 +104,7 @@ contract CSXTrade {
         paymentToken = IERC20(_paymentToken);
         priceType = _priceType;
         referralRegistryContract = IReferralRegistry(_referralRegistryContract);
+        sCSXToken = IStakedCSX(_sCSXToken);
     }
 
     function stickerLength() external view returns (uint256) {
@@ -154,35 +160,14 @@ contract CSXTrade {
         bytes32 _affLink
     ) public {
         require(status == TradeStatus.ForSale, "!fs");
-        uint256 buyerNetValue;
-        bool hasRefferal = referralRegistryContract.getReferralCodeOwner(
-            _affLink
-        ) != address(0);
+        require(msg.sender != seller, "!seller");
 
-        uint256 ownerRatio;
-
-        if(hasRefferal){
-            (uint256 _ownerRatio, /*uint256 buyerRatio*/) = referralRegistryContract.getReferralCodeRatios(_affLink);
-            ownerRatio = _ownerRatio;
-        }    
-
-        (
-            uint256 _buyerNetValue,
-            /*uint256 affililatorRebate*/,
-            /*uint256 holdersAmount*/,
-            /*uint256 discountedFee*/
-        ) = referralRegistryContract.calculateNetValue(
-                weiPrice,
-                hasRefferal,
-                factoryContract.baseFee(),
-                ownerRatio
-            );
-
-        buyerNetValue = _buyerNetValue;
+        (uint256 buyerNetValue,,,) = _netValue(_affLink);
 
         require(paymentToken.transferFrom(msg.sender, address(this), buyerNetValue), 'transfer failed');
+
+        refferalCode = _affLink;
         
-        require(msg.sender != seller, "!seller");
         status = TradeStatus.BuyerCommitted;
         buyerCommitTimestamp = block.timestamp;
         usersContract.startDeliveryTimer(address(this), seller);
@@ -292,14 +277,13 @@ contract CSXTrade {
         );
         require(success, "didn't remove tradeId");
         
-        require(paymentToken.transfer(seller, depositedValue), "!snt");
+        // require(paymentToken.transfer(seller, depositedValue), "!snt");
+        _distributeProceeds();
 
-        usersContract.changeUserInteractionStatus(
-            address(this),
-            seller,
-            status
-        );
+        usersContract.changeUserInteractionStatus(address(this), seller, status);
+        usersContract.emitNewTrade(seller, true);
         usersContract.changeUserInteractionStatus(address(this), buyer, status);
+        usersContract.emitNewTrade(buyer, false);
         string memory data = string(
             abi.encodePacked(Strings.toString(weiPrice), "||", "MANUAL")
         );
@@ -322,7 +306,9 @@ contract CSXTrade {
         );
         usersContract.changeUserInteractionStatus(address(this), buyer, status);
         
-        require(paymentToken.transfer(seller, depositedValue), "!snt");
+        //require(paymentToken.transfer(seller, depositedValue), "!snt");
+
+        _distributeProceeds();
 
         string memory data = string(
             abi.encodePacked(Strings.toString(weiPrice))
@@ -351,7 +337,8 @@ contract CSXTrade {
                 status
             );
             
-            require(paymentToken.transfer(seller, depositedValue), "!snt");
+            // require(paymentToken.transfer(seller, depositedValue), "!snt");
+            _distributeProceeds();
 
             string memory data = string(
                 abi.encodePacked(Strings.toString(weiPrice))
@@ -424,7 +411,8 @@ contract CSXTrade {
         } else {
             status = TradeStatus.Resolved;
             if (isWithValue) {
-                require(paymentToken.transfer(seller, depositedValue), "!snt");
+                // require(paymentToken.transfer(seller, depositedValue), "!snt");
+                _distributeProceeds();
             }
         }
         if (giveWarningToSeller) {
@@ -440,5 +428,39 @@ contract CSXTrade {
         );
         usersContract.changeUserInteractionStatus(address(this), buyer, status);
         factoryContract.onStatusChange(status, "", seller, buyer);
+    }
+
+    // Private Functions
+    function _distributeProceeds() private {
+        (/*uint256 buyerNetPrice*/, uint256 sellerNetProceeds, uint256 affiliatorNetReward, uint256 tokenHoldersNetReward) = _netValue(refferalCode);
+        require(paymentToken.transfer(seller, sellerNetProceeds), "!ssnt");
+        require(paymentToken.transfer(referralRegistryContract.getReferralCodeOwner(refferalCode), affiliatorNetReward), "!rsnt");
+        paymentToken.approve(address(sCSXToken), tokenHoldersNetReward);
+        require(sCSXToken.depositDividend(address(paymentToken), tokenHoldersNetReward), '!tsnt');
+    }
+
+    function _netValue(bytes32 _affLink) private view returns (uint256 buyerNetPrice, uint256 sellerNetProceeds, uint256 affiliatorNetReward, uint256 tokenHoldersNetReward) {
+        bool hasRefferal = referralRegistryContract.getReferralCodeOwner(
+            _affLink
+        ) != address(0);
+
+        uint256 ownerRatio;
+
+        if(hasRefferal){
+            (uint256 _ownerRatio, /*uint256 buyerRatio*/) = referralRegistryContract.getReferralCodeRatios(_affLink);
+            ownerRatio = _ownerRatio;
+        }    
+
+        (
+            buyerNetPrice,
+            sellerNetProceeds,
+            affiliatorNetReward,
+            tokenHoldersNetReward
+        ) = referralRegistryContract.calculateNetValue(
+                weiPrice,
+                hasRefferal,
+                factoryContract.baseFee(),
+                ownerRatio
+        );
     }
 }
