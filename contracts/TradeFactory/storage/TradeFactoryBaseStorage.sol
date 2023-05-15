@@ -12,7 +12,6 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
     bool hasInit;
 
     constructor(address _keepers, address _users) {
-        // TODO
         keepersContract = IKeepers(_keepers);
         usersContract = IUsers(_users);
     }
