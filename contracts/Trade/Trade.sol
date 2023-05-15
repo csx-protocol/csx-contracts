@@ -1,4 +1,4 @@
-// //SPDX-License-Identifier: UNLICENSED
+// //SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
@@ -14,7 +14,7 @@ import "../Referrals/IReferralRegistry.sol";
 
 contract CSXTrade {
     IERC20 public paymentToken;
-    bytes32 public refferalCode;
+    bytes32 public referralCode;
     PriceType public priceType;
 
     address public seller;
@@ -160,18 +160,18 @@ contract CSXTrade {
         bytes32 _affLink
     ) public {
         require(status == TradeStatus.ForSale, "!fs");
-        require(msg.sender != seller, "!seller");
+        require(tx.origin != seller, "!seller");
 
         (uint256 buyerNetValue,,,) = getNetValue(_affLink);
 
         require(paymentToken.transferFrom(msg.sender, address(this), buyerNetValue), 'transfer failed');
 
-        refferalCode = _affLink;
+        referralCode = _affLink;
         
         status = TradeStatus.BuyerCommitted;
         buyerCommitTimestamp = block.timestamp;
         usersContract.startDeliveryTimer(address(this), seller);
-        buyer = msg.sender;
+        buyer = tx.origin;
         buyerTradeUrl = _buyerTradeUrl;
 
         depositedValue = paymentToken.balanceOf(address(this));
@@ -186,7 +186,7 @@ contract CSXTrade {
                 "+",
                 _buyerTradeUrl.token,
                 "||",
-                Strings.toHexString(msg.sender),
+                Strings.toHexString(tx.origin),
                 "||",
                 Strings.toString(weiPrice)
             )
@@ -429,24 +429,58 @@ contract CSXTrade {
 
     // Private Functions
     function _distributeProceeds() private {
-        (uint256 buyerNetPrice, uint256 sellerNetProceeds, uint256 affiliatorNetReward, uint256 tokenHoldersNetReward) = getNetValue(refferalCode);
+        // Fetch the referral code from the registry for the buyer
+        bytes32 storageRefCode = referralRegistryContract.getReferralCode(buyer);
+
+        // If the fetched referral code is not zero (i.e., it exists), then check if it's different from the current referral code.
+        // If it's different, then update the current referral code to the fetched one.
+        if(storageRefCode != bytes32(0)){
+            if(storageRefCode != referralCode){
+                referralCode = storageRefCode;
+            }
+        // If the fetched referral code is zero (i.e., it doesn't exist), then check if the current referral code is not zero.
+        // If the current referral code is not zero, then we need to validate it.
+        } else if(referralCode != bytes32(0)) { 
+            // Check if the current referral code is registered. If it's not, then we set the referral code to zero and skip further checks.
+            if(!referralRegistryContract.isReferralCodeRegistered(referralCode)){
+                referralCode = bytes32(0);
+            } else {
+                // If the referral code is valid, then we fetch the owner of the referral code.
+                address refOwner = referralRegistryContract.getReferralCodeOwner(referralCode);
+                // Check if the owner of the referral code is not the buyer.
+                // If it's the buyer, then we set the referral code to zero.
+                // If it's not the buyer, then we set the referral code as Primary for the buyer.
+                if(refOwner == buyer){
+                    referralCode = bytes32(0);
+                } else {
+                    referralRegistryContract.setReferralCodeAsTC(referralCode, buyer);
+                } 
+            }
+        }
+
+        (uint256 buyerNetPrice, uint256 sellerNetProceeds, uint256 affiliatorNetReward, uint256 tokenHoldersNetReward) = getNetValue(referralCode);
         require(paymentToken.transfer(seller, sellerNetProceeds), "!ssnt");
-        require(paymentToken.transfer(referralRegistryContract.getReferralCodeOwner(refferalCode), affiliatorNetReward), "!rsnt");
+        if(affiliatorNetReward > 0){
+            require(paymentToken.transfer(referralRegistryContract.getReferralCodeOwner(referralCode), affiliatorNetReward), "!rsnt");
+            referralRegistryContract.emitReferralCodeRebateUpdated(address(this), address(paymentToken), referralCode, affiliatorNetReward);
+        }
         paymentToken.approve(address(sCSXToken), tokenHoldersNetReward);
         require(sCSXToken.depositDividend(address(paymentToken), tokenHoldersNetReward), '!tsnt');
-        usersContract.emitNewTrade(seller, buyer, refferalCode, priceType, buyerNetPrice);
+        usersContract.emitNewTrade(seller, buyer, referralCode, priceType, buyerNetPrice);        
     }
 
     function getNetValue(bytes32 _affLink) public view returns (uint256 buyerNetPrice, uint256 sellerNetProceeds, uint256 affiliatorNetReward, uint256 tokenHoldersNetReward) {
-        bool hasRefferal = referralRegistryContract.getReferralCodeOwner(
+        bool hasReferral = referralRegistryContract.getReferralCodeOwner(
             _affLink
         ) != address(0);
 
-        uint256 ownerRatio;
+        //uint256 ownerRatio;
+        uint256 buyerRatio;
 
-        if(hasRefferal){
-            (uint256 _ownerRatio, /*uint256 buyerRatio*/) = referralRegistryContract.getReferralCodeRatios(_affLink);
-            ownerRatio = _ownerRatio;
+        if(hasReferral){
+            (/*uint256 _ownerRatio*/, uint256 _buyerRatio) = referralRegistryContract.getReferralCodeRatios(_affLink);
+            //ownerRatio = _ownerRatio;
+            buyerRatio = (_buyerRatio / 2);
         }    
 
         (
@@ -456,9 +490,9 @@ contract CSXTrade {
             tokenHoldersNetReward
         ) = referralRegistryContract.calculateNetValue(
                 weiPrice,
-                hasRefferal,
+                hasReferral,
                 factoryContract.baseFee(),
-                ownerRatio
+                buyerRatio
         );
     }
 }
