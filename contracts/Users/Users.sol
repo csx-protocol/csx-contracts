@@ -101,8 +101,8 @@ contract Users is ReentrancyGuard {
         user.isBanned = false;
     }
 
-    function getUser(address _user) external view returns (User memory) {
-        return users[_user];
+    function getUserData(address user) external view returns (User memory) {
+        return users[user];
     }
 
     function isBanned(address _user) external view returns (bool) {
@@ -145,10 +145,7 @@ contract Users is ReentrancyGuard {
     ) external view returns (uint256) {
         return users[user].deliveryInfo.averageDeliveryTime;
     }
-
-    function getUserData(address user) external view returns (User memory) {
-        return users[user];
-    }
+ 
 
     //User to Trades
     mapping(address => UserInteraction[]) userTrades;
