@@ -7,4 +7,6 @@ remappings = [
     '@openzeppelin/=node_modules/@openzeppelin/',
 ]
 
-# See more config options https://github.com/foundry-rs/foundry/tree/master/config
+[fuzz]
+runs = 10000
+max_test_rejects = 150000
