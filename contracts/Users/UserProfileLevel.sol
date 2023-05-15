@@ -43,7 +43,7 @@ contract UserProfileLevel {
         require(_levels > 0, "Number of levels must be greater than 0.");
 
         User storage user = users[msg.sender];
-        uint256 totalCost = getLevelUpCost(user.level, 50, _levels);
+        uint256 totalCost = getLevelUpCost(user.level, _levels);
 
         require(_tokenAmount >= totalCost, "Not enough tokens sent to level up.");
 
@@ -58,42 +58,41 @@ contract UserProfileLevel {
     }
 
     /**
-     * @dev Get the token cost to level up from the current level to the next level.
-     * The cost increases exponentially with the user's level, and the base cost increases
-     * by 1 token for every 10 levels.
-     *
-     * @param currentLevel The current user level
-     * @param scalingFactor The scaling factor to adjust the exponential growth
-     * @param levels The number of levels to level up
-     * @return totalCost The total token cost to level up the specified number of levels
-     *
-     * Example:
-     *  Rough calculations for the cost to level up from level 1 to 100 with a scaling factor of 50:
-     *
-     *  AdjustedBaseCost(1) = 1
-     *  Total cost = 
-     *      Σ [AdjustedBaseCost(level) * (2 ** (level / scalingFactor))], from level 1 to 100.
-     *
-     *  Here are the approximations for the total cost to level up in each range:
-     *      Level 0-100: ≈ 977.09 CSX tokens
-     *      Level 100-200: ≈ 1,954.18 CSX tokens
-     *      Level 200-300: ≈ 3,908.36 CSX tokens
-     *      Level 300-400: ≈ 7,816.72 CSX tokens
-     *      Level 400-500: ≈ 15,633.44 CSX tokens
-     *      Level 500-600: ≈ 31,266.88 CSX tokens
-     *      Level 600-700: ≈ 62,533.76 CSX tokens
-     *      Level 700-800: ≈ 125,067.52 CSX tokens
-     *      Level 800-900: ≈ 250,135.04 CSX tokens
-     *      Level 900-1000: ≈ 500,270.08 CSX tokens
-     *      ----------------------------------
-     *      0-1000: ≈ 979,562.08 CSX tokens (≈ 0.97% of the total supply)
-     */
-    function getLevelUpCost(uint256 currentLevel, uint256 scalingFactor, uint256 levels) public pure returns (uint256) {
+    * @dev Get the token cost to level up from the current level to the next level.
+    * The cost increases linearly with the user's level.
+    *
+    * @param currentLevel The current user level
+    * @param levels The number of levels to level up
+    * @return totalCost The total token cost to level up the specified number of levels
+    *
+    * Total cost = Σ (level * BASE_COST), for each level from 1 to n.
+    *
+    * Total costs to level up in each range:
+    *      0-10: 55 CSX tokens
+    *      0-20: 210 CSX tokens
+    *      0-30: 465 CSX tokens
+    *      0-40: 820 CSX tokens
+    *      0-50: 1,275 CSX tokens
+    *      0-60: 1,830 CSX tokens
+    *      0-70: 2,485 CSX tokens
+    *      0-80: 3,240 CSX tokens
+    *      0-90: 4,095 CSX tokens
+    *      0-100: 5,050 CSX tokens
+    *      0-200: 20,100 CSX tokens
+    *      0-300: 45,150 CSX tokens
+    *      0-400: 80,200 CSX tokens
+    *      0-500: 125,250 CSX tokens
+    *      0-700: 245,350 CSX tokens
+    *      0-800: 320,400 CSX tokens
+    *      0-900: 405,450 CSX tokens
+    *      0-1000: 500,500 CSX tokens
+    *      0-2000: 2,001,000 CSX tokens
+    */
+    function getLevelUpCost(uint256 currentLevel, uint256 levels) public pure returns (uint256) {
         uint256 totalCost = 0;
 
         for (uint256 i = 0; i < levels; i++) {
-            uint256 adjustedBaseCost = BASE_COST + (((currentLevel + i) / 10) * 1 * 10 ** 18); // Assuming the token has 18 decimals
-            uint256 cost = adjustedBaseCost * (2 ** ((currentLevel + i) / scalingFactor));
+            uint256 cost = BASE_COST + ((currentLevel + i) * BASE_COST);
             totalCost += cost;
         }
 
@@ -117,7 +116,7 @@ contract UserProfileLevel {
      */
     function getCostForNextLevels(address userAddress, uint256 levels) public view returns (uint256) {
         uint256 currentLevel = users[userAddress].level;
-        return getLevelUpCost(currentLevel, 50, levels);
+        return getLevelUpCost(currentLevel, levels);
     }
 
     /**
@@ -128,9 +127,9 @@ contract UserProfileLevel {
     function getUserData(address userAddress) public view returns (uint256, uint256, uint256, uint256) {
         uint256 currentLevel = users[userAddress].level;
 
-        uint256 costForNextLevel = getLevelUpCost(currentLevel, 50, 1);
-        uint256 costForNext5Levels = getLevelUpCost(currentLevel, 50, 5);
-        uint256 costForNext10Levels = getLevelUpCost(currentLevel, 50, 10);
+        uint256 costForNextLevel = getLevelUpCost(currentLevel, 1);
+        uint256 costForNext5Levels = getLevelUpCost(currentLevel, 5);
+        uint256 costForNext10Levels = getLevelUpCost(currentLevel, 10);
 
         return (currentLevel, costForNextLevel, costForNext5Levels, costForNext10Levels);
     }
@@ -141,6 +140,7 @@ contract UserProfileLevel {
      *
      * @param newAddress The address to which the profile should be transferred
      */
+     // TODO: Add so its not transferable if you're banned!
     function transferProfile(address newAddress) public {
         require(users[newAddress].level == 0, "The new address must have zero levels.");
         require(newAddress != address(0), "The new address cannot be the zero address.");
