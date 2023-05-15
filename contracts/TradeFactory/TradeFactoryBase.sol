@@ -61,7 +61,9 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
         emit TradeContractStatusChange(msg.sender, status, data, sellerAddress, buyerAddress);
     }
 
-
+    function totalContracts() external view returns (uint256) {
+        return tradeFactoryBaseStorage.totalContracts();
+    }
 
     /* 
     Move to Users Contract to free up space if needed
