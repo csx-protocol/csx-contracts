@@ -23,9 +23,9 @@ interface ITradeFactoryBaseStorage {
         uint256 index
     ) external view returns (CSXTrade);
 
-    function getTradeContractByAddress(
-        address tradeAddress
-    ) external view returns (CSXTrade);
+    // function getTradeContractByAddress(
+    //     address tradeAddress
+    // ) external view returns (CSXTrade);
 
     function getLastTradeContractAddress() external view returns (address);
 }
