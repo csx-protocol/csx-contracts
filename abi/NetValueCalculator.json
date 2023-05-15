@@ -1,0 +1,51 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "fullItemPrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "isBuyerAffiliated",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "baseFeePercent",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "discountRatio",
+        "type": "uint256"
+      }
+    ],
+    "name": "calculateNetValue",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "buyerNetPrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "sellerNetProceeds",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "affiliatorNetReward",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenHoldersNetReward",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  }
+]

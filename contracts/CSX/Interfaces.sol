@@ -1,4 +1,5 @@
-// //SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: ISC
+
 pragma solidity 0.8.19;
 
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";

@@ -1,0 +1,627 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_keepers",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "seller",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "buyer",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "refCode",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum PriceType",
+        "name": "priceType",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "NewTrade",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tradeAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "enum Role",
+        "name": "role",
+        "type": "uint8"
+      },
+      {
+        "internalType": "address",
+        "name": "userAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "enum TradeStatus",
+        "name": "status",
+        "type": "uint8"
+      }
+    ],
+    "name": "addUserInteractionStatus",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_user",
+        "type": "address"
+      }
+    ],
+    "name": "banUser",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tradeAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "userAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "enum TradeStatus",
+        "name": "status",
+        "type": "uint8"
+      }
+    ],
+    "name": "changeUserInteractionStatus",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "seller",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "buyer",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "refCode",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "enum PriceType",
+        "name": "priceType",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "emitNewTrade",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "contractAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "endDeliveryTimer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "factory",
+    "outputs": [
+      {
+        "internalType": "contract ITradeFactory",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "getAverageDeliveryTime",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "getUserData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "reputationPos",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "reputationNeg",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalTrades",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "warnings",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "isBanned",
+            "type": "bool"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "totalStarts",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalDeliveryTime",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "numberOfDeliveries",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "averageDeliveryTime",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct Users.DeliveryTimes",
+            "name": "deliveryInfo",
+            "type": "tuple"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalTradesAsSeller",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalTradesAsBuyer",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct Users.User",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "userAddrss",
+        "type": "address"
+      }
+    ],
+    "name": "getUserTotalTradeUIs",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "userAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "enum TradeStatus",
+        "name": "status",
+        "type": "uint8"
+      }
+    ],
+    "name": "getUserTradeCountByStatus",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "userAddrss",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "i",
+        "type": "uint256"
+      }
+    ],
+    "name": "getUserTradeUIByIndex",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "contractAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "enum Role",
+            "name": "role",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum TradeStatus",
+            "name": "status",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct UserInteraction",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "userAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "enum TradeStatus",
+        "name": "status",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "indexFrom",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxResults",
+        "type": "uint256"
+      }
+    ],
+    "name": "getUserTradeUIsByStatus",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "contractAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "enum Role",
+            "name": "role",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum TradeStatus",
+            "name": "status",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct UserInteraction[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tradeAddrs",
+        "type": "address"
+      }
+    ],
+    "name": "hasMadeRepOnTrade",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "hasBuyer",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "hasSeller",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "isTime",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_user",
+        "type": "address"
+      }
+    ],
+    "name": "isBanned",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "keepers",
+    "outputs": [
+      {
+        "internalType": "contract IKeepers",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tradeAddrs",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "isPositive",
+        "type": "bool"
+      }
+    ],
+    "name": "repAfterTrade",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_factoryAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setFactoryAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "contractAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "startDeliveryTimer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_user",
+        "type": "address"
+      }
+    ],
+    "name": "unbanUser",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "users",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "reputationPos",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "reputationNeg",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalTrades",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "warnings",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "isBanned",
+        "type": "bool"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "totalStarts",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalDeliveryTime",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "numberOfDeliveries",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "averageDeliveryTime",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct Users.DeliveryTimes",
+        "name": "deliveryInfo",
+        "type": "tuple"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalTradesAsSeller",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalTradesAsBuyer",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_user",
+        "type": "address"
+      }
+    ],
+    "name": "warnUser",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

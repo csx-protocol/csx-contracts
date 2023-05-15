@@ -7,7 +7,11 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lerna-publish": "yarn build && lerna publish && lerna run tsc-clean",
+    "build": "hardhat compile && lerna run tsc",
+    "prepare": "husky install",
+    "prettier": "prettier --write --ignore-path .gitignore .",
+    "upgrade-dependencies": "yarn-up -e '@solidstate/library,@solidstate/spec,@solidstate/typechain-types' && yarn upgrade"
   },
   "author": "",
   "license": "ISC",

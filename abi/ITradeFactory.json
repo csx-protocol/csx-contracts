@@ -1,0 +1,258 @@
+[
+  {
+    "inputs": [],
+    "name": "baseFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tradeAddrs",
+        "type": "address"
+      }
+    ],
+    "name": "getTradeDetailsByAddress",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "contractAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "seller",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "partner",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "token",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct TradeUrl",
+            "name": "sellerTradeUrl",
+            "type": "tuple"
+          },
+          {
+            "internalType": "address",
+            "name": "buyer",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "partner",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "token",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct TradeUrl",
+            "name": "buyerTradeUrl",
+            "type": "tuple"
+          },
+          {
+            "internalType": "string",
+            "name": "itemMarketName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "inspectLink",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "itemImageUrl",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "weiPrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "averageSellerDeliveryTime",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "floatValues",
+                "type": "string"
+              },
+              {
+                "internalType": "uint256",
+                "name": "paintSeed",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "paintIndex",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct SkinInfo",
+            "name": "skinInfo",
+            "type": "tuple"
+          },
+          {
+            "internalType": "enum TradeStatus",
+            "name": "status",
+            "type": "uint8"
+          },
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "material",
+                "type": "string"
+              },
+              {
+                "internalType": "uint8",
+                "name": "slot",
+                "type": "uint8"
+              },
+              {
+                "internalType": "string",
+                "name": "imageLink",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct Sticker[]",
+            "name": "stickers",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "string",
+            "name": "weaponType",
+            "type": "string"
+          },
+          {
+            "internalType": "enum PriceType",
+            "name": "priceType",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct TradeInfo",
+        "name": "result",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "contractAddress",
+        "type": "address"
+      }
+    ],
+    "name": "isThisTradeContract",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum TradeStatus",
+        "name": "status",
+        "type": "uint8"
+      },
+      {
+        "internalType": "string",
+        "name": "data",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "sellerAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "buyerAddress",
+        "type": "address"
+      }
+    ],
+    "name": "onStatusChange",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_assetId",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "sellerAddrss",
+        "type": "address"
+      }
+    ],
+    "name": "removeAssetIdUsed",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalContracts",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

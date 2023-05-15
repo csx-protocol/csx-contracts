@@ -1,0 +1,296 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "referralCode",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "ownerRatio",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "buyerRatio",
+        "type": "uint256"
+      }
+    ],
+    "name": "ReferralCodeRegistered",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "fullItemPrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "isBuyerAffiliated",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "baseFeePercent",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "discountRatio",
+        "type": "uint256"
+      }
+    ],
+    "name": "calculateNetValue",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "buyerNetPrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "sellerNetProceeds",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "affiliatorNetReward",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenHoldersNetReward",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "contractAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_paymentToken",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "referralCode",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "rebate",
+        "type": "uint256"
+      }
+    ],
+    "name": "emitReferralCodeRebateUpdated",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "referralCode",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "ownerRatio",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "buyerRatio",
+        "type": "uint256"
+      }
+    ],
+    "name": "emitReferralCodeRegistered",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "getReferralCode",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "referralCode",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getReferralCodeOwner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "referralCode",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getReferralCodeRatios",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "ownerRatio",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "buyerRatio",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "referralCode",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getReferralInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "ownerRatio",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "buyerRatio",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IReferralRegistry.ReferralInfo",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "referralCode",
+        "type": "bytes32"
+      }
+    ],
+    "name": "isReferralCodeRegistered",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "referralCode",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "ownerRatio",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "buyerRatio",
+        "type": "uint256"
+      }
+    ],
+    "name": "registerReferralCode",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "referralCode",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "setReferralCodeAsTC",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

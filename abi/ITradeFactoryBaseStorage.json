@@ -1,0 +1,119 @@
+[
+  {
+    "inputs": [],
+    "name": "getLastTradeContractAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "getTradeContractByIndex",
+    "outputs": [
+      {
+        "internalType": "contract CSXTrade",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_itemMarketName",
+        "type": "string"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "partner",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "token",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct TradeUrl",
+        "name": "_tradeUrl",
+        "type": "tuple"
+      },
+      {
+        "internalType": "string",
+        "name": "_assetId",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_inspectLink",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_itemImageUrl",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_weiPrice",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "floatValues",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "paintSeed",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "paintIndex",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct SkinInfo",
+        "name": "_skinInfo",
+        "type": "tuple"
+      }
+    ],
+    "name": "newTradeContract",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalContracts",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
