@@ -59,6 +59,8 @@ contract VestedStaking {
         csxToken.approve(address(sCsxToken), amount);
         sCsxToken.stake(amount);
         vesting = Vesting(vesting.amount + amount, block.timestamp); // vesting time-lock (re)-starts when deposit is made
+
+        // emit event?
     }
 
     /// @notice Claim rewards from the staking contract.

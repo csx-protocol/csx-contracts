@@ -38,7 +38,13 @@ contract EscrowedCSX is ERC20Burnable, ReentrancyGuard {
 
     function mintEscrow(uint256 _amount) external nonReentrant {
         require(_amount > 0, "Amount must be greater than 0");
-        require(csxToken.transferFrom(msg.sender, address(vestingToken), _amount), 'Transfer failed.');
+        // USE SAFETRANFER!!
+        // enough balance on vestingtoken?
+        // use ERROR instead (gas)
+        require(
+            csxToken.transferFrom(msg.sender, address(vestingToken), _amount),
+            "Transfer failed."
+        );
         _mint(msg.sender, _amount);
         // vestings[msg.sender] = Vesting(_amount, block.timestamp);
         // handle vesting in vCSX contract

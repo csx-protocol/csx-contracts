@@ -12,7 +12,7 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
     IERC20Burnable public EscrowedCSX;
     IStakedCSX public StakedCSX;
     IWETH public WETH;
-    IERC20 public USDC;     
+    IERC20 public USDC;
     IERC20 public CSX;
     IERC20 public USDT;
 
@@ -49,6 +49,9 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
     function vest(uint256 amount) external mintable(amount) nonReentrant {
         require(amount > 0, "Amount must be greater than 0"); // To prevent users wasting gas
 
+        // ???
+        // Transfer eCSX to this contract. Then let this contract burn it.
+        // ofcourse I approve it myself
         // Burn the deposited escrow tokens
         EscrowedCSX.burnFrom(msg.sender, amount);
 
@@ -66,13 +69,15 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
                 address(USDT),
                 address(WETH)
             );
-        } 
+        }
 
         // Approve VestedStaking Contract to transfer CSX tokens
         CSX.approve(address(vestedStakingContractPerUser[msg.sender]), amount);
 
         // Deposit CSX tokens to VestedStaking Contract for the user
         vestedStakingContractPerUser[msg.sender].deposit(amount);
+
+        // emit event?
     }
 
     //=================================== INTERNAL ==============================================
