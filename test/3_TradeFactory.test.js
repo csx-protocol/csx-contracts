@@ -30,7 +30,8 @@ contract("TradeFactory", (accounts) => {
             [],
             [],
         ];
-        const prices = ['2977130000000000', '8933480000000000', '17864780000000000', '44661960000000000', '89323910000000000', '297776550000000000', '1489077140000000000'];
+        const priceTypes = ['0', '0', '1', '0', '0', '2', '0'];
+        const prices = ['2977130000000000', '8933480000000000', '27800000', '44661960000000000', '89323910000000000', '457000000', '1489077140000000000'];
         const names = ['R8 Revolver | Bone Mask (Field-Tested)', 'Negev | Bulkhead (Minimal Wear)', 'Negev | Army Sheen (Minimal Wear)', 'MAC-10 | Nuclear Garden (Field-Tested)', 'Galil AR | Rocket Pop (Factory New)', 'StatTrak™ AK-47 | Slate (Factory New)', '★ Driver Gloves | Rezan the Red (Minimal Wear)']
         const weaponTypes = ['R8 Revolver', 'Negev', 'Negev', 'MAC-10', 'Galil AR', 'AK-47', 'Driver Gloves'];
         const imgs = ['https://media.steampowered.com/apps/730/icons/econ/default_generated/weapon_revolver_sp_tape_light_large.c8f9124ff70ca2a6e8867920cd39e4fb7308ac87.png', 'https://media.steampowered.com/apps/730/icons/econ/default_generated/weapon_negev_hy_ducts_yellow_light_large.9d9335325a4a696ec6c2ef704ec1d4b3112c8c87.png', 'https://media.steampowered.com/apps/730/icons/econ/default_generated/weapon_negev_am_army_shine_light_large.884085f4a13b786f0ac7234d616ff01a848f28d5.png', 'https://media.steampowered.com/apps/730/icons/econ/default_generated/weapon_mac10_am_nuclear_skulls3_mac10_light_large.467b325065522e5248247cf125bec257cdb66902.png', 'https://media.steampowered.com/apps/730/icons/econ/default_generated/weapon_galilar_cu_galilar_particles_light_large.8732f64d53dbc9b0c732641655d4f99124d8cacc.png', 'https://media.steampowered.com/apps/730/icons/econ/default_generated/weapon_ak47_gs_ak47_professional_light_large.d09d623d0a725c63e8a3905f66bba41ba2ed59e8.png', 'https://media.steampowered.com/apps/730/icons/econ/default_generated/slick_gloves_slick_rezan_light_large.642934831085e8715a7e8072614f71f9fc0f205e.png']
@@ -85,7 +86,7 @@ contract("TradeFactory", (accounts) => {
                 skinInfo: skinInfo[i],
                 stickers: stickers[i],
                 weaponType: weaponTypes[i],
-                priceType: 0
+                priceType: priceTypes[i]
             }
             await tradeFactory.createListingContract(params);
         }
@@ -99,7 +100,7 @@ contract("TradeFactory", (accounts) => {
         // Check if each contract was created with the correct data
         for (let i = 0; i < prices.length; i++) {
             const listing = await tradeFactory.getTradeDetailsByIndex(i);
-
+          
             // Assert that each property of the listing matches the expected value
             assert.equal(listing.itemMarketName, names[i], `The itemMarketName for listing ${i} should match`);
             assert.equal(listing.sellerTradeUrl.partner, _tradeUrl.partner, `The tradeUrl partner for listing ${i} should match`);
