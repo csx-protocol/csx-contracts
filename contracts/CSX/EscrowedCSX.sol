@@ -25,8 +25,12 @@ contract EscrowedCSX is ERC20Burnable, ReentrancyGuard {
     event Minted(address indexed user, uint256 amount);
     event Claimed(address indexed user, uint256 amount);
 
-    constructor(address _csxToken) ERC20("Escrowed CSX", "eCSX") {
-        csxToken = IERC20(_csxToken);
+    // constructor(address _csxToken) ERC20("Escrowed CSX", "eCSX") {
+    //     csxToken = IERC20(_csxToken);
+    // }
+
+    constructor(address _csxToken, string memory _name, string memory _symbol) ERC20(_name, _symbol) {
+         csxToken = IERC20(_csxToken);
     }
 
     function init(address _vCSXToken) external {
