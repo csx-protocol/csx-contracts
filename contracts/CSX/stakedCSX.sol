@@ -3,15 +3,17 @@
 
 pragma solidity 0.8.19;
 
-import {IERC20, IWETH, ReentrancyGuard, ERC20} from "./Interfaces.sol";
+import { ERC20Capped, ERC20 } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
+import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import {IERC20, IWETH} from "./Interfaces.sol";
 
-contract StakedCSX is ReentrancyGuard, ERC20 {
+contract StakedCSX is ERC20Capped, ReentrancyGuard {
     IERC20 public CSX;
     IWETH public WETH;
     IERC20 public USDC;
     IERC20 public USDT;
 
-    uint256 public constant MAX_SUPPLY = 100000000 ether;
+    //uint256 public constant MAX_SUPPLY = 100000000 ether;
 
     /// @notice PRECISION is a constant used for calculations in the contract.
     /// It is set to 10**33 to ensure accuracy in calculations.
@@ -44,20 +46,23 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
 
     event FundsClaimed(uint256 amount, uint256 dividendPerToken, address token);
 
-    modifier mintable(uint256 amount) {
-        require(
-            amount + totalSupply() <= MAX_SUPPLY,
-            "amount surpasses max supply"
-        );
-        _;
-    }
+    // modifier mintable(uint256 amount) {
+    //     require(
+    //         amount + totalSupply() <= MAX_SUPPLY,
+    //         "amount surpasses max supply"
+    //     );
+    //     _;
+    // }
 
     constructor(
+        string memory _name,
+        string memory _symbol,
+        uint256 initialSupply,
         address _csxAddress,
         address _weth,
         address _usdc,
         address _usdt
-    ) ERC20("Staked CSX", "sCSX") {
+    ) ERC20Capped(initialSupply) ERC20(_name, _symbol) {
         CSX = IERC20(_csxAddress);
         WETH = IWETH(_weth);
         USDC = IERC20(_usdc);
@@ -106,7 +111,7 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         return true;
     }
 
-    function stake(uint256 amount) external mintable(amount) nonReentrant {
+    function stake(uint256 amount) external nonReentrant {
         require(amount > 0, "Amount must be greater than 0");
         require(
             CSX.transferFrom(msg.sender, address(this), amount),

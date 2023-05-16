@@ -2,41 +2,65 @@
 
 pragma solidity ^0.8.19;
 
+import { TestUtils } from "test/utils/TestUtils.t.sol";
+import { ERC20Mock } from "@openzeppelin/contracts/mocks/ERC20Mock.sol";
+import { IErrors } from "contracts/interfaces/IErrors.sol";
 import { ERC20BehaviourTest } from "@csx/spec/token/ERC20/ERC20.behaviour.sol";
+import { CommonToken } from "./CommonToken.t.sol";
 import { CSXToken } from "contracts/CSX/CSX.sol";
 import { EscrowedCSX } from "contracts/CSX/EscrowedCSX.sol";
 
-contract EscrowedCSXTest is ERC20BehaviourTest {
-    CSXToken public csx;
-    EscrowedCSX public eCSX;
-
-
-    uint256 public constant maxSupply = 100000000 ether;
-
+contract EscrowedCSXTest is TestUtils, CommonToken {
     function setUp() public {
-        vm.prank(DEPLOYER);
-        csx = new CSXToken("CSX Token", "CSX", maxSupply);
-        
-        vm.prank(DEPLOYER);
-        eCSX = new EscrowedCSX(address(csx), "EscrowedCSX Token", "eCSX");
-        
-        vm.prank(DEPLOYER);
-        csx.approve(address(eCSX), 1);
+        _initCSXToken();
+        _initEscrowedCSX();
+        _initWETH();
+        _initUsdc();
+        _initUSDT();
+        _initStakedCSX();
+        _initVestedCSX();
 
         vm.prank(DEPLOYER);
-        eCSX.init(_vCSXToken);
-        //eCSX.mintEscrow(1);
+        csx.approve(address(eCSX), maxSupply);
+        assertEq(csx.allowance(DEPLOYER, address(eCSX)), maxSupply);
+        //vm.prank(DEPLOYER);
+        //eCSX.init(address(vCSX));
+
+        //vm.prank(DEPLOYER);
+        //eCSX.mintEscrow(1 ether);
         //_erc20Init(address(eCSX), 1);
         
         vm.stopPrank();
-        
     }
 
-    function testName() public {
-        assertEq(csx.name(), "EscrowedCSX Token");
-    }
+    // function testCsxToken() public {
+    //     assertEq(address(eCSX.csxToken()), address(csx));
+    // }
 
-    function testSymbol() public {
-        assertEq(csx.symbol(), "eCSX");
-    }
+    // function testExpectRevertInitWhenAlreadyInitialized() public {
+    //     vm.expectRevert(IErrors.AlreadyInitialized.selector);
+    //     vm.prank(DEPLOYER);
+    //     eCSX.init(address(vCSX));
+    //     vm.stopPrank();
+    // }
+
+    // function testMinEscrow(uint256 amount) public {
+    //     vm.assume(amount > 0);
+    //     vm.assume(amount < maxSupply);
+    //     assertEq(csx.balanceOf(DEPLOYER), maxSupply);
+    //     vm.prank(DEPLOYER);
+    //     csx.approve(address(eCSX), amount);
+    //     assertEq(csx.allowance(DEPLOYER, address(eCSX)), amount);
+    //     vm.prank(DEPLOYER);
+    //     eCSX.mintEscrow(amount);
+    //     // vm.stopPrank();
+    // }
+
+    // function testName() public {
+    //     assertEq(csx.name(), "EscrowedCSX Token");
+    // }
+
+    // function testSymbol() public {
+    //     assertEq(csx.symbol(), "eCSX");
+    // }
 }

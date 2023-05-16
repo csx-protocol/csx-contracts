@@ -3,12 +3,13 @@
 
 pragma solidity 0.8.19;
 
-import {ERC20, IERC20, ReentrancyGuard, IWETH, IERC20Burnable} from "./Interfaces.sol";
+import { ERC20Capped, ERC20 } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
+import {IERC20, ReentrancyGuard, IWETH, IERC20Burnable} from "./Interfaces.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
 import "./VestedStaking.sol";
 
-contract VestedCSX is ReentrancyGuard, ERC20Burnable {
+contract VestedCSX is ReentrancyGuard, ERC20Burnable, ERC20Capped {
     IERC20Burnable public EscrowedCSX;
     IStakedCSX public StakedCSX;
     IWETH public WETH;
@@ -16,24 +17,27 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
     IERC20 public CSX;
     IERC20 public USDT;
 
-    uint256 public constant MAX_SUPPLY = 100000000 ether;
+    //uint256 public constant MAX_SUPPLY = 100000000 ether;
 
-    modifier mintable(uint256 amount) {
-        require(
-            amount + totalSupply() <= MAX_SUPPLY,
-            "amount surpasses max supply"
-        );
-        _;
-    }
+    // modifier mintable(uint256 amount) {
+    //     require(
+    //         amount + totalSupply() <= MAX_SUPPLY,
+    //         "amount surpasses max supply"
+    //     );
+    //     _;
+    // }
 
     constructor(
+        string memory _name,
+        string memory _symbol,
+        uint256 initialSupply,
         address _eCsxAddress,
         address _sCsxAddress,
         address _wethAddress,
         address _usdcAddress,
         address _csxAddress,
         address _usdtAddress
-    ) ERC20("Vested CSX", "vCSX") {
+    ) ERC20(_name, _symbol) ERC20Capped(initialSupply) {
         EscrowedCSX = IERC20Burnable(_eCsxAddress);
         StakedCSX = IStakedCSX(_sCsxAddress);
         WETH = IWETH(_wethAddress);
@@ -46,7 +50,7 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
 
     mapping(address => VestedStaking) public vestedStakingContractPerUser;
 
-    function vest(uint256 amount) external mintable(amount) nonReentrant {
+    function vest(uint256 amount) external nonReentrant {
         require(amount > 0, "Amount must be greater than 0"); // To prevent users wasting gas
 
         // ???
@@ -89,5 +93,12 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
         super._beforeTokenTransfer(from, to, amount);
         if (from == address(0) || to == address(0)) return;
         revert("NonTransferableToken: Token transfers are disabled.");
+    }
+
+    function _mint(address account, uint256 amount)
+        internal
+        override(ERC20, ERC20Capped)
+    {
+        super._mint(account, amount);
     }
 }
