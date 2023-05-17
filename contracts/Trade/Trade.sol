@@ -263,7 +263,7 @@ contract CSXTrade {
     }
 
     // Buyer Confirms they have received the item.
-    function buyerConfirmReceived() public onlyAddress(buyer) {
+    function buyerConfirmReceived() external onlyAddress(buyer) {
         require(
             status == TradeStatus.BuyerCommitted ||
                 status == TradeStatus.SellerCommitted,
