@@ -1,14 +1,19 @@
 // SPDX-License-Identifier: MIT
-// CSX Staking Contract v2
+// csx Staking Contract v2
 
 pragma solidity 0.8.19;
 
 import { ERC20Capped, ERC20 } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import {IERC20, IWETH} from "./Interfaces.sol";
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { IERC20 } from "contracts/interfaces/IERC20.sol";
+import { IErrors } from "contracts/interfaces/IErrors.sol";
+import { IWETH} from "./Interfaces.sol";
 
 contract StakedCSX is ERC20Capped, ReentrancyGuard {
-    IERC20 public CSX;
+    using SafeERC20 for IERC20;
+
+    IERC20 public csx;
     IWETH public WETH;
     IERC20 public USDC;
     IERC20 public USDT;
@@ -57,13 +62,13 @@ contract StakedCSX is ERC20Capped, ReentrancyGuard {
     constructor(
         string memory _name,
         string memory _symbol,
-        uint256 initialSupply,
+        uint256 _cap,
         address _csxAddress,
         address _weth,
         address _usdc,
         address _usdt
-    ) ERC20Capped(initialSupply) ERC20(_name, _symbol) {
-        CSX = IERC20(_csxAddress);
+    ) ERC20Capped(_cap) ERC20(_name, _symbol) {
+        csx = IERC20(_csxAddress);
         WETH = IWETH(_weth);
         USDC = IERC20(_usdc);
         USDT = IERC20(_usdt);
@@ -112,19 +117,21 @@ contract StakedCSX is ERC20Capped, ReentrancyGuard {
     }
 
     function stake(uint256 amount) external nonReentrant {
-        require(amount > 0, "Amount must be greater than 0");
-        require(
-            CSX.transferFrom(msg.sender, address(this), amount),
-            "Token transfer failed"
-        );
+        if (amount == 0) revert IErrors.ZeroAmount();
+        if (amount > csx.balanceOf(msg.sender)) revert IErrors.InsufficientBalance();
+        if (amount > csx.allowance(msg.sender, address(this))) revert IErrors.InsufficientAllowance();
+
+        csx.safeTransferFrom(msg.sender, address(this), amount);
         _mint(msg.sender, amount);
     }
 
     function unStake(uint256 amount) external nonReentrant {
         require(amount > 0, "Amount must be greater than 0");
         require(balanceOf(msg.sender) >= amount, "Insufficient balance");
+        // TODO: claim before unstake
+        claim(true, true, true, true);
         _burn(msg.sender, amount);
-        require(CSX.transfer(msg.sender, amount), "Token transfer failed");
+        require(csx.transfer(msg.sender, amount), "Token transfer failed");
     }
 
     function claim(
@@ -132,7 +139,7 @@ contract StakedCSX is ERC20Capped, ReentrancyGuard {
         bool claimUsdt,
         bool claimWeth,
         bool convertWethToEth
-    ) external nonReentrant {
+    ) public nonReentrant {
         if (claimWeth) {
             _claim(address(WETH), convertWethToEth);
         }
@@ -151,6 +158,7 @@ contract StakedCSX is ERC20Capped, ReentrancyGuard {
         uint256 amount
     ) internal override {
         super._beforeTokenTransfer(from, to, amount);
+        // Don't go to _claimToCredit if it's just minted or burned
         if (from == address(0) || to == address(0)) return;
         // receiver first withdraw funds to credit
         _claimToCredit(to);

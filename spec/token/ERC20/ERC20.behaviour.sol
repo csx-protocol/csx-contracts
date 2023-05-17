@@ -6,7 +6,7 @@ import { TestUtils } from "test/utils/TestUtils.t.sol";
 import { IERC20 } from "contracts/interfaces/IERC20.sol";
 
 abstract contract ERC20BehaviourTest is TestUtils {
-    IERC20 token;
+    IERC20 public token;
     uint256 initalSupply;
 
     event Transfer(address indexed from, address indexed to, uint256 value);

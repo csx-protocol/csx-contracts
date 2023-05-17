@@ -7,4 +7,5 @@ interface IErrors {
     error ZeroAmount();
     error AlreadyInitialized();
     error InsufficientAllowance();
+    error InsufficientBalance();
 }

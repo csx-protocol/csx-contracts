@@ -57,7 +57,7 @@ abstract contract CommonToken is TestUtils {
         sCSX = new StakedCSX(
             "StakedCSX Token",
             "sCSX",
-            100000000 ether,
+            maxSupply,
             address(csx),
             address(weth),
             address(usdc),
@@ -70,7 +70,7 @@ abstract contract CommonToken is TestUtils {
         vCSX = new VestedCSX(
             "Vested CSX",
             "vCSX",
-            100000000 ether,
+            maxSupply,
             address(eCSX),
             address(sCSX),
             address(weth), 

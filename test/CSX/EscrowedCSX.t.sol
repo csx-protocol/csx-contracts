@@ -23,10 +23,10 @@ contract EscrowedCSXTest is TestUtils, CommonToken {
         vm.prank(DEPLOYER);
         csx.approve(address(eCSX), maxSupply);
         assertEq(csx.allowance(DEPLOYER, address(eCSX)), maxSupply);
-        //vm.prank(DEPLOYER);
-        //eCSX.init(address(vCSX));
+        vm.prank(DEPLOYER);
+        eCSX.init(address(vCSX));
 
-        //vm.prank(DEPLOYER);
+        vm.prank(DEPLOYER);
         //eCSX.mintEscrow(1 ether);
         //_erc20Init(address(eCSX), 1);
         
@@ -44,17 +44,35 @@ contract EscrowedCSXTest is TestUtils, CommonToken {
     //     vm.stopPrank();
     // }
 
-    // function testMinEscrow(uint256 amount) public {
+    function testExpectRevertMintEscrowWhenZeroAmount() public {
+        vm.expectRevert(IErrors.ZeroAmount.selector);
+        vm.prank(DEPLOYER);
+        eCSX.mintEscrow(ZERO);
+        vm.stopPrank();
+    }
+
+    // function testExpectRevertMintEscrowWhenInsufficientAllowance(uint256 amount) public {
     //     vm.assume(amount > 0);
-    //     vm.assume(amount < maxSupply);
-    //     assertEq(csx.balanceOf(DEPLOYER), maxSupply);
-    //     vm.prank(DEPLOYER);
-    //     csx.approve(address(eCSX), amount);
-    //     assertEq(csx.allowance(DEPLOYER, address(eCSX)), amount);
+    //     vm.assume(amount < maxSupply - 1 ether);
+    //     vm.expectRevert(IErrors.InsufficientAllowance.selector);
     //     vm.prank(DEPLOYER);
     //     eCSX.mintEscrow(amount);
-    //     // vm.stopPrank();
+    //     vm.stopPrank();
     // }
+
+    function testMintEscrow(uint256 amount) public {
+        vm.assume(amount > 0);
+        vm.assume(amount < maxSupply - 1 ether);
+        assertEq(csx.balanceOf(DEPLOYER), maxSupply);
+        vm.prank(DEPLOYER);
+        csx.approve(address(eCSX), amount);
+        assertEq(csx.allowance(DEPLOYER, address(eCSX)), amount);
+        vm.prank(DEPLOYER);
+        eCSX.mintEscrow(amount);
+        assertEq(eCSX.balanceOf(DEPLOYER), amount);
+        assertEq(csx.balanceOf(address(vCSX)), amount);
+        vm.stopPrank();
+    }
 
     // function testName() public {
     //     assertEq(csx.name(), "EscrowedCSX Token");

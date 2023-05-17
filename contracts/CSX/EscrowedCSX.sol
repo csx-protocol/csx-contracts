@@ -13,7 +13,7 @@ import { IEscrowedCSX } from "contracts/interfaces/IEscrowedCSX.sol";
 contract EscrowedCSX is IEscrowedCSX, ERC20Burnable, Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
-    bool public isInitialized = false;
+    bool public isInitialized;
     IERC20 public csxToken;
     IERC20 public vestingToken;
 
@@ -27,20 +27,21 @@ contract EscrowedCSX is IEscrowedCSX, ERC20Burnable, Ownable, ReentrancyGuard {
         _transferOwnership(msg.sender);
     }
 
-    function init(address vCSXToken) external  onlyOwner() {
+    function init(address vCSXToken) external  onlyOwner {
         if (isInitialized) revert IErrors.AlreadyInitialized();
         if (vCSXToken == address(0)) revert IErrors.ZeroAddress();
         isInitialized = true;
         vestingToken = IERC20(vCSXToken);
+        renounceOwnership();
 
         emit Initialized();
     }
 
-    function mintEscrow(uint256 amount) external {
+    function mintEscrow(uint256 amount) external nonReentrant {
         if (amount == 0) revert IErrors.ZeroAmount();
         if (csxToken.allowance(msg.sender, address(this)) < amount) revert IErrors.InsufficientAllowance();
-        //csxToken.transferFrom(msg.sender, address(this), amount);
-        //csxToken.safeTransferFrom(msg.sender, address(vestingToken), amount);
-        //_mint(msg.sender, amount);
+
+        csxToken.safeTransferFrom(msg.sender, address(vestingToken), amount);
+        _mint(msg.sender, amount);
     }
 }
