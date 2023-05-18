@@ -9,8 +9,9 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { IERC20 } from "contracts/interfaces/IERC20.sol";
 import { IErrors } from "contracts/interfaces/IErrors.sol";
 import { IWETH} from "./Interfaces.sol";
+import { IStakedCSX } from "contracts/interfaces/IStakedCSX.sol";
 
-contract StakedCSX is ERC20Capped, ReentrancyGuard {
+contract StakedCSX is IStakedCSX, ERC20Capped, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     IERC20 public csx;
@@ -43,22 +44,6 @@ contract StakedCSX is ERC20Capped, ReentrancyGuard {
     // USDC, WETH, USDT => user => totalClaimed
     mapping(address => mapping(address => uint256)) totalClaimed;
 
-    event FundsReceived(
-        uint256 amount,
-        uint256 dividendPerToken,
-        address token
-    );
-
-    event FundsClaimed(uint256 amount, uint256 dividendPerToken, address token);
-
-    // modifier mintable(uint256 amount) {
-    //     require(
-    //         amount + totalSupply() <= MAX_SUPPLY,
-    //         "amount surpasses max supply"
-    //     );
-    //     _;
-    // }
-
     constructor(
         string memory _name,
         string memory _symbol,
@@ -77,61 +62,70 @@ contract StakedCSX is ERC20Capped, ReentrancyGuard {
     //=================================== EXTERNAL ==============================================
 
     /// @notice Function to getClaimableAmount
-    /// @param _account address of the user
+    /// @param account address of the user
     /// @return usdcAmount
     /// @return usdtAmount
     /// @return wethAmount
     function getClaimableAmount(
-        address _account
-    ) external view returns (uint256 usdcAmount, uint256 usdtAmount, uint256 wethAmount) {
-        uint256 recipientBalance = balanceOf(_account);
+        address account
+    ) external view override returns (uint256 usdcAmount, uint256 usdtAmount, uint256 wethAmount) {
+        uint256 recipientBalance = balanceOf(account);
         usdcAmount = (((dividendPerToken[address(USDC)] -
-            xDividendPerToken[address(USDC)][_account]) * recipientBalance) /
+            xDividendPerToken[address(USDC)][account]) * recipientBalance) /
             PRECISION);
         usdtAmount = (((dividendPerToken[address(USDT)] -
-            xDividendPerToken[address(USDT)][_account]) * recipientBalance) /
+            xDividendPerToken[address(USDT)][account]) * recipientBalance) /
             PRECISION);
         wethAmount = (((dividendPerToken[address(WETH)] -
-            xDividendPerToken[address(WETH)][_account]) * recipientBalance) /
+            xDividendPerToken[address(WETH)][account]) * recipientBalance) /
             PRECISION);
     }
 
     /// @notice Function to reward stakers.
-    function depositDividend(address token, uint256 amount) external returns (bool) {
-        require(totalSupply() != 0, "No tokens minted");
-        require(
-            token == address(WETH) ||
-                token == address(USDC) ||
-                token == address(USDT),
-            "Invalid token"
-        );
-        require(
-            IERC20(token).transferFrom(msg.sender, address(this), amount),
-            "Token transfer failed"
-        );
-        dividendPerToken[token] += (amount * PRECISION) / totalSupply();
+    function depositDividend(address token, uint256 amount) external override returns (bool) {
+        if (token == address(0)) revert IErrors.ZeroAddress();
+        if (amount == 0) revert IErrors.ZeroAmount();
+        if (amount > IERC20(token).balanceOf(msg.sender)) revert IErrors.InsufficientBalance();
+        if (amount > IERC20(token).allowance(msg.sender, address(this))) revert IErrors.InsufficientAllowance();
+
+        if (
+            token != address(WETH) || 
+            token != address(USDC) ||
+            token != address(USDT)
+        ) revert TokenNotSupported(token);
+
+        if (totalSupply() == 0) revert ZeroTokensMinted();
+      
+        IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
+        dividendPerToken[token] = dividendPerToken[token] + (amount * PRECISION) / totalSupply();
 
         emit FundsReceived(amount, dividendPerToken[token], token);
 
         return true;
     }
 
-    function stake(uint256 amount) external nonReentrant {
+    function stake(uint256 amount) external override nonReentrant {
         if (amount == 0) revert IErrors.ZeroAmount();
         if (amount > csx.balanceOf(msg.sender)) revert IErrors.InsufficientBalance();
         if (amount > csx.allowance(msg.sender, address(this))) revert IErrors.InsufficientAllowance();
 
         csx.safeTransferFrom(msg.sender, address(this), amount);
         _mint(msg.sender, amount);
+
+        emit Staked(msg.sender, amount);
     }
 
-    function unStake(uint256 amount) external nonReentrant {
-        require(amount > 0, "Amount must be greater than 0");
-        require(balanceOf(msg.sender) >= amount, "Insufficient balance");
-        // TODO: claim before unstake
-        claim(true, true, true, true);
+    function unstake(uint256 amount) external override nonReentrant {
+        if (amount == 0) revert IErrors.ZeroAmount();
+        if (amount > balanceOf(msg.sender)) revert IErrors.InsufficientBalance();
+
+        _claimToCredit(msg.sender);
+
         _burn(msg.sender, amount);
-        require(csx.transfer(msg.sender, amount), "Token transfer failed");
+        
+        csx.safeTransfer(msg.sender, amount);
+
+        emit Unstaked(msg.sender, amount);
     }
 
     function claim(
@@ -139,7 +133,7 @@ contract StakedCSX is ERC20Capped, ReentrancyGuard {
         bool claimUsdt,
         bool claimWeth,
         bool convertWethToEth
-    ) public nonReentrant {
+    ) external nonReentrant override {
         if (claimWeth) {
             _claim(address(WETH), convertWethToEth);
         }

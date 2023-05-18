@@ -21,8 +21,8 @@ contract EscrowedCSXTest is TestUtils, CommonToken {
         _initVestedCSX();
 
         vm.prank(DEPLOYER);
-        csx.approve(address(eCSX), maxSupply);
-        assertEq(csx.allowance(DEPLOYER, address(eCSX)), maxSupply);
+        csx.approve(address(eCSX), MAX_SUPPLY);
+        assertEq(csx.allowance(DEPLOYER, address(eCSX)), MAX_SUPPLY);
         vm.prank(DEPLOYER);
         eCSX.init(address(vCSX));
 
@@ -53,7 +53,7 @@ contract EscrowedCSXTest is TestUtils, CommonToken {
 
     // function testExpectRevertMintEscrowWhenInsufficientAllowance(uint256 amount) public {
     //     vm.assume(amount > 0);
-    //     vm.assume(amount < maxSupply - 1 ether);
+    //     vm.assume(amount < MAX_SUPPLY - 1 ether);
     //     vm.expectRevert(IErrors.InsufficientAllowance.selector);
     //     vm.prank(DEPLOYER);
     //     eCSX.mintEscrow(amount);
@@ -62,8 +62,8 @@ contract EscrowedCSXTest is TestUtils, CommonToken {
 
     function testMintEscrow(uint256 amount) public {
         vm.assume(amount > 0);
-        vm.assume(amount < maxSupply - 1 ether);
-        assertEq(csx.balanceOf(DEPLOYER), maxSupply);
+        vm.assume(amount < MAX_SUPPLY - 1 ether);
+        assertEq(csx.balanceOf(DEPLOYER), MAX_SUPPLY);
         vm.prank(DEPLOYER);
         csx.approve(address(eCSX), amount);
         assertEq(csx.allowance(DEPLOYER, address(eCSX)), amount);

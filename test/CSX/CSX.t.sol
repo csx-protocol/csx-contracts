@@ -9,12 +9,12 @@ import { CommonToken } from "./CommonToken.t.sol";
 
 contract CSXTokenTest is ERC20BehaviourTest, CommonToken {
     //CSXToken public csx;
-    //uint256 public constant maxSupply = 100000000 ether;
+    //uint256 public constant MAX_SUPPLY = 100000000 ether;
 
     function setUp() public {
         _initCSXToken();
         vm.prank(DEPLOYER);
-        _erc20Init(address(csx), maxSupply);
+        _erc20Init(address(csx), MAX_SUPPLY);
         vm.stopPrank();
     }
 
