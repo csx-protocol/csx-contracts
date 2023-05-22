@@ -82,6 +82,8 @@ interface ITradeFactory {
     
     function baseFee() external view returns (uint256);
 
+    function buyAssistoor() external view returns (address);
+
     function totalContracts() external view returns (uint256);
 }
 

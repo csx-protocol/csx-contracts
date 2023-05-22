@@ -157,10 +157,19 @@ contract CSXTrade {
     // Buyer commits tokens to buy if status-state allows & Sends trade-offer to sellers trade-link off-chain.
     function commitBuy(
         TradeUrl memory _buyerTradeUrl,
-        bytes32 _affLink
+        bytes32 _affLink, 
+        address _buyerAddress
     ) public {
         require(status == TradeStatus.ForSale, "!fs");
-        require(tx.origin != seller, "!seller");
+
+        address _buyer;
+        if(msg.sender == factoryContract.buyAssistoor()){
+            _buyer = _buyerAddress;
+        } else {
+            _buyer = msg.sender;
+        }
+
+        require(_buyer != seller, '!seller');
 
         (uint256 buyerNetValue,,,) = getNetValue(_affLink);
 
@@ -171,7 +180,7 @@ contract CSXTrade {
         status = TradeStatus.BuyerCommitted;
         buyerCommitTimestamp = block.timestamp;
         usersContract.startDeliveryTimer(address(this), seller);
-        buyer = tx.origin;
+        buyer = _buyer;
         buyerTradeUrl = _buyerTradeUrl;
 
         depositedValue = paymentToken.balanceOf(address(this));
@@ -186,7 +195,7 @@ contract CSXTrade {
                 "+",
                 _buyerTradeUrl.token,
                 "||",
-                Strings.toHexString(tx.origin),
+                Strings.toHexString(buyer),
                 "||",
                 Strings.toString(weiPrice)
             )

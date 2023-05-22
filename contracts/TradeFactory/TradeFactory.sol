@@ -40,6 +40,7 @@ contract CSXTradeFactory is TradeFactoryBase {
     PaymentTokens public paymentTokens;
     address public referralRegistryAddress;
     address public sCSXTokenAddress;
+    address public buyAssistoor;
 
     constructor(
         address _keepers,
@@ -48,11 +49,13 @@ contract CSXTradeFactory is TradeFactoryBase {
         uint256 _baseFee,
         PaymentTokens memory _paymentTokens,
         address _referralRegistryAddress,
-        address _sCSXTokenAddress
+        address _sCSXTokenAddress,
+        address _buyAssistoor
     ) TradeFactoryBase(_keepers, _users, _tradeFactoryBaseStorage, _baseFee) {
         paymentTokens = _paymentTokens;
         referralRegistryAddress = _referralRegistryAddress;
         sCSXTokenAddress = _sCSXTokenAddress;
+        buyAssistoor = _buyAssistoor;
     }
 
     function createListingContract(
