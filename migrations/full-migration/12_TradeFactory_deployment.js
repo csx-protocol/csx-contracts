@@ -4,6 +4,7 @@ const Users = artifacts.require("Users");
 const TradeFactoryBaseStorage = artifacts.require("TradeFactoryBaseStorage");
 const ReferralRegistry = artifacts.require("ReferralRegistry");
 const StakedCSX = artifacts.require("StakedCSX");
+const BuyAssistoor = artifacts.require("BuyAssistoor");
 
 //mock
 const Web3 = require('web3');
@@ -18,7 +19,7 @@ module.exports = async function (deployer, network, accounts) {
     const weth = WETH9Mock.address;
     const usdc = USDCToken.address;
     const usdt = USDTToken.address;
-    await deployer.deploy(TradeFactory, Keepers.address, Users.address, TradeFactoryBaseStorage.address, '2', { weth, usdc, usdt }, ReferralRegistry.address, StakedCSX.address);
+    await deployer.deploy(TradeFactory, Keepers.address, Users.address, TradeFactoryBaseStorage.address, '2', { weth, usdc, usdt }, ReferralRegistry.address, StakedCSX.address, BuyAssistoor.address);
 
     // MOCK DATA
     const web3 = new Web3(deployer.provider);
