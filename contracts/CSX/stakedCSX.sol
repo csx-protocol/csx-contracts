@@ -118,11 +118,6 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
     function unStake(uint256 amount) external nonReentrant {
         require(amount > 0, "Amount must be greater than 0");
         require(balanceOf(msg.sender) >= amount, "Insufficient balance");
-        // TODO Validate if claimToCredit is logically correct here
-        // instead of claim rewards in unstake()
-        // _claim(address(WETH), true);
-        // _claim(address(USDC), false);
-        // _claim(address(USDT), false);
         _claimToCredit(msg.sender);
         _burn(msg.sender, amount);
         require(CSX.transfer(msg.sender, amount), "Token transfer failed");
