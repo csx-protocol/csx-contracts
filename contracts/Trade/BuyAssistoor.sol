@@ -4,7 +4,7 @@ pragma solidity 0.8.19;
 import { IWETH } from "../CSX/Interfaces.sol";
 
 interface ITradeContract {
-    function commitBuy(TradeUrl memory _buyerTradeUrl, bytes32 _affLink) external;
+    function commitBuy(TradeUrl memory _buyerTradeUrl, bytes32 _affLink, address _buyerAddress) external;
     function priceType() external view returns (PriceType);
     function weiPrice() external view returns (uint256);
 }
@@ -37,6 +37,6 @@ contract BuyAssistoor {
         require(approved, "WETH approval failed");
 
         // Now you have WETH, and you can call commitBuy function
-        tradeContract.commitBuy(_buyerTradeUrl, _affLink);
+        tradeContract.commitBuy(_buyerTradeUrl, _affLink, msg.sender);
     }
 }
