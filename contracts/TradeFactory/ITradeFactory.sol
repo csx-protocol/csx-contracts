@@ -60,6 +60,7 @@ struct TradeInfo {
     Sticker[] stickers;
     string weaponType;
     PriceType priceType;
+    string assetId;
 }
 
 interface ITradeFactory {
