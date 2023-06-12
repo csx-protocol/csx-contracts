@@ -74,12 +74,14 @@ contract("TradeFactory", (accounts) => {
             },
         ]
 
+        const assetIds = ['GG1', '28492787574', 'GG2', '28315956209', '28315874929', '28229768155', '27955299910'];
+
         // Create the listing contracts
         for (let i = 0; i < prices.length; i++) {
             const params = {
                 itemMarketName: names[i],
                 tradeUrl: _tradeUrl,
-                assetId: '112' + i,
+                assetId: assetIds[i],
                 inspectLink: inspctLink[i],
                 itemImageUrl: imgs[i],
                 weiPrice: prices[i],
