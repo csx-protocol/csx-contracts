@@ -21,6 +21,7 @@ abstract contract CommonToken is TestUtils {
     WETH9Mock public weth;
 
     uint256 public constant MAX_SUPPLY = 100000000 ether;
+    uint256 public constant MAX_SUPPLY_USD = 100000000 * 10 ** 6;
 
     function _initCSXToken() internal virtual {
         vm.prank(DEPLOYER);
@@ -47,11 +48,11 @@ abstract contract CommonToken is TestUtils {
     }
 
     function _initWETH() internal virtual {
-        vm.deal(DEPLOYER, 10000 ether);   
+        vm.deal(DEPLOYER, MAX_SUPPLY);   
         vm.prank(DEPLOYER);
         weth = new WETH9Mock();
         vm.prank(DEPLOYER);
-        weth.deposit{value: 10000 ether}();
+        weth.deposit{value: MAX_SUPPLY}();
         vm.stopPrank();
     }
 

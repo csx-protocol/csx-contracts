@@ -10,8 +10,13 @@ import { CommonToken } from "./CommonToken.t.sol";
 import { IStakedCSX } from "contracts/interfaces/IStakedCSX.sol";
 
 contract StakedCSXTest is TestUtils, CommonToken {
+    event Transfer(address indexed from, address indexed to, uint256 value);
+
     event Staked(address indexed account, uint256 amount);
     event Unstaked(address indexed account, uint256 amount);
+    event FundsReceived( uint256 amount, uint256 dividendPerToken, address indexed token);
+
+    uint256 public constant PRECISION = 10 ** 33; // used for higher precision calculations
 
     function setUp() public {
         _initCSXToken();
@@ -104,14 +109,25 @@ contract StakedCSXTest is TestUtils, CommonToken {
         sCSX.unstake(amount);
         vm.stopPrank();
     }
+
+    function testExpectRevertUnstakeWhenUnstakeSameBlock(uint256 amount) public {
+        vm.assume(amount > 0);
+        vm.assume(amount <= MAX_SUPPLY);
+        vm.prank(DEPLOYER);
+        testStake(amount);
+        vm.expectRevert(abi.encodeWithSelector(IStakedCSX.UnstakeSameBlock.selector, block.number));
+        vm.prank(DEPLOYER);
+        sCSX.unstake(amount);
+        vm.stopPrank();
+    }
     
     function testUnstake(uint256 amount) public {
         vm.assume(amount > 0);
         vm.assume(amount <= MAX_SUPPLY);
+        uint256 currentBlockNumber = block.number;
         testStake(amount);
-        assertEq(block.timestamp, 1);
-        skip(3600);
-        assertEq(block.timestamp, 3601);
+        vm.roll(currentBlockNumber + 1);
+        assertEq(block.number, currentBlockNumber + 1);
         uint256 balanceBefore = csx.balanceOf(DEPLOYER);
         emit log_named_uint("balanceBefore", balanceBefore);
         vm.expectEmit(true, true, false, true);
@@ -125,11 +141,11 @@ contract StakedCSXTest is TestUtils, CommonToken {
 
     function testUnstakes(address[5] memory stakers) public {
         uint256 count = stakers.length;
+        uint256 currentBlockNumber = block.number;
         testStakes(stakers);
         uint256 amount = (MAX_SUPPLY / 2) / count;
-        assertEq(block.timestamp, 1);
-        skip(3600);
-        assertEq(block.timestamp, 3601);
+        vm.roll(currentBlockNumber + 1);
+        assertEq(block.number, currentBlockNumber + 1);
         for (uint256 i = 0; i < count; i++) {
             _unstake(stakers[i], amount);
         }
@@ -191,6 +207,44 @@ contract StakedCSXTest is TestUtils, CommonToken {
     //     vm.stopPrank();
     // }
 
+    function testDepositDividendWETH(uint256 amount) public {
+        vm.assume(amount > 0);
+        vm.assume(amount <= MAX_SUPPLY);
+        testStake(amount);
+        assertEq(block.timestamp, 1);
+        skip(3600);
+        assertEq(block.timestamp, 3601);
+        _depositWETH(amount);
+        assertEq(weth.balanceOf(address(sCSX)), amount);
+        (,, uint256 claimableAmount) = sCSX.getClaimableAmount(DEPLOYER);
+        assertEq(claimableAmount, amount);
+    }
+
+    function testDepositDividendUSDT(uint256 stakes, uint256 deposit) public {
+        vm.assume(stakes > 0);
+        vm.assume(stakes <= MAX_SUPPLY);
+        vm.assume(deposit > 0);
+        vm.assume(deposit <= MAX_SUPPLY_USD);
+        testStake(stakes);
+        assertEq(block.timestamp, 1);
+        skip(3600);
+        assertEq(block.timestamp, 3601);
+        _depositUSDT(deposit);
+        assertEq(usdt.balanceOf(address(sCSX)), deposit);
+    }
+
+    function testDepositDividendUSDC(uint256 stakes, uint256 deposit) public {
+        vm.assume(stakes > 0);
+        vm.assume(stakes <= MAX_SUPPLY);
+        vm.assume(deposit > 0);
+        vm.assume(deposit <= MAX_SUPPLY_USD);
+        testStake(stakes);
+        assertEq(block.timestamp, 1);
+        skip(3600);
+        assertEq(block.timestamp, 3601);
+        _depositUSDC(deposit);
+        assertEq(usdc.balanceOf(address(sCSX)), deposit);
+    }
 
     function _stake(address _staker, uint256 _amount) internal {
         vm.prank(DEPLOYER);
@@ -218,9 +272,11 @@ contract StakedCSXTest is TestUtils, CommonToken {
     function _depositWETH(uint256 amount) internal {
         vm.prank(DEPLOYER);
         weth.approve(address(sCSX), amount);
+        uint256 dividendPerToken =  (amount * PRECISION) / sCSX.totalSupply();
         vm.prank(DEPLOYER);
         sCSX.depositDividend(address(weth), amount);
         vm.stopPrank();
+        assertEq(sCSX.getDividendPerToken(address(weth)), dividendPerToken);
     }
 
     function _depositUSDT(uint256 amount) internal {
@@ -233,7 +289,7 @@ contract StakedCSXTest is TestUtils, CommonToken {
 
     function _depositUSDC(uint256 amount) internal {
         vm.prank(DEPLOYER);
-        usdt.approve(address(sCSX), amount);
+        usdc.approve(address(sCSX), amount);
         vm.prank(DEPLOYER);
         sCSX.depositDividend(address(usdc), amount);
         vm.stopPrank();

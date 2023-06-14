@@ -30,19 +30,23 @@ contract StakedCSX is IStakedCSX, ERC20Capped, ReentrancyGuard {
 
     /// @notice Token (usdc,weth, usdt) share of each token in gwei.
     // USDC, WETH, USDT => totalDividendPerToken
-    mapping(address => uint256) dividendPerToken;
+    mapping(address => uint256) private _dividendPerToken;
 
     /// @notice Token (usdc,weth, usdt) user's share of each token in gwei.
-    // USDC, WETH, USDT => user => xDividendPerToken
-    mapping(address => mapping(address => uint256)) xDividendPerToken;
+    // USDC, WETH, USDT => user => _xDividendPerToken
+    mapping(address => mapping(address => uint256)) private _xDividendPerToken;
 
     /// @notice Amount that should have been withdrawn
-    // USDC, WETH, USDT => user => credit
-    mapping(address => mapping(address => uint256)) credit;
+    // USDC, WETH, USDT => user => _credit
+    mapping(address => mapping(address => uint256)) private _credit;
 
     /// @notice State variable representing amount claimed by account in WETH, USDC, USDT
-    // USDC, WETH, USDT => user => totalClaimed
-    mapping(address => mapping(address => uint256)) totalClaimed;
+    // USDC, WETH, USDT => user => _totalClaimed
+    mapping(address => mapping(address => uint256)) private _totalClaimed;
+
+    // @notice blocknumber state for each stakes
+    // account => blocknumber
+    mapping(address => uint256) private _stakesBlockNumber;
 
     constructor(
         string memory _name,
@@ -61,6 +65,9 @@ contract StakedCSX is IStakedCSX, ERC20Capped, ReentrancyGuard {
 
     //=================================== EXTERNAL ==============================================
 
+    function getDividendPerToken(address token) external view override returns (uint256) {
+        return _dividendPerToken[token];
+    }
     /// @notice Function to getClaimableAmount
     /// @param account address of the user
     /// @return usdcAmount
@@ -70,18 +77,31 @@ contract StakedCSX is IStakedCSX, ERC20Capped, ReentrancyGuard {
         address account
     ) external view override returns (uint256 usdcAmount, uint256 usdtAmount, uint256 wethAmount) {
         uint256 recipientBalance = balanceOf(account);
-        usdcAmount = (((dividendPerToken[address(USDC)] -
-            xDividendPerToken[address(USDC)][account]) * recipientBalance) /
+        usdcAmount = (((_dividendPerToken[address(USDC)] -
+            _xDividendPerToken[address(USDC)][account]) * recipientBalance) /
             PRECISION);
-        usdtAmount = (((dividendPerToken[address(USDT)] -
-            xDividendPerToken[address(USDT)][account]) * recipientBalance) /
+        usdtAmount = (((_dividendPerToken[address(USDT)] -
+            _xDividendPerToken[address(USDT)][account]) * recipientBalance) /
             PRECISION);
-        wethAmount = (((dividendPerToken[address(WETH)] -
-            xDividendPerToken[address(WETH)][account]) * recipientBalance) /
+        wethAmount = (((_dividendPerToken[address(WETH)] -
+            _xDividendPerToken[address(WETH)][account]) * recipientBalance) /
             PRECISION);
     }
 
-    /// @notice Function to reward stakers.
+    /**
+     * @notice deposit `amount` of `token` to the contract
+     * @param token address of the token to deposit
+     * @param amount amount of tokens to deposit
+     * @dev emits a FundsReceived event
+        *
+            * Requirements:
+            * - address `token` can't be the zero address
+            * - `amount` must be greater than 0
+            * - `amount` must be less than or equal to the balance of `msg.sender` for `token`
+            * - `amount` must be less than or equal to the allowance of `msg.sender` for `token`
+            * - `address token` must be a supported token WETH, USDC, USDT
+            * - totalSupply must be greater than 0
+    */
     function depositDividend(address token, uint256 amount) external override returns (bool) {
         if (token == address(0)) revert IErrors.ZeroAddress();
         if (amount == 0) revert IErrors.ZeroAmount();
@@ -89,35 +109,64 @@ contract StakedCSX is IStakedCSX, ERC20Capped, ReentrancyGuard {
         if (amount > IERC20(token).allowance(msg.sender, address(this))) revert IErrors.InsufficientAllowance();
 
         if (
-            token != address(WETH) || 
-            token != address(USDC) ||
+            token != address(WETH) && 
+            token != address(USDC) && 
             token != address(USDT)
         ) revert TokenNotSupported(token);
-
+        
         if (totalSupply() == 0) revert ZeroTokensMinted();
       
         IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
-        dividendPerToken[token] = dividendPerToken[token] + (amount * PRECISION) / totalSupply();
+        _dividendPerToken[token] = _dividendPerToken[token] + (amount * PRECISION) / totalSupply();
 
-        emit FundsReceived(amount, dividendPerToken[token], token);
+        emit FundsReceived(amount, _dividendPerToken[token], token);
 
         return true;
     }
 
+    /**
+     * @notice stake `amount` of csx tokens
+     * @param amount amount of csx tokens to stake
+     * @dev emits a Staked event
+     *
+        * Requirements:
+        * - staker can't call this function twice in the same block
+        * - `amount` must be greater than 0
+        * - staker must have a balance of at least `amount` for csx tokens
+        * - staker must have an allowance for csx tokens of at least `amount` to this contract
+     */
     function stake(uint256 amount) external override nonReentrant {
         if (amount == 0) revert IErrors.ZeroAmount();
         if (amount > csx.balanceOf(msg.sender)) revert IErrors.InsufficientBalance();
         if (amount > csx.allowance(msg.sender, address(this))) revert IErrors.InsufficientAllowance();
 
+        uint256 currentBlockNumber = block.number;
+
         csx.safeTransferFrom(msg.sender, address(this), amount);
         _mint(msg.sender, amount);
+
+        _stakesBlockNumber[msg.sender] = currentBlockNumber;
 
         emit Staked(msg.sender, amount);
     }
 
+    /**
+     * @notice unstake `amount` of csx tokens
+     * @param amount amount of csx tokens to unstake
+     * @dev emits a Unstaked event
+     *
+        * Requirements:
+        * - staker can't call this function twice in the same block
+        * - `amount` must be greater than 0
+        * - staker must have a balance of at least `amount` for scsx tokens
+        * - staker can't unstake after stake withing the same block
+     */
     function unstake(uint256 amount) external override nonReentrant {
         if (amount == 0) revert IErrors.ZeroAmount();
         if (amount > balanceOf(msg.sender)) revert IErrors.InsufficientBalance();
+
+        uint256 currentBlockNumber = block.number;
+        if (_stakesBlockNumber[msg.sender] == currentBlockNumber) revert UnstakeSameBlock(currentBlockNumber);
 
         _claimToCredit(msg.sender);
 
@@ -154,7 +203,7 @@ contract StakedCSX is IStakedCSX, ERC20Capped, ReentrancyGuard {
         super._beforeTokenTransfer(from, to, amount);
         // Don't go to _claimToCredit if it's just minted or burned
         if (from == address(0) || to == address(0)) return;
-        // receiver first withdraw funds to credit
+        // receiver first withdraw funds to _credit
         _claimToCredit(to);
         _claimToCredit(from);
     }
@@ -164,55 +213,55 @@ contract StakedCSX is IStakedCSX, ERC20Capped, ReentrancyGuard {
     function _claimToCredit(address to_) private {
         uint256 recipientBalance = balanceOf(to_);
         if (recipientBalance != 0) {
-            uint256 usdcAmount = (((dividendPerToken[address(USDC)] -
-                xDividendPerToken[address(USDC)][to_]) * recipientBalance) /
+            uint256 usdcAmount = (((_dividendPerToken[address(USDC)] -
+                _xDividendPerToken[address(USDC)][to_]) * recipientBalance) /
                 PRECISION);
-            uint256 usdtAmount = (((dividendPerToken[address(USDT)] -
-                xDividendPerToken[address(USDT)][to_]) * recipientBalance) /
+            uint256 usdtAmount = (((_dividendPerToken[address(USDT)] -
+                _xDividendPerToken[address(USDT)][to_]) * recipientBalance) /
                 PRECISION);
-            uint256 wethAmount = (((dividendPerToken[address(WETH)] -
-                xDividendPerToken[address(WETH)][to_]) * recipientBalance) /
+            uint256 wethAmount = (((_dividendPerToken[address(WETH)] -
+                _xDividendPerToken[address(WETH)][to_]) * recipientBalance) /
                 PRECISION);
 
             if (usdcAmount != 0) {
-                credit[address(USDC)][to_] =
-                    credit[address(USDC)][to_] +
+                _credit[address(USDC)][to_] =
+                    _credit[address(USDC)][to_] +
                     usdcAmount;
             }
 
             if (usdtAmount != 0) {
-                credit[address(USDT)][to_] =
-                    credit[address(USDT)][to_] +
+                _credit[address(USDT)][to_] =
+                    _credit[address(USDT)][to_] +
                     usdtAmount;
             }
 
             if (wethAmount != 0) {
-                credit[address(WETH)][to_] =
-                    credit[address(WETH)][to_] +
+                _credit[address(WETH)][to_] =
+                    _credit[address(WETH)][to_] +
                     wethAmount;
             }
         }
-        xDividendPerToken[address(USDC)][to_] = dividendPerToken[address(USDC)];
-        xDividendPerToken[address(USDT)][to_] = dividendPerToken[address(USDT)];
-        xDividendPerToken[address(WETH)][to_] = dividendPerToken[address(WETH)];
+        _xDividendPerToken[address(USDC)][to_] = _dividendPerToken[address(USDC)];
+        _xDividendPerToken[address(USDT)][to_] = _dividendPerToken[address(USDT)];
+        _xDividendPerToken[address(WETH)][to_] = _dividendPerToken[address(WETH)];
     }
 
     function _claim(address token, bool convertWethToEth) private {
         uint256 amount;
         uint256 csxBalance = balanceOf(msg.sender);
-        uint256 creditBalance = credit[token][msg.sender];
+        uint256 creditBalance = _credit[token][msg.sender];
 
         if (csxBalance != 0) {
-            uint256 userDividendPerToken = xDividendPerToken[token][msg.sender];
+            uint256 userDividendPerToken = _xDividendPerToken[token][msg.sender];
 
-            xDividendPerToken[token][msg.sender] = dividendPerToken[token];
+            _xDividendPerToken[token][msg.sender] = _dividendPerToken[token];
 
-            amount = (((dividendPerToken[token] - userDividendPerToken) *
+            amount = (((_dividendPerToken[token] - userDividendPerToken) *
                 csxBalance) / PRECISION);
         }
 
         if (creditBalance != 0) {
-            credit[token][msg.sender] = 0;
+            _credit[token][msg.sender] = 0;
             amount += creditBalance;
         }
 
@@ -229,8 +278,8 @@ contract StakedCSX is IStakedCSX, ERC20Capped, ReentrancyGuard {
                     "Token transfer failed"
                 );
             }
-            totalClaimed[token][msg.sender] += amount;
-            emit FundsClaimed(amount, dividendPerToken[token], token);
+            _totalClaimed[token][msg.sender] += amount;
+            emit FundsClaimed(amount, _dividendPerToken[token], token);
         }
     }
 }
