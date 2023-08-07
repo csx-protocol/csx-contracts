@@ -75,6 +75,10 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
         vestedStakingContractPerUser[msg.sender].deposit(amount);
     }
 
+    function getVestedStakingContractAddress(address user) public view returns (address) {
+        return address(vestedStakingContractPerUser[user]);
+    }
+
     //=================================== INTERNAL ==============================================
     function _beforeTokenTransfer(
         address from,
