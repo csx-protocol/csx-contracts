@@ -13,8 +13,10 @@ struct Vesting {
 contract VestedStaking {
     Vesting public vesting;
 
-    uint256 public constant VESTING_PERIOD = 24 * 30 days; // 24 months
-
+    //uint256 public constant VESTING_PERIOD = 24 * 30 days; // 24 months
+    
+    // For testing purposes, 5 minutes
+    uint256 public constant VESTING_PERIOD = 5 minutes;
     address public vesterAddress;
     IStakedCSX public sCsxToken;
     IERC20Burnable public vCsxToken;
@@ -60,6 +62,22 @@ contract VestedStaking {
         sCsxToken.stake(amount);
         vesting = Vesting(vesting.amount + amount, block.timestamp); // vesting time-lock (re)-starts when deposit is made
     }
+
+    /// @notice get Claimable Amount
+    /// @return usdcAmount
+    /// @return usdtAmount
+    /// @return wethAmount
+    function getClaimableAmountAndVestTimeLeft() external view returns (uint256 usdcAmount, uint256 usdtAmount, uint256 wethAmount, uint256 vestTimeLeft) {
+        (usdcAmount, usdtAmount, wethAmount) = sCsxToken.getClaimableAmount(address(this));
+
+        uint256 vestingEndTime = vesting.startTime + VESTING_PERIOD;
+        if (block.timestamp < vestingEndTime) {
+            vestTimeLeft = vestingEndTime - block.timestamp;
+        } else {
+            vestTimeLeft = 0;
+        }
+    }
+    
 
     /// @notice Claim rewards from the staking contract.
     /// @param claimUsdc Whether to claim USDC rewards.
