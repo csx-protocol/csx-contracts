@@ -21,12 +21,12 @@ contract StakedCSX is IStakedCSX, ERC20Capped, ReentrancyGuard {
 
     //uint256 public constant MAX_SUPPLY = 100000000 ether;
 
-    /// @notice PRECISION is a constant used for calculations in the contract.
+    /// @notice _PRECISION is a constant used for calculations in the contract.
     /// It is set to 10**33 to ensure accuracy in calculations.
     /// This allows for up to 100 million tokens with:
     /// - A maximum dividend per token of 10^26 ether (for 18 decimals, lowest fraction is gwei)
     /// - A maximum dividend per token of 10^32 tokens (for 6 decimals, lowest fraction is Mwei / Lovelace / Picoether)
-    uint256 private constant PRECISION = 10 ** 33; // used for higher precision calculations
+    uint256 private constant _PRECISION = 10 ** 33; // used for higher _PRECISION calculations
 
     /// @notice Token (usdc,weth, usdt) share of each token in gwei.
     // USDC, WETH, USDT => totalDividendPerToken
@@ -64,6 +64,9 @@ contract StakedCSX is IStakedCSX, ERC20Capped, ReentrancyGuard {
     }
 
     //=================================== EXTERNAL ==============================================
+    receive() external payable {
+        require(address(WETH) == msg.sender, "Invalid sender");
+    }
 
     function getDividendPerToken(address token) external view override returns (uint256) {
         return _dividendPerToken[token];
@@ -79,13 +82,13 @@ contract StakedCSX is IStakedCSX, ERC20Capped, ReentrancyGuard {
         uint256 recipientBalance = balanceOf(account);
         usdcAmount = (((_dividendPerToken[address(USDC)] -
             _xDividendPerToken[address(USDC)][account]) * recipientBalance) /
-            PRECISION);
+            _PRECISION);
         usdtAmount = (((_dividendPerToken[address(USDT)] -
             _xDividendPerToken[address(USDT)][account]) * recipientBalance) /
-            PRECISION);
+            _PRECISION);
         wethAmount = (((_dividendPerToken[address(WETH)] -
             _xDividendPerToken[address(WETH)][account]) * recipientBalance) /
-            PRECISION);
+            _PRECISION);
     }
 
     /**
@@ -117,7 +120,7 @@ contract StakedCSX is IStakedCSX, ERC20Capped, ReentrancyGuard {
         if (totalSupply() == 0) revert ZeroTokensMinted();
       
         IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
-        _dividendPerToken[token] = _dividendPerToken[token] + (amount * PRECISION) / totalSupply();
+        _dividendPerToken[token] = _dividendPerToken[token] + (amount * _PRECISION) / totalSupply();
 
         emit FundsReceived(amount, _dividendPerToken[token], token);
 
@@ -215,13 +218,13 @@ contract StakedCSX is IStakedCSX, ERC20Capped, ReentrancyGuard {
         if (recipientBalance != 0) {
             uint256 usdcAmount = (((_dividendPerToken[address(USDC)] -
                 _xDividendPerToken[address(USDC)][to_]) * recipientBalance) /
-                PRECISION);
+                _PRECISION);
             uint256 usdtAmount = (((_dividendPerToken[address(USDT)] -
                 _xDividendPerToken[address(USDT)][to_]) * recipientBalance) /
-                PRECISION);
+                _PRECISION);
             uint256 wethAmount = (((_dividendPerToken[address(WETH)] -
                 _xDividendPerToken[address(WETH)][to_]) * recipientBalance) /
-                PRECISION);
+                _PRECISION);
 
             if (usdcAmount != 0) {
                 _credit[address(USDC)][to_] =
@@ -257,7 +260,7 @@ contract StakedCSX is IStakedCSX, ERC20Capped, ReentrancyGuard {
             _xDividendPerToken[token][msg.sender] = _dividendPerToken[token];
 
             amount = (((_dividendPerToken[token] - userDividendPerToken) *
-                csxBalance) / PRECISION);
+                csxBalance) / _PRECISION);
         }
 
         if (creditBalance != 0) {
@@ -270,7 +273,7 @@ contract StakedCSX is IStakedCSX, ERC20Capped, ReentrancyGuard {
                 // Convert WETH to ETH and send to user
                 WETH.withdraw(amount);
                 // Check if the transfer is successful
-                (bool success, ) = msg.sender.call{value: amount}("");
+                (bool success, ) = payable(msg.sender).call{value: amount}("");
                 require(success, "ETH transfer failed");
             } else {
                 require(

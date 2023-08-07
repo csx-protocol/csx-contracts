@@ -19,16 +19,18 @@ contract StakedCSXTest is TestUtils, CommonToken {
     uint256 public constant PRECISION = 10 ** 33; // used for higher precision calculations
 
     function setUp() public {
+        vm.startPrank(DEPLOYER);
         _initCSXToken();
         _initWETH();
         _initUsdc();
         _initUSDT();
         _initStakedCSX();
+        vm.stopPrank();
     }
 
     function testExpectRevertStakeWhenZeroAmount() public {
         vm.expectRevert(IErrors.ZeroAmount.selector);
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         sCSX.stake(ZERO);
         vm.stopPrank();
     }
@@ -38,12 +40,12 @@ contract StakedCSXTest is TestUtils, CommonToken {
         vm.assume(amount <= MAX_SUPPLY);
         vm.assume(staker != ZERO_ADDRESS);
         vm.assume(staker != DEPLOYER);
-        vm.prank(staker);
+        vm.startPrank(staker);
         csx.approve(address(sCSX), amount);
         assertEq(csx.allowance(staker, address(sCSX)), amount);
         assertEq(csx.balanceOf(staker), ZERO);
         vm.expectRevert(IErrors.InsufficientBalance.selector);
-        vm.prank(staker);
+        //vm.startPrank(staker);
         sCSX.stake(amount);
         vm.stopPrank();
     }
@@ -52,7 +54,7 @@ contract StakedCSXTest is TestUtils, CommonToken {
         vm.assume(amount > 0);
         vm.assume(amount <= MAX_SUPPLY);
         vm.expectRevert(IErrors.InsufficientAllowance.selector);
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         sCSX.stake(amount);
         vm.stopPrank();
     }
@@ -61,12 +63,12 @@ contract StakedCSXTest is TestUtils, CommonToken {
         vm.assume(amount > 0);
         vm.assume(amount <= MAX_SUPPLY); 
         assertEq(csx.balanceOf(DEPLOYER), MAX_SUPPLY);
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         csx.approve(address(sCSX), amount);
         assertEq(csx.allowance(DEPLOYER, address(sCSX)), amount);
         vm.expectEmit(true, true, false, true);
         emit Staked(DEPLOYER, amount);
-        vm.prank(DEPLOYER);
+        //vm.startPrank(DEPLOYER);
         sCSX.stake(amount);
         assertEq(sCSX.balanceOf(DEPLOYER), amount);
         assertEq(csx.balanceOf(address(sCSX)), amount);
@@ -92,7 +94,7 @@ contract StakedCSXTest is TestUtils, CommonToken {
 
     function testExpectRevertUnstakeWhenZeroAmount() public {
         vm.expectRevert(IErrors.ZeroAmount.selector);
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         sCSX.unstake(ZERO);
         vm.stopPrank();
     }
@@ -102,10 +104,10 @@ contract StakedCSXTest is TestUtils, CommonToken {
         vm.assume(amount <= MAX_SUPPLY);
         vm.assume(staker != ZERO_ADDRESS);
         vm.assume(staker != DEPLOYER);
-        vm.prank(staker);
+        vm.startPrank(staker);
         assertEq(sCSX.balanceOf(staker), ZERO);
         vm.expectRevert(IErrors.InsufficientBalance.selector);
-        vm.prank(staker);
+        //vm.startPrank(staker);
         sCSX.unstake(amount);
         vm.stopPrank();
     }
@@ -113,10 +115,9 @@ contract StakedCSXTest is TestUtils, CommonToken {
     function testExpectRevertUnstakeWhenUnstakeSameBlock(uint256 amount) public {
         vm.assume(amount > 0);
         vm.assume(amount <= MAX_SUPPLY);
-        vm.prank(DEPLOYER);
         testStake(amount);
         vm.expectRevert(abi.encodeWithSelector(IStakedCSX.UnstakeSameBlock.selector, block.number));
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         sCSX.unstake(amount);
         vm.stopPrank();
     }
@@ -132,7 +133,7 @@ contract StakedCSXTest is TestUtils, CommonToken {
         emit log_named_uint("balanceBefore", balanceBefore);
         vm.expectEmit(true, true, false, true);
         emit Unstaked(DEPLOYER, amount);
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         sCSX.unstake(amount);
         assertEq(sCSX.balanceOf(DEPLOYER), ZERO);
         assertEq(csx.balanceOf(DEPLOYER), MAX_SUPPLY);
@@ -153,14 +154,14 @@ contract StakedCSXTest is TestUtils, CommonToken {
 
     function testExpectRevertDepositDividendWhenZeroTokenAddress() public {
         vm.expectRevert(IErrors.ZeroAddress.selector);
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         sCSX.depositDividend(ZERO_ADDRESS, 1);
         vm.stopPrank();
     }
 
     function testExpectRevertDepositDividendWhenZeroAmount() public {
         vm.expectRevert(IErrors.ZeroAmount.selector);
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         sCSX.depositDividend(address(weth), ZERO);
         vm.stopPrank();
     }
@@ -170,7 +171,7 @@ contract StakedCSXTest is TestUtils, CommonToken {
         vm.assume(staker != ZERO_ADDRESS);
         vm.assume(staker != DEPLOYER);
         vm.expectRevert(IErrors.InsufficientBalance.selector);
-        vm.prank(staker);
+        vm.startPrank(staker);
         sCSX.depositDividend(address(weth), amount);
         vm.stopPrank();
     }
@@ -181,7 +182,7 @@ contract StakedCSXTest is TestUtils, CommonToken {
         emit log_named_uint("Balance weth", weth.balanceOf(DEPLOYER));
         emit log_named_uint("amount", amount);
         vm.expectRevert(IErrors.InsufficientAllowance.selector);
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         sCSX.depositDividend(address(weth), amount);
         vm.stopPrank();
     }
@@ -190,10 +191,10 @@ contract StakedCSXTest is TestUtils, CommonToken {
         vm.assume(amount > 0);
         vm.assume(amount <= MAX_SUPPLY);
         address token = address(new ERC20Mock("Test", "TST", DEPLOYER, MAX_SUPPLY));
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         IERC20(token).approve(address(sCSX), amount);
         vm.expectRevert(abi.encodeWithSelector(IStakedCSX.TokenNotSupported.selector, token));
-        vm.prank(DEPLOYER);
+        //vm.startPrank(DEPLOYER);
         sCSX.depositDividend(token, amount);
         vm.stopPrank();
     }
@@ -202,7 +203,7 @@ contract StakedCSXTest is TestUtils, CommonToken {
     // function testExpectRevertDepositDividendWhenZeroTokensMinted(uint256 amount) public {
     //     vm.assume(amount > 0);
     //     vm.expectRevert(IStakedCSX.ZeroTokensMinted.selector);
-    //     vm.prank(DEPLOYER);
+    //     vm.startPrank(DEPLOYER);
     //     sCSX.depositDividend(address(weth), amount);
     //     vm.stopPrank();
     // }
@@ -246,23 +247,41 @@ contract StakedCSXTest is TestUtils, CommonToken {
         assertEq(usdc.balanceOf(address(sCSX)), deposit);
     }
 
+    function testClaim(address staker, uint256 amount) public {
+        vm.assume(amount > 0);
+        vm.assume(amount <= MAX_SUPPLY);
+        vm.assume(staker != ZERO_ADDRESS);
+        vm.assume(staker != DEPLOYER);
+        vm.assume(staker != address(sCSX));
+        vm.assume(staker != address(csx));
+        vm.assume(staker != address(weth));
+        vm.assume(staker != address(usdc));
+        vm.assume(staker != address(usdt));
+        vm.assume(staker != address(0x0000000000000000000000000000000000000009));
+        _stake(staker, amount);
+        _depositWETH(amount);
+        emit log_named_address("staker", staker);
+        _claim(staker);
+    }
+
+
     function _stake(address _staker, uint256 _amount) internal {
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         csx.transfer(_staker, _amount);
         assertEq(csx.balanceOf(_staker), _amount);
-        vm.prank(_staker);
+        vm.startPrank(_staker);
         csx.approve(address(sCSX), _amount);
         assertEq(csx.allowance(_staker, address(sCSX)), _amount);
         vm.expectEmit(true, true, false, true);
         emit Staked(_staker, _amount);
-        vm.prank(_staker);
+        //vm.startPrank(_staker);
         sCSX.stake(_amount);
         assertEq(sCSX.balanceOf(_staker), _amount);
         vm.stopPrank();
     }
 
     function _unstake(address _staker, uint256 _amount) internal {
-        vm.prank(_staker);
+        vm.startPrank(_staker);
         sCSX.unstake(_amount);
         assertEq(sCSX.balanceOf(_staker), ZERO);
         assertEq(csx.balanceOf(_staker), _amount);
@@ -270,28 +289,34 @@ contract StakedCSXTest is TestUtils, CommonToken {
     }
 
     function _depositWETH(uint256 amount) internal {
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         weth.approve(address(sCSX), amount);
         uint256 dividendPerToken =  (amount * PRECISION) / sCSX.totalSupply();
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         sCSX.depositDividend(address(weth), amount);
         vm.stopPrank();
         assertEq(sCSX.getDividendPerToken(address(weth)), dividendPerToken);
     }
 
     function _depositUSDT(uint256 amount) internal {
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         usdt.approve(address(sCSX), amount);
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         sCSX.depositDividend(address(usdt), amount);
         vm.stopPrank();
     }
 
     function _depositUSDC(uint256 amount) internal {
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         usdc.approve(address(sCSX), amount);
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         sCSX.depositDividend(address(usdc), amount);
+        vm.stopPrank();
+    }
+
+    function _claim(address staker) internal {
+        vm.startPrank(staker);
+        sCSX.claim(false, false, true, true);
         vm.stopPrank();
     }
 }

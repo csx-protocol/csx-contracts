@@ -24,40 +24,28 @@ abstract contract CommonToken is TestUtils {
     uint256 public constant MAX_SUPPLY_USD = 100000000 * 10 ** 6;
 
     function _initCSXToken() internal virtual {
-        vm.prank(DEPLOYER);
         csx = new CSXToken("CSX Token", "CSX", MAX_SUPPLY);
-        vm.stopPrank();
     }
 
     function _initEscrowedCSX() internal virtual {
-        vm.prank(DEPLOYER);
         eCSX = new EscrowedCSX("EscrowedCSX Token", "eCSX", address(csx));
-        vm.stopPrank();
     }
 
     function _initUsdc() internal virtual {
-        vm.prank(DEPLOYER);
         usdc = new USDCToken();
-        vm.stopPrank();
     }
 
     function _initUSDT() internal virtual {
-        vm.prank(DEPLOYER);
         usdt = new USDTToken();
-        vm.stopPrank();
     }
 
     function _initWETH() internal virtual {
-        vm.deal(DEPLOYER, MAX_SUPPLY);   
-        vm.prank(DEPLOYER);
+        vm.deal(DEPLOYER, MAX_SUPPLY);
         weth = new WETH9Mock();
-        vm.prank(DEPLOYER);
         weth.deposit{value: MAX_SUPPLY}();
-        vm.stopPrank();
     }
 
     function _initStakedCSX() internal virtual {
-        vm.prank(DEPLOYER);
         sCSX = new StakedCSX(
             "StakedCSX Token",
             "sCSX",
@@ -67,10 +55,10 @@ abstract contract CommonToken is TestUtils {
             address(usdc),
             address(usdt)
         );
+        //
     }
 
     function _initVestedCSX() internal virtual {
-        vm.prank(DEPLOYER);
         vCSX = new VestedCSX(
             "Vested CSX",
             "vCSX",
