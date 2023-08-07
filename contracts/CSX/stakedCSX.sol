@@ -140,6 +140,10 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         }
     }
 
+    receive() external payable {
+        require(address(WETH) == msg.sender, "Invalid Sender");
+    }
+
     //=================================== INTERNAL ==============================================
     function _beforeTokenTransfer(
         address from,
@@ -212,10 +216,12 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
 
         if (amount != 0) {
             if (token == address(WETH) && convertWethToEth) {
+                require(WETH.balanceOf(address(this)) >= amount, "Address: insufficient balance");
                 // Convert WETH to ETH and send to user
                 WETH.withdraw(amount);
                 // Check if the transfer is successful
-                (bool success, ) = msg.sender.call{value: amount}("");
+                
+                (bool success, ) = payable(msg.sender).call{value: amount}("");
                 require(success, "ETH transfer failed");
             } else {
                 require(
