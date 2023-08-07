@@ -50,7 +50,6 @@ contract CSXTrade {
     IStakedCSX public sCSXToken;
 
     string public disputeComplaint;
-    TradeStatus public disputedStatus;
     address public disputeer;
 
     constructor(
@@ -385,7 +384,6 @@ contract CSXTrade {
         );
         status = TradeStatus.Disputed;
         disputeer = msg.sender;
-        disputedStatus = status;
         disputeComplaint = _complaint;
         usersContract.changeUserInteractionStatus(
             address(this),
