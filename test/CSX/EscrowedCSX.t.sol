@@ -12,6 +12,7 @@ import { EscrowedCSX } from "contracts/CSX/EscrowedCSX.sol";
 
 contract EscrowedCSXTest is TestUtils, CommonToken {
     function setUp() public {
+        vm.startPrank(DEPLOYER);
         _initCSXToken();
         _initEscrowedCSX();
         _initWETH();
@@ -20,13 +21,10 @@ contract EscrowedCSXTest is TestUtils, CommonToken {
         _initStakedCSX();
         _initVestedCSX();
 
-        vm.prank(DEPLOYER);
         csx.approve(address(eCSX), MAX_SUPPLY);
         assertEq(csx.allowance(DEPLOYER, address(eCSX)), MAX_SUPPLY);
-        vm.prank(DEPLOYER);
         eCSX.init(address(vCSX));
 
-        vm.prank(DEPLOYER);
         //eCSX.mintEscrow(1 ether);
         //_erc20Init(address(eCSX), 1);
         
@@ -46,7 +44,7 @@ contract EscrowedCSXTest is TestUtils, CommonToken {
 
     function testExpectRevertMintEscrowWhenZeroAmount() public {
         vm.expectRevert(IErrors.ZeroAmount.selector);
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         eCSX.mintEscrow(ZERO);
         vm.stopPrank();
     }
@@ -64,10 +62,9 @@ contract EscrowedCSXTest is TestUtils, CommonToken {
         vm.assume(amount > 0);
         vm.assume(amount < MAX_SUPPLY - 1 ether);
         assertEq(csx.balanceOf(DEPLOYER), MAX_SUPPLY);
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         csx.approve(address(eCSX), amount);
         assertEq(csx.allowance(DEPLOYER, address(eCSX)), amount);
-        vm.prank(DEPLOYER);
         eCSX.mintEscrow(amount);
         assertEq(eCSX.balanceOf(DEPLOYER), amount);
         assertEq(csx.balanceOf(address(vCSX)), amount);

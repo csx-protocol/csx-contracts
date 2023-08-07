@@ -55,7 +55,6 @@ abstract contract CommonToken is TestUtils {
             address(usdc),
             address(usdt)
         );
-        //
     }
 
     function _initVestedCSX() internal virtual {

@@ -12,15 +12,15 @@ contract CSXTokenTest is ERC20BehaviourTest, CommonToken {
     //uint256 public constant MAX_SUPPLY = 100000000 ether;
 
     function setUp() public {
+        vm.startPrank(DEPLOYER);
         _initCSXToken();
-        vm.prank(DEPLOYER);
         _erc20Init(address(csx), MAX_SUPPLY);
         vm.stopPrank();
     }
 
     function testRevertContractZeroAmount() public {
         vm.expectRevert(IErrors.ZeroAmount.selector);
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         CSXToken csx = new CSXToken("CSX Token", "CSX", ZERO);
         vm.stopPrank();
     }

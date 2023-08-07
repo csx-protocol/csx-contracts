@@ -33,7 +33,7 @@ abstract contract ERC20BehaviourTest is TestUtils {
         vm.assume(amount <= initalSupply);
         vm.expectEmit(true, true, false, true);
         emit Transfer(DEPLOYER, to, amount);
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         token.transfer(to, amount);
         vm.stopPrank();
         assertEq(token.balanceOf(to), amount);
@@ -46,7 +46,7 @@ abstract contract ERC20BehaviourTest is TestUtils {
         vm.assume(amount <= initalSupply);
         vm.expectEmit(true, true, false, true);
         emit Approval(approver, spender, amount);
-        vm.prank(approver);
+        vm.startPrank(approver);
         token.approve(spender, amount);       
         vm.stopPrank();
         assertEq(token.allowance(approver, spender), amount);
@@ -63,7 +63,7 @@ abstract contract ERC20BehaviourTest is TestUtils {
         testApprove(approver, spender, amount);
         vm.expectEmit(true, true, false, true);
         emit Transfer(approver, spender, amount);
-        vm.prank(spender);
+        vm.startPrank(spender);
         token.transferFrom(approver, spender, amount);
         // Should reste the allowance to sender to zero
         assertEq(token.allowance(approver, spender), 0);
@@ -76,7 +76,7 @@ abstract contract ERC20BehaviourTest is TestUtils {
         vm.assume(amount > ZERO);
         vm.assume(amount > token.balanceOf(DEPLOYER));
         vm.expectRevert(bytes("ERC20: transfer amount exceeds balance"));
-        vm.prank(DEPLOYER);
+        vm.startPrank(DEPLOYER);
         token.transfer(to, amount);
         vm.stopPrank();
     }
@@ -93,7 +93,7 @@ abstract contract ERC20BehaviourTest is TestUtils {
         // make sure we approve exceedAmount
         testApprove(approver, spender, exceedAmount);
         vm.expectRevert(bytes("ERC20: transfer amount exceeds balance"));
-        vm.prank(spender);
+        vm.startPrank(spender);
         token.transferFrom(approver, spender, exceedAmount);
         vm.stopPrank();
     }
