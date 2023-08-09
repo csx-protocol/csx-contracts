@@ -10,7 +10,8 @@
     "lerna-publish": "yarn build && lerna publish && lerna run tsc-clean",
     "build": "hardhat compile && lerna run tsc",
     "prepare": "husky install",
-    "prettier": "prettier --write --ignore-path .gitignore ."
+    "prettier": "prettier --write --ignore-path .gitignore .",
+    "test": "foundry test"
   },
   "author": "",
   "license": "ISC",

@@ -46,6 +46,12 @@ contract VestedStaking {
         _;
     }
 
+    // TEST FUNCTION REMOVE LATER
+    event log_named_uint(string name, uint256 value);
+    function getVestedAmount() external view returns (uint256) {
+        return vesting.amount;
+    }
+
     /// @notice Deposit CSX tokens into the staking contract.
     /// @param amount Amount of CSX tokens to deposit.
     /// @dev This function is called by the vester contract.
@@ -110,5 +116,8 @@ contract VestedStaking {
         vCsxToken.burnFrom(msg.sender, amount);
         sCsxToken.unStake(amount);
         csxToken.transfer(msg.sender, amount);
+
+        //ONLY FOR TEST
+        emit log_named_uint("withdraw", this.getVestedAmount());
     }
 }

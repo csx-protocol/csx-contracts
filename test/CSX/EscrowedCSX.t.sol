@@ -25,15 +25,12 @@ contract EscrowedCSXTest is TestUtils, CommonToken {
         assertEq(csx.allowance(DEPLOYER, address(eCSX)), MAX_SUPPLY);
         eCSX.init(address(vCSX));
 
-        //eCSX.mintEscrow(1 ether);
-        //_erc20Init(address(eCSX), 1);
-        
         vm.stopPrank();
     }
 
-    // function testCsxToken() public {
-    //     assertEq(address(eCSX.csxToken()), address(csx));
-    // }
+    function testCsxToken() public {
+        assertEq(address(eCSX.csxToken()), address(csx));
+    }
 
     // function testExpectRevertInitWhenAlreadyInitialized() public {
     //     vm.expectRevert(IErrors.AlreadyInitialized.selector);
@@ -49,14 +46,16 @@ contract EscrowedCSXTest is TestUtils, CommonToken {
         vm.stopPrank();
     }
 
-    // function testExpectRevertMintEscrowWhenInsufficientAllowance(uint256 amount) public {
-    //     vm.assume(amount > 0);
-    //     vm.assume(amount < MAX_SUPPLY - 1 ether);
-    //     vm.expectRevert(IErrors.InsufficientAllowance.selector);
-    //     vm.prank(DEPLOYER);
-    //     eCSX.mintEscrow(amount);
-    //     vm.stopPrank();
-    // }
+    function testExpectRevertMintEscrowWhenInsufficientAllowance(address sender, uint256 amount) public {
+        vm.assume(sender != DEPLOYER);
+        vm.assume(sender != ZERO_ADDRESS);
+        vm.assume(amount > 0);
+        vm.assume(amount < MAX_SUPPLY - 1 ether);
+        vm.expectRevert(IErrors.InsufficientAllowance.selector);
+        vm.startPrank(sender);
+        eCSX.mintEscrow(amount);
+        vm.stopPrank();
+    }
 
     function testMintEscrow(uint256 amount) public {
         vm.assume(amount > 0);
@@ -71,11 +70,32 @@ contract EscrowedCSXTest is TestUtils, CommonToken {
         vm.stopPrank();
     }
 
-    // function testName() public {
-    //     assertEq(csx.name(), "EscrowedCSX Token");
-    // }
+    function testMintEscrowAsNonDeployer(address sender, uint256 amount) public {
+        vm.assume(sender != DEPLOYER);
+        vm.assume(sender != ZERO_ADDRESS);
+        vm.assume(amount > 0);
+        vm.assume(amount < MAX_SUPPLY - 1 ether);
+        assertEq(csx.balanceOf(DEPLOYER), MAX_SUPPLY);
+        
+        // make sure sender got balances
+        vm.startPrank(DEPLOYER);
+        csx.transfer(sender, amount);
+        vm.stopPrank();
 
-    // function testSymbol() public {
-    //     assertEq(csx.symbol(), "eCSX");
-    // }
+        vm.startPrank(sender);
+        csx.approve(address(eCSX), amount);
+        assertEq(csx.allowance(sender, address(eCSX)), amount);
+        eCSX.mintEscrow(amount);
+        assertEq(eCSX.balanceOf(sender), amount);
+        assertEq(csx.balanceOf(address(vCSX)), amount);
+        vm.stopPrank();
+    }
+
+    function testName() public {
+        assertEq(eCSX.name(), "EscrowedCSX Token");
+    }
+
+    function testSymbol() public {
+        assertEq(eCSX.symbol(), "eCSX");
+    }
 }

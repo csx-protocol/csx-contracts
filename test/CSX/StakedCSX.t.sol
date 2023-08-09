@@ -68,7 +68,6 @@ contract StakedCSXTest is TestUtils, CommonToken {
         assertEq(csx.allowance(DEPLOYER, address(sCSX)), amount);
         vm.expectEmit(true, true, false, true);
         emit Staked(DEPLOYER, amount);
-        //vm.startPrank(DEPLOYER);
         sCSX.stake(amount);
         assertEq(sCSX.balanceOf(DEPLOYER), amount);
         assertEq(csx.balanceOf(address(sCSX)), amount);
@@ -107,7 +106,6 @@ contract StakedCSXTest is TestUtils, CommonToken {
         vm.startPrank(staker);
         assertEq(sCSX.balanceOf(staker), ZERO);
         vm.expectRevert(IErrors.InsufficientBalance.selector);
-        //vm.startPrank(staker);
         sCSX.unstake(amount);
         vm.stopPrank();
     }
@@ -194,7 +192,6 @@ contract StakedCSXTest is TestUtils, CommonToken {
         vm.startPrank(DEPLOYER);
         IERC20(token).approve(address(sCSX), amount);
         vm.expectRevert(abi.encodeWithSelector(IStakedCSX.TokenNotSupported.selector, token));
-        //vm.startPrank(DEPLOYER);
         sCSX.depositDividend(token, amount);
         vm.stopPrank();
     }

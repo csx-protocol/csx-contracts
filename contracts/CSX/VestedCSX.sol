@@ -6,6 +6,7 @@ pragma solidity 0.8.19;
 import { ERC20Capped, ERC20 } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 import {IERC20, ReentrancyGuard, IWETH, IERC20Burnable} from "./Interfaces.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import { IErrors } from "contracts/interfaces/IErrors.sol";
 
 import "./VestedStaking.sol";
 
@@ -17,15 +18,8 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable, ERC20Capped {
     IERC20 public CSX;
     IERC20 public USDT;
 
-    //uint256 public constant MAX_SUPPLY = 100000000 ether;
-
-    // modifier mintable(uint256 amount) {
-    //     require(
-    //         amount + totalSupply() <= MAX_SUPPLY,
-    //         "amount surpasses max supply"
-    //     );
-    //     _;
-    // }
+    event NewVestedStakingContract(address indexed user, address indexed contractAddress);
+    event Vested(address indexed user, uint256 amount);
 
     constructor(
         string memory _name,
@@ -50,8 +44,13 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable, ERC20Capped {
 
     mapping(address => VestedStaking) public vestedStakingContractPerUser;
 
+    function getVestedStakingContractAddress(address user) public view returns (address) {
+        return address(vestedStakingContractPerUser[user]);
+    }
+    
     function vest(uint256 amount) external nonReentrant {
-        require(amount > 0, "Amount must be greater than 0"); // To prevent users wasting gas
+         if (amount == 0) revert IErrors.ZeroAmount();
+         if (EscrowedCSX.balanceOf(msg.sender) < amount) revert IErrors.InsufficientBalance();
 
         // ???
         // Transfer eCSX to this contract. Then let this contract burn it.
@@ -73,6 +72,8 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable, ERC20Capped {
                 address(USDT),
                 address(WETH)
             );
+
+            emit NewVestedStakingContract(msg.sender, address(vestedStakingContractPerUser[msg.sender]));
         }
 
         // Approve VestedStaking Contract to transfer CSX tokens
@@ -82,6 +83,7 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable, ERC20Capped {
         vestedStakingContractPerUser[msg.sender].deposit(amount);
 
         // emit event?
+        emit Vested(msg.sender, amount);
     }
 
     //=================================== INTERNAL ==============================================
