@@ -231,7 +231,7 @@ contract CSXTrade {
 
         require(paymentToken.transfer(buyer, depositedValue), "!snt");
 
-        factoryContract.onStatusChange(status, "BU DEFAULT", seller, buyer);
+        factoryContract.onStatusChange(status, "BU_DEFAULT", seller, buyer);
     }
 
     // Seller Confirms or deny they have accepted the trade offer.
@@ -266,7 +266,7 @@ contract CSXTrade {
                 status
             );
             require(paymentToken.transfer(buyer, depositedValue), "!snt");
-            factoryContract.onStatusChange(status, "SE DEFAULT", seller, buyer);
+            factoryContract.onStatusChange(status, "SE_DEFAULT", seller, buyer);
         }
     }
 
@@ -365,7 +365,7 @@ contract CSXTrade {
                 );
             }            
             require(paymentToken.transfer(buyer, depositedValue), "!snt");
-            factoryContract.onStatusChange(status, "KO DEFAULT", seller, buyer);
+            factoryContract.onStatusChange(status, "KO_DEFAULT", seller, buyer);
         }
 
         bool raS = factoryContract.removeAssetIdUsed(itemSellerAssetId, seller);
