@@ -59,7 +59,7 @@ module.exports = async function (deployer, network, accounts) {
     const weth = 'addyHere';
     const usdc = 'addyHere';
     const usdt = 'addyHere';
-    await deployer.deploy(TradeFactory, Keepers.address, Users.address, TradeFactoryBaseStorage.address, '2', { weth, usdc, usdt }, ReferralRegistry.address, StakedCSX.address);
+    await deployer.deploy(TradeFactory, Keepers.address, Users.address, TradeFactoryBaseStorage.address, '26', { weth, usdc, usdt }, ReferralRegistry.address, StakedCSX.address);
   }
 
   const tradeFactory = await TradeFactory.at(TradeFactory.address);
