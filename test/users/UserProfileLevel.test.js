@@ -1,21 +1,19 @@
 const { expect } = require('chai');
-const { BN, ether, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
+const { BN, ether, expectRevert } = require('@openzeppelin/test-helpers');
 const UserProfileLevel = artifacts.require('UserProfileLevel');
 const CSXToken = artifacts.require('CSXToken'); // Replace this with your actual CSX token contract
 
-contract('UserProfileLevel', function ([owner, user1, user2]) {
-    //const scalingFactor = 50;
-    const initialTokenSupply = ether('1000000');
+contract('UserProfileLevel', function ([deployer, user1, user2]) {
     let userProfileLevelInstance;
     let csxTokenInstance;
 
     beforeEach(async () => {
-        csxTokenInstance = await CSXToken.new({ from: owner }); 
-        userProfileLevelInstance = await UserProfileLevel.new(csxTokenInstance.address, { from: owner });
+        csxTokenInstance = await CSXToken.new({ from: deployer }); 
+        userProfileLevelInstance = await UserProfileLevel.new(csxTokenInstance.address, { from: deployer });
 
         // Mint some tokens for user1 and user2 for testing purposes
-        await csxTokenInstance.transfer(user1, ether('40000000'), { from: owner });
-        await csxTokenInstance.transfer(user2, ether('40000000'), { from: owner });
+        await csxTokenInstance.transfer(user1, ether('40000000'), { from: deployer });
+        await csxTokenInstance.transfer(user2, ether('40000000'), { from: deployer });
 
         // Approve the UserProfileLevel contract to burn tokens from user1 and user2
         await csxTokenInstance.approve(userProfileLevelInstance.address, ether('40000000'), { from: user1 });
@@ -68,10 +66,8 @@ contract('UserProfileLevel', function ([owner, user1, user2]) {
             const levelsToIncrease = targetLevel.sub(currentLevel);
         
             const totalTokenAmount = await userProfileLevelInstance.getLevelUpCost(currentLevel, levelsToIncrease);
-            // convert totalTokenAmount to regular string
-            const regular = totalTokenAmount.toString();
-            console.log('totalTokenAmount: ', regular);
-            await csxTokenInstance.transfer(user1, totalTokenAmount, { from: owner });
+
+            await csxTokenInstance.transfer(user1, totalTokenAmount, { from: deployer });
             await csxTokenInstance.approve(userProfileLevelInstance.address, totalTokenAmount, { from: user1 });
             await userProfileLevelInstance.levelUp(totalTokenAmount, levelsToIncrease, { from: user1 });
         
