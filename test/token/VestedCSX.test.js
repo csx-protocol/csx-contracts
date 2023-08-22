@@ -95,4 +95,32 @@ contract('VestedCSX', function(accounts) {
     );
   });
 
+  it('should revert transfer of vested tokens', async function() {
+    const amount = web3.utils.toBN('1000').mul(web3.utils.toBN('1000000000000000000')); // 1000 ether
+    const user = accounts[1];
+    const receiver = accounts[2];
+  
+    // Transfer CSX tokens to the user
+    await csx.transfer(user, amount);
+  
+    // Approve the escrowedCSX to send to the VestedCSX
+    await csx.approve(escrowedCSX.address, amount, { from: user });
+  
+    // Lock the CSX tokens and mint escrowedCSX to the user
+    await escrowedCSX.mintEscrow(amount, { from: user });
+  
+    // Approve the VestedCSX to burn escrowedCSX from the user
+    await escrowedCSX.approve(vestedCSX.address, amount, { from: user });
+  
+    // Vest the CSX tokens
+    await vestedCSX.vest(amount, { from: user });
+  
+    // Attempt to transfer the vested tokens (should fail)
+    await expectRevert(
+      vestedCSX.transfer(receiver, amount, { from: user }),
+      "NonTransferableToken: Token transfers are disabled."
+    );
+  });
+  
+
 });
