@@ -15,7 +15,7 @@ contract Keepers {
     }
 
     modifier onlyCouncil() {
-        require(msg.sender == council);
+        require(msg.sender == council, "sender must be council");
         _;
     }
 
