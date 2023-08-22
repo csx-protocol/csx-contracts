@@ -1,16 +1,11 @@
 {
-  "contractName": "IERC20",
+  "contractName": "IDividendContract",
   "abi": [
     {
       "inputs": [
         {
           "internalType": "address",
-          "name": "sender",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "recipient",
+          "name": "token",
           "type": "address"
         },
         {
@@ -19,7 +14,7 @@
           "type": "uint256"
         }
       ],
-      "name": "transferFrom",
+      "name": "depositDividend",
       "outputs": [
         {
           "internalType": "bool",
@@ -29,28 +24,9 @@
       ],
       "stateMutability": "nonpayable",
       "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        }
-      ],
-      "name": "balanceOf",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/Trade/AntiTruncation.sol\":\"IERC20\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":300},\"remappings\":[]},\"sources\":{\"project:/contracts/Trade/AntiTruncation.sol\":{\"keccak256\":\"0x971e6547591f2bdf9932cc09a6a305a82aec0bebe0f9732f9796fcd09fe71d5a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://1c4739d96c7673352f56034ff5f5156eac4f3839e311e3317c86ee3d2a2f0a8e\",\"dweb:/ipfs/QmVWANkEnNq3jaS9WfqdLPD6UWGesShdJtfYVpgaD6Vgd4\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"depositDividend\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/Trade/AntiTruncation.sol\":\"IDividendContract\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":300},\"remappings\":[]},\"sources\":{\"project:/contracts/Trade/AntiTruncation.sol\":{\"keccak256\":\"0x971e6547591f2bdf9932cc09a6a305a82aec0bebe0f9732f9796fcd09fe71d5a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://1c4739d96c7673352f56034ff5f5156eac4f3839e311e3317c86ee3d2a2f0a8e\",\"dweb:/ipfs/QmVWANkEnNq3jaS9WfqdLPD6UWGesShdJtfYVpgaD6Vgd4\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "immutableReferences": {},
@@ -5214,7 +5190,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.3",
-  "updatedAt": "2023-08-22T17:36:56.450Z",
+  "updatedAt": "2023-08-22T17:36:56.448Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},

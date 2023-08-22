@@ -1444,23 +1444,23 @@
       "name": "#utility.yul"
     }
   ],
-  "sourceMap": "229:2977:21:-:0;;;;;;;;;;;;;;;;;;;",
-  "deployedSourceMap": "229:2977:21:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1731:1472;;;;;;:::i;:::-;;:::i;:::-;;;;728:25:36;;;784:2;769:18;;762:34;;;;812:18;;;805:34;870:2;855:18;;848:34;715:3;700:19;1731:1472:21;;;;;;;;2012:21;2075:25;2146:27;2221:29;2335:2;2318:13;:19;;2310:54;;;;;;;1095:2:36;2310:54:21;;;1077:21:36;1134:2;1114:18;;;1107:30;1173:24;1153:18;;;1146:52;1215:18;;2310:54:21;;;;;;;;2412:15;2465:3;2431:30;2447:14;2431:13;:30;:::i;:::-;2430:38;;;;:::i;:::-;2412:56;;2481:21;2607:17;2603:260;;;2685:3;2658:23;2668:13;2658:7;:23;:::i;:::-;2657:31;;;;:::i;:::-;2641:47;-1:-1:-1;2760:3:21;2737:18;2742:13;2737:2;:18;:::i;:::-;2726:30;;:7;:30;:::i;:::-;2725:38;;;;:::i;:::-;2703:60;;2603:260;;;-1:-1:-1;2812:1:21;;-1:-1:-1;2812:1:21;2603:260;2933:29;2949:13;2933;:29;:::i;:::-;2917:45;-1:-1:-1;3041:23:21;3057:7;3041:13;:23;:::i;:::-;3021:43;-1:-1:-1;3176:19:21;3150:23;3160:13;3150:7;:23;:::i;:::-;:45;;;;:::i;:::-;3126:69;;2299:904;;1731:1472;;;;;;;;;:::o;14:478:36:-;97:6;105;113;121;174:3;162:9;153:7;149:23;145:33;142:53;;;191:1;188;181:12;142:53;227:9;214:23;204:33;;287:2;276:9;272:18;259:32;334:5;327:13;320:21;313:5;310:32;300:60;;356:1;353;346:12;300:60;14:478;;379:5;;-1:-1:-1;;;;431:2:36;416:18;;403:32;;482:2;467:18;454:32;;14:478::o;1244:184::-;1296:77;1293:1;1286:88;1393:4;1390:1;1383:15;1417:4;1414:1;1407:15;1433:168;1506:9;;;1537;;1554:15;;;1548:22;;1534:37;1524:71;;1575:18;;:::i;:::-;1433:168;;;;:::o;1606:274::-;1646:1;1672;1662:189;;1707:77;1704:1;1697:88;1808:4;1805:1;1798:15;1836:4;1833:1;1826:15;1662:189;-1:-1:-1;1865:9:36;;1606:274::o;1885:128::-;1952:9;;;1973:11;;;1970:37;;;1987:18;;:::i",
+  "sourceMap": "229:2977:20:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "229:2977:20:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1731:1472;;;;;;:::i;:::-;;:::i;:::-;;;;728:25:36;;;784:2;769:18;;762:34;;;;812:18;;;805:34;870:2;855:18;;848:34;715:3;700:19;1731:1472:20;;;;;;;;2012:21;2075:25;2146:27;2221:29;2335:2;2318:13;:19;;2310:54;;;;;;;1095:2:36;2310:54:20;;;1077:21:36;1134:2;1114:18;;;1107:30;1173:24;1153:18;;;1146:52;1215:18;;2310:54:20;;;;;;;;2412:15;2465:3;2431:30;2447:14;2431:13;:30;:::i;:::-;2430:38;;;;:::i;:::-;2412:56;;2481:21;2607:17;2603:260;;;2685:3;2658:23;2668:13;2658:7;:23;:::i;:::-;2657:31;;;;:::i;:::-;2641:47;-1:-1:-1;2760:3:20;2737:18;2742:13;2737:2;:18;:::i;:::-;2726:30;;:7;:30;:::i;:::-;2725:38;;;;:::i;:::-;2703:60;;2603:260;;;-1:-1:-1;2812:1:20;;-1:-1:-1;2812:1:20;2603:260;2933:29;2949:13;2933;:29;:::i;:::-;2917:45;-1:-1:-1;3041:23:20;3057:7;3041:13;:23;:::i;:::-;3021:43;-1:-1:-1;3176:19:20;3150:23;3160:13;3150:7;:23;:::i;:::-;:45;;;;:::i;:::-;3126:69;;2299:904;;1731:1472;;;;;;;;;:::o;14:478:36:-;97:6;105;113;121;174:3;162:9;153:7;149:23;145:33;142:53;;;191:1;188;181:12;142:53;227:9;214:23;204:33;;287:2;276:9;272:18;259:32;334:5;327:13;320:21;313:5;310:32;300:60;;356:1;353;346:12;300:60;14:478;;379:5;;-1:-1:-1;;;;431:2:36;416:18;;403:32;;482:2;467:18;454:32;;14:478::o;1244:184::-;1296:77;1293:1;1286:88;1393:4;1390:1;1383:15;1417:4;1414:1;1407:15;1433:168;1506:9;;;1537;;1554:15;;;1548:22;;1534:37;1524:71;;1575:18;;:::i;:::-;1433:168;;;;:::o;1606:274::-;1646:1;1672;1662:189;;1707:77;1704:1;1697:88;1808:4;1805:1;1798:15;1836:4;1833:1;1826:15;1662:189;-1:-1:-1;1865:9:36;;1606:274::o;1885:128::-;1952:9;;;1973:11;;;1970:37;;;1987:18;;:::i",
   "source": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.0;\r\n\r\n// The NetValueCalculator contract calculates the net value for each party involved in a transaction:\r\n// the buyer, the seller, the affiliator, and the token holders.\r\ncontract NetValueCalculator {\r\n    // The calculateNetValue function calculates the net value for each party involved in a transaction\r\n    // based on the full item price, whether the buyer is affiliated, the base fee percentage, and the ratio between the discount\r\n    // and rebate percentages.\r\n    //\r\n    // Example:\r\n    // --------\r\n    // Assuming the following input values:\r\n    // - fullItemPrice = 1,000 tokens\r\n    // - isBuyerAffiliated = true\r\n    // - baseFeePercent = 2\r\n    // - discountRatio = 10\r\n    //\r\n    // Steps:\r\n    // 1. Calculate the base fee:\r\n    //    - baseFee = (fullItemPrice * baseFeePercent) / 100\r\n    //    - baseFee = (1,000 * 2) / 100 = 20 tokens\r\n    //\r\n    // 2. Calculate the discounted fee and affiliator reward:\r\n    //    - discountedFee = (baseFee * discountRatio) / 100\r\n    //    - discountedFee = (20 * 10) / 100 = 2 tokens\r\n    //    - affiliatorReward = (baseFee * (50 - discountRatio)) / 100\r\n    //    - affiliatorReward = (20 * (50 - 10)) / 100 = 8 tokens\r\n    //\r\n    // 3. Calculate the net value for the buyer, the seller, the affiliator, and the token holders:\r\n    //    - buyerNetPrice = fullItemPrice - discountedFee\r\n    //    - buyerNetPrice = 1,000 - 2 = 998 tokens\r\n    //    - sellerNetProceeds = fullItemPrice - baseFee\r\n    //    - sellerNetProceeds = 1,000 - 20 = 980 tokens\r\n    //    - tokenHoldersNetReward = baseFee - discountedFee - affiliatorReward\r\n    //    - tokenHoldersNetReward = 20 - 2 - 8 = 10 tokens\r\n    //\r\n    function calculateNetValue(\r\n        uint256 fullItemPrice,\r\n        bool isBuyerAffiliated,\r\n        uint256 baseFeePercent,\r\n        uint256 discountRatio // Ratio between the discount and reward percentages\r\n    )\r\n        external\r\n        pure\r\n        returns (\r\n            uint256 buyerNetPrice, // Net price for the buyer\r\n            uint256 sellerNetProceeds, // Net proceeds for the seller\r\n            uint256 affiliatorNetReward, // Net reward for the affiliator\r\n            uint256 tokenHoldersNetReward // Net reward for token holders\r\n        )\r\n    {\r\n        require(discountRatio <= 50, \"Invalid discount ratio\");\r\n\r\n        // Calculate the base fee\r\n        uint256 baseFee = (fullItemPrice * baseFeePercent) / 100;\r\n\r\n        uint256 discountedFee;\r\n        // Calculate the discounted fee and affiliator reward if the buyer is affiliated\r\n        if (isBuyerAffiliated) {\r\n            discountedFee = (baseFee * discountRatio) / 100;\r\n            affiliatorNetReward = (baseFee * (50 - discountRatio)) / 100;\r\n        } else {\r\n            discountedFee = 0;\r\n            affiliatorNetReward = 0;\r\n        }\r\n\r\n        // Calculate the buyer net price\r\n        buyerNetPrice = fullItemPrice - discountedFee;\r\n\r\n        // Calculate the seller net proceeds\r\n        sellerNetProceeds = fullItemPrice - baseFee;\r\n        // Calculate the token holders net reward\r\n        tokenHoldersNetReward = baseFee - discountedFee - affiliatorNetReward;\r\n    }\r\n}\r\n",
   "sourcePath": "C:\\Users\\Charl\\Documents\\Projects\\SteamMarket\\CSX\\csx-contracts\\contracts\\Referrals\\NetValueCalculator.sol",
   "ast": {
     "absolutePath": "project:/contracts/Referrals/NetValueCalculator.sol",
     "exportedSymbols": {
       "NetValueCalculator": [
-        3344
+        3359
       ]
     },
-    "id": 3345,
+    "id": 3360,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 3251,
+        "id": 3266,
         "literals": [
           "solidity",
           "^",
@@ -1468,7 +1468,7 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "33:23:21"
+        "src": "33:23:20"
       },
       {
         "abstract": false,
@@ -1477,19 +1477,19 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "id": 3344,
+        "id": 3359,
         "linearizedBaseContracts": [
-          3344
+          3359
         ],
         "name": "NetValueCalculator",
-        "nameLocation": "238:18:21",
+        "nameLocation": "238:18:20",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 3342,
+              "id": 3357,
               "nodeType": "Block",
-              "src": "2299:904:21",
+              "src": "2299:904:20",
               "statements": [
                 {
                   "expression": {
@@ -1499,18 +1499,18 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         },
-                        "id": 3273,
+                        "id": 3288,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
-                          "id": 3271,
+                          "id": 3286,
                           "name": "discountRatio",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 3259,
-                          "src": "2318:13:21",
+                          "referencedDeclaration": 3274,
+                          "src": "2318:13:20",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
@@ -1520,21 +1520,21 @@
                         "operator": "<=",
                         "rightExpression": {
                           "hexValue": "3530",
-                          "id": 3272,
+                          "id": 3287,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
                           "kind": "number",
                           "lValueRequested": false,
                           "nodeType": "Literal",
-                          "src": "2335:2:21",
+                          "src": "2335:2:20",
                           "typeDescriptions": {
                             "typeIdentifier": "t_rational_50_by_1",
                             "typeString": "int_const 50"
                           },
                           "value": "50"
                         },
-                        "src": "2318:19:21",
+                        "src": "2318:19:20",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
@@ -1542,14 +1542,14 @@
                       },
                       {
                         "hexValue": "496e76616c696420646973636f756e7420726174696f",
-                        "id": 3274,
+                        "id": 3289,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
                         "kind": "string",
                         "lValueRequested": false,
                         "nodeType": "Literal",
-                        "src": "2339:24:21",
+                        "src": "2339:24:20",
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_5b5cef3df079ac2390dc2d7c5d6d7d465d203acae997f5bbfd8551a930a1d22e",
                           "typeString": "literal_string \"Invalid discount ratio\""
@@ -1568,7 +1568,7 @@
                           "typeString": "literal_string \"Invalid discount ratio\""
                         }
                       ],
-                      "id": 3270,
+                      "id": 3285,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -1576,13 +1576,13 @@
                         4294967278
                       ],
                       "referencedDeclaration": 4294967278,
-                      "src": "2310:7:21",
+                      "src": "2310:7:20",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 3275,
+                    "id": 3290,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1591,31 +1591,31 @@
                     "nameLocations": [],
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "2310:54:21",
+                    "src": "2310:54:20",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 3276,
+                  "id": 3291,
                   "nodeType": "ExpressionStatement",
-                  "src": "2310:54:21"
+                  "src": "2310:54:20"
                 },
                 {
                   "assignments": [
-                    3278
+                    3293
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 3278,
+                      "id": 3293,
                       "mutability": "mutable",
                       "name": "baseFee",
-                      "nameLocation": "2420:7:21",
+                      "nameLocation": "2420:7:20",
                       "nodeType": "VariableDeclaration",
-                      "scope": 3342,
-                      "src": "2412:15:21",
+                      "scope": 3357,
+                      "src": "2412:15:20",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
@@ -1623,10 +1623,10 @@
                         "typeString": "uint256"
                       },
                       "typeName": {
-                        "id": 3277,
+                        "id": 3292,
                         "name": "uint256",
                         "nodeType": "ElementaryTypeName",
-                        "src": "2412:7:21",
+                        "src": "2412:7:20",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -1635,13 +1635,13 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 3285,
+                  "id": 3300,
                   "initialValue": {
                     "commonType": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     },
-                    "id": 3284,
+                    "id": 3299,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1653,18 +1653,18 @@
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           },
-                          "id": 3281,
+                          "id": 3296,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftExpression": {
-                            "id": 3279,
+                            "id": 3294,
                             "name": "fullItemPrice",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3253,
-                            "src": "2431:13:21",
+                            "referencedDeclaration": 3268,
+                            "src": "2431:13:20",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
@@ -1673,32 +1673,32 @@
                           "nodeType": "BinaryOperation",
                           "operator": "*",
                           "rightExpression": {
-                            "id": 3280,
+                            "id": 3295,
                             "name": "baseFeePercent",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3257,
-                            "src": "2447:14:21",
+                            "referencedDeclaration": 3272,
+                            "src": "2447:14:20",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
                             }
                           },
-                          "src": "2431:30:21",
+                          "src": "2431:30:20",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           }
                         }
                       ],
-                      "id": 3282,
+                      "id": 3297,
                       "isConstant": false,
                       "isInlineArray": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "nodeType": "TupleExpression",
-                      "src": "2430:32:21",
+                      "src": "2430:32:20",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -1708,43 +1708,43 @@
                     "operator": "/",
                     "rightExpression": {
                       "hexValue": "313030",
-                      "id": 3283,
+                      "id": 3298,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
                       "kind": "number",
                       "lValueRequested": false,
                       "nodeType": "Literal",
-                      "src": "2465:3:21",
+                      "src": "2465:3:20",
                       "typeDescriptions": {
                         "typeIdentifier": "t_rational_100_by_1",
                         "typeString": "int_const 100"
                       },
                       "value": "100"
                     },
-                    "src": "2430:38:21",
+                    "src": "2430:38:20",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
                   "nodeType": "VariableDeclarationStatement",
-                  "src": "2412:56:21"
+                  "src": "2412:56:20"
                 },
                 {
                   "assignments": [
-                    3287
+                    3302
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 3287,
+                      "id": 3302,
                       "mutability": "mutable",
                       "name": "discountedFee",
-                      "nameLocation": "2489:13:21",
+                      "nameLocation": "2489:13:20",
                       "nodeType": "VariableDeclaration",
-                      "scope": 3342,
-                      "src": "2481:21:21",
+                      "scope": 3357,
+                      "src": "2481:21:20",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
@@ -1752,10 +1752,10 @@
                         "typeString": "uint256"
                       },
                       "typeName": {
-                        "id": 3286,
+                        "id": 3301,
                         "name": "uint256",
                         "nodeType": "ElementaryTypeName",
-                        "src": "2481:7:21",
+                        "src": "2481:7:20",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -1764,42 +1764,42 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 3288,
+                  "id": 3303,
                   "nodeType": "VariableDeclarationStatement",
-                  "src": "2481:21:21"
+                  "src": "2481:21:20"
                 },
                 {
                   "condition": {
-                    "id": 3289,
+                    "id": 3304,
                     "name": "isBuyerAffiliated",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 3255,
-                    "src": "2607:17:21",
+                    "referencedDeclaration": 3270,
+                    "src": "2607:17:20",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
                     }
                   },
                   "falseBody": {
-                    "id": 3320,
+                    "id": 3335,
                     "nodeType": "Block",
-                    "src": "2781:82:21",
+                    "src": "2781:82:20",
                     "statements": [
                       {
                         "expression": {
-                          "id": 3314,
+                          "id": 3329,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftHandSide": {
-                            "id": 3312,
+                            "id": 3327,
                             "name": "discountedFee",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3287,
-                            "src": "2796:13:21",
+                            "referencedDeclaration": 3302,
+                            "src": "2796:13:20",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
@@ -1809,44 +1809,44 @@
                           "operator": "=",
                           "rightHandSide": {
                             "hexValue": "30",
-                            "id": 3313,
+                            "id": 3328,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
                             "kind": "number",
                             "lValueRequested": false,
                             "nodeType": "Literal",
-                            "src": "2812:1:21",
+                            "src": "2812:1:20",
                             "typeDescriptions": {
                               "typeIdentifier": "t_rational_0_by_1",
                               "typeString": "int_const 0"
                             },
                             "value": "0"
                           },
-                          "src": "2796:17:21",
+                          "src": "2796:17:20",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           }
                         },
-                        "id": 3315,
+                        "id": 3330,
                         "nodeType": "ExpressionStatement",
-                        "src": "2796:17:21"
+                        "src": "2796:17:20"
                       },
                       {
                         "expression": {
-                          "id": 3318,
+                          "id": 3333,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftHandSide": {
-                            "id": 3316,
+                            "id": 3331,
                             "name": "affiliatorNetReward",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3266,
-                            "src": "2828:19:21",
+                            "referencedDeclaration": 3281,
+                            "src": "2828:19:20",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
@@ -1856,54 +1856,54 @@
                           "operator": "=",
                           "rightHandSide": {
                             "hexValue": "30",
-                            "id": 3317,
+                            "id": 3332,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
                             "kind": "number",
                             "lValueRequested": false,
                             "nodeType": "Literal",
-                            "src": "2850:1:21",
+                            "src": "2850:1:20",
                             "typeDescriptions": {
                               "typeIdentifier": "t_rational_0_by_1",
                               "typeString": "int_const 0"
                             },
                             "value": "0"
                           },
-                          "src": "2828:23:21",
+                          "src": "2828:23:20",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           }
                         },
-                        "id": 3319,
+                        "id": 3334,
                         "nodeType": "ExpressionStatement",
-                        "src": "2828:23:21"
+                        "src": "2828:23:20"
                       }
                     ]
                   },
-                  "id": 3321,
+                  "id": 3336,
                   "nodeType": "IfStatement",
-                  "src": "2603:260:21",
+                  "src": "2603:260:20",
                   "trueBody": {
-                    "id": 3311,
+                    "id": 3326,
                     "nodeType": "Block",
-                    "src": "2626:149:21",
+                    "src": "2626:149:20",
                     "statements": [
                       {
                         "expression": {
-                          "id": 3297,
+                          "id": 3312,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftHandSide": {
-                            "id": 3290,
+                            "id": 3305,
                             "name": "discountedFee",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3287,
-                            "src": "2641:13:21",
+                            "referencedDeclaration": 3302,
+                            "src": "2641:13:20",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
@@ -1916,7 +1916,7 @@
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
                             },
-                            "id": 3296,
+                            "id": 3311,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -1928,18 +1928,18 @@
                                     "typeIdentifier": "t_uint256",
                                     "typeString": "uint256"
                                   },
-                                  "id": 3293,
+                                  "id": 3308,
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "leftExpression": {
-                                    "id": 3291,
+                                    "id": 3306,
                                     "name": "baseFee",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 3278,
-                                    "src": "2658:7:21",
+                                    "referencedDeclaration": 3293,
+                                    "src": "2658:7:20",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_uint256",
                                       "typeString": "uint256"
@@ -1948,32 +1948,32 @@
                                   "nodeType": "BinaryOperation",
                                   "operator": "*",
                                   "rightExpression": {
-                                    "id": 3292,
+                                    "id": 3307,
                                     "name": "discountRatio",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 3259,
-                                    "src": "2668:13:21",
+                                    "referencedDeclaration": 3274,
+                                    "src": "2668:13:20",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_uint256",
                                       "typeString": "uint256"
                                     }
                                   },
-                                  "src": "2658:23:21",
+                                  "src": "2658:23:20",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_uint256",
                                     "typeString": "uint256"
                                   }
                                 }
                               ],
-                              "id": 3294,
+                              "id": 3309,
                               "isConstant": false,
                               "isInlineArray": false,
                               "isLValue": false,
                               "isPure": false,
                               "lValueRequested": false,
                               "nodeType": "TupleExpression",
-                              "src": "2657:25:21",
+                              "src": "2657:25:20",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_uint256",
                                 "typeString": "uint256"
@@ -1983,50 +1983,50 @@
                             "operator": "/",
                             "rightExpression": {
                               "hexValue": "313030",
-                              "id": 3295,
+                              "id": 3310,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "kind": "number",
                               "lValueRequested": false,
                               "nodeType": "Literal",
-                              "src": "2685:3:21",
+                              "src": "2685:3:20",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_rational_100_by_1",
                                 "typeString": "int_const 100"
                               },
                               "value": "100"
                             },
-                            "src": "2657:31:21",
+                            "src": "2657:31:20",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
                             }
                           },
-                          "src": "2641:47:21",
+                          "src": "2641:47:20",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           }
                         },
-                        "id": 3298,
+                        "id": 3313,
                         "nodeType": "ExpressionStatement",
-                        "src": "2641:47:21"
+                        "src": "2641:47:20"
                       },
                       {
                         "expression": {
-                          "id": 3309,
+                          "id": 3324,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftHandSide": {
-                            "id": 3299,
+                            "id": 3314,
                             "name": "affiliatorNetReward",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3266,
-                            "src": "2703:19:21",
+                            "referencedDeclaration": 3281,
+                            "src": "2703:19:20",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
@@ -2039,7 +2039,7 @@
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
                             },
-                            "id": 3308,
+                            "id": 3323,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -2051,18 +2051,18 @@
                                     "typeIdentifier": "t_uint256",
                                     "typeString": "uint256"
                                   },
-                                  "id": 3305,
+                                  "id": 3320,
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "leftExpression": {
-                                    "id": 3300,
+                                    "id": 3315,
                                     "name": "baseFee",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 3278,
-                                    "src": "2726:7:21",
+                                    "referencedDeclaration": 3293,
+                                    "src": "2726:7:20",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_uint256",
                                       "typeString": "uint256"
@@ -2077,21 +2077,21 @@
                                           "typeIdentifier": "t_uint256",
                                           "typeString": "uint256"
                                         },
-                                        "id": 3303,
+                                        "id": 3318,
                                         "isConstant": false,
                                         "isLValue": false,
                                         "isPure": false,
                                         "lValueRequested": false,
                                         "leftExpression": {
                                           "hexValue": "3530",
-                                          "id": 3301,
+                                          "id": 3316,
                                           "isConstant": false,
                                           "isLValue": false,
                                           "isPure": true,
                                           "kind": "number",
                                           "lValueRequested": false,
                                           "nodeType": "Literal",
-                                          "src": "2737:2:21",
+                                          "src": "2737:2:20",
                                           "typeDescriptions": {
                                             "typeIdentifier": "t_rational_50_by_1",
                                             "typeString": "int_const 50"
@@ -2101,52 +2101,52 @@
                                         "nodeType": "BinaryOperation",
                                         "operator": "-",
                                         "rightExpression": {
-                                          "id": 3302,
+                                          "id": 3317,
                                           "name": "discountRatio",
                                           "nodeType": "Identifier",
                                           "overloadedDeclarations": [],
-                                          "referencedDeclaration": 3259,
-                                          "src": "2742:13:21",
+                                          "referencedDeclaration": 3274,
+                                          "src": "2742:13:20",
                                           "typeDescriptions": {
                                             "typeIdentifier": "t_uint256",
                                             "typeString": "uint256"
                                           }
                                         },
-                                        "src": "2737:18:21",
+                                        "src": "2737:18:20",
                                         "typeDescriptions": {
                                           "typeIdentifier": "t_uint256",
                                           "typeString": "uint256"
                                         }
                                       }
                                     ],
-                                    "id": 3304,
+                                    "id": 3319,
                                     "isConstant": false,
                                     "isInlineArray": false,
                                     "isLValue": false,
                                     "isPure": false,
                                     "lValueRequested": false,
                                     "nodeType": "TupleExpression",
-                                    "src": "2736:20:21",
+                                    "src": "2736:20:20",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_uint256",
                                       "typeString": "uint256"
                                     }
                                   },
-                                  "src": "2726:30:21",
+                                  "src": "2726:30:20",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_uint256",
                                     "typeString": "uint256"
                                   }
                                 }
                               ],
-                              "id": 3306,
+                              "id": 3321,
                               "isConstant": false,
                               "isInlineArray": false,
                               "isLValue": false,
                               "isPure": false,
                               "lValueRequested": false,
                               "nodeType": "TupleExpression",
-                              "src": "2725:32:21",
+                              "src": "2725:32:20",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_uint256",
                                 "typeString": "uint256"
@@ -2156,53 +2156,53 @@
                             "operator": "/",
                             "rightExpression": {
                               "hexValue": "313030",
-                              "id": 3307,
+                              "id": 3322,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "kind": "number",
                               "lValueRequested": false,
                               "nodeType": "Literal",
-                              "src": "2760:3:21",
+                              "src": "2760:3:20",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_rational_100_by_1",
                                 "typeString": "int_const 100"
                               },
                               "value": "100"
                             },
-                            "src": "2725:38:21",
+                            "src": "2725:38:20",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
                             }
                           },
-                          "src": "2703:60:21",
+                          "src": "2703:60:20",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           }
                         },
-                        "id": 3310,
+                        "id": 3325,
                         "nodeType": "ExpressionStatement",
-                        "src": "2703:60:21"
+                        "src": "2703:60:20"
                       }
                     ]
                   }
                 },
                 {
                   "expression": {
-                    "id": 3326,
+                    "id": 3341,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
-                      "id": 3322,
+                      "id": 3337,
                       "name": "buyerNetPrice",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3262,
-                      "src": "2917:13:21",
+                      "referencedDeclaration": 3277,
+                      "src": "2917:13:20",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -2215,18 +2215,18 @@
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       },
-                      "id": 3325,
+                      "id": 3340,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "leftExpression": {
-                        "id": 3323,
+                        "id": 3338,
                         "name": "fullItemPrice",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3253,
-                        "src": "2933:13:21",
+                        "referencedDeclaration": 3268,
+                        "src": "2933:13:20",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -2235,47 +2235,47 @@
                       "nodeType": "BinaryOperation",
                       "operator": "-",
                       "rightExpression": {
-                        "id": 3324,
+                        "id": 3339,
                         "name": "discountedFee",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3287,
-                        "src": "2949:13:21",
+                        "referencedDeclaration": 3302,
+                        "src": "2949:13:20",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         }
                       },
-                      "src": "2933:29:21",
+                      "src": "2933:29:20",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "src": "2917:45:21",
+                    "src": "2917:45:20",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 3327,
+                  "id": 3342,
                   "nodeType": "ExpressionStatement",
-                  "src": "2917:45:21"
+                  "src": "2917:45:20"
                 },
                 {
                   "expression": {
-                    "id": 3332,
+                    "id": 3347,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
-                      "id": 3328,
+                      "id": 3343,
                       "name": "sellerNetProceeds",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3264,
-                      "src": "3021:17:21",
+                      "referencedDeclaration": 3279,
+                      "src": "3021:17:20",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -2288,18 +2288,18 @@
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       },
-                      "id": 3331,
+                      "id": 3346,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "leftExpression": {
-                        "id": 3329,
+                        "id": 3344,
                         "name": "fullItemPrice",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3253,
-                        "src": "3041:13:21",
+                        "referencedDeclaration": 3268,
+                        "src": "3041:13:20",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -2308,47 +2308,47 @@
                       "nodeType": "BinaryOperation",
                       "operator": "-",
                       "rightExpression": {
-                        "id": 3330,
+                        "id": 3345,
                         "name": "baseFee",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3278,
-                        "src": "3057:7:21",
+                        "referencedDeclaration": 3293,
+                        "src": "3057:7:20",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         }
                       },
-                      "src": "3041:23:21",
+                      "src": "3041:23:20",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "src": "3021:43:21",
+                    "src": "3021:43:20",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 3333,
+                  "id": 3348,
                   "nodeType": "ExpressionStatement",
-                  "src": "3021:43:21"
+                  "src": "3021:43:20"
                 },
                 {
                   "expression": {
-                    "id": 3340,
+                    "id": 3355,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
-                      "id": 3334,
+                      "id": 3349,
                       "name": "tokenHoldersNetReward",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3268,
-                      "src": "3126:21:21",
+                      "referencedDeclaration": 3283,
+                      "src": "3126:21:20",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -2361,7 +2361,7 @@
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       },
-                      "id": 3339,
+                      "id": 3354,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -2371,18 +2371,18 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         },
-                        "id": 3337,
+                        "id": 3352,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
-                          "id": 3335,
+                          "id": 3350,
                           "name": "baseFee",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 3278,
-                          "src": "3150:7:21",
+                          "referencedDeclaration": 3293,
+                          "src": "3150:7:20",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
@@ -2391,18 +2391,18 @@
                         "nodeType": "BinaryOperation",
                         "operator": "-",
                         "rightExpression": {
-                          "id": 3336,
+                          "id": 3351,
                           "name": "discountedFee",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 3287,
-                          "src": "3160:13:21",
+                          "referencedDeclaration": 3302,
+                          "src": "3160:13:20",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           }
                         },
-                        "src": "3150:23:21",
+                        "src": "3150:23:20",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -2411,252 +2411,56 @@
                       "nodeType": "BinaryOperation",
                       "operator": "-",
                       "rightExpression": {
-                        "id": 3338,
+                        "id": 3353,
                         "name": "affiliatorNetReward",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3266,
-                        "src": "3176:19:21",
+                        "referencedDeclaration": 3281,
+                        "src": "3176:19:20",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         }
                       },
-                      "src": "3150:45:21",
+                      "src": "3150:45:20",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "src": "3126:69:21",
+                    "src": "3126:69:20",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 3341,
+                  "id": 3356,
                   "nodeType": "ExpressionStatement",
-                  "src": "3126:69:21"
+                  "src": "3126:69:20"
                 }
               ]
             },
             "functionSelector": "42ba2f24",
-            "id": 3343,
+            "id": 3358,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "calculateNetValue",
-            "nameLocation": "1740:17:21",
+            "nameLocation": "1740:17:20",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3260,
+              "id": 3275,
               "nodeType": "ParameterList",
               "parameters": [
-                {
-                  "constant": false,
-                  "id": 3253,
-                  "mutability": "mutable",
-                  "name": "fullItemPrice",
-                  "nameLocation": "1776:13:21",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 3343,
-                  "src": "1768:21:21",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  },
-                  "typeName": {
-                    "id": 3252,
-                    "name": "uint256",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "1768:7:21",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 3255,
-                  "mutability": "mutable",
-                  "name": "isBuyerAffiliated",
-                  "nameLocation": "1805:17:21",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 3343,
-                  "src": "1800:22:21",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_bool",
-                    "typeString": "bool"
-                  },
-                  "typeName": {
-                    "id": 3254,
-                    "name": "bool",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "1800:4:21",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_bool",
-                      "typeString": "bool"
-                    }
-                  },
-                  "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 3257,
-                  "mutability": "mutable",
-                  "name": "baseFeePercent",
-                  "nameLocation": "1841:14:21",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 3343,
-                  "src": "1833:22:21",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  },
-                  "typeName": {
-                    "id": 3256,
-                    "name": "uint256",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "1833:7:21",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 3259,
-                  "mutability": "mutable",
-                  "name": "discountRatio",
-                  "nameLocation": "1874:13:21",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 3343,
-                  "src": "1866:21:21",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  },
-                  "typeName": {
-                    "id": 3258,
-                    "name": "uint256",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "1866:7:21",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "visibility": "internal"
-                }
-              ],
-              "src": "1757:190:21"
-            },
-            "returnParameters": {
-              "id": 3269,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 3262,
-                  "mutability": "mutable",
-                  "name": "buyerNetPrice",
-                  "nameLocation": "2020:13:21",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 3343,
-                  "src": "2012:21:21",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  },
-                  "typeName": {
-                    "id": 3261,
-                    "name": "uint256",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "2012:7:21",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 3264,
-                  "mutability": "mutable",
-                  "name": "sellerNetProceeds",
-                  "nameLocation": "2083:17:21",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 3343,
-                  "src": "2075:25:21",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  },
-                  "typeName": {
-                    "id": 3263,
-                    "name": "uint256",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "2075:7:21",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 3266,
-                  "mutability": "mutable",
-                  "name": "affiliatorNetReward",
-                  "nameLocation": "2154:19:21",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 3343,
-                  "src": "2146:27:21",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  },
-                  "typeName": {
-                    "id": 3265,
-                    "name": "uint256",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "2146:7:21",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "visibility": "internal"
-                },
                 {
                   "constant": false,
                   "id": 3268,
                   "mutability": "mutable",
-                  "name": "tokenHoldersNetReward",
-                  "nameLocation": "2229:21:21",
+                  "name": "fullItemPrice",
+                  "nameLocation": "1776:13:20",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3343,
-                  "src": "2221:29:21",
+                  "scope": 3358,
+                  "src": "1768:21:20",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2667,7 +2471,88 @@
                     "id": 3267,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2221:7:21",
+                    "src": "1768:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3270,
+                  "mutability": "mutable",
+                  "name": "isBuyerAffiliated",
+                  "nameLocation": "1805:17:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3358,
+                  "src": "1800:22:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 3269,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1800:4:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3272,
+                  "mutability": "mutable",
+                  "name": "baseFeePercent",
+                  "nameLocation": "1841:14:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3358,
+                  "src": "1833:22:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3271,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1833:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3274,
+                  "mutability": "mutable",
+                  "name": "discountRatio",
+                  "nameLocation": "1874:13:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3358,
+                  "src": "1866:21:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3273,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1866:7:20",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -2676,35 +2561,150 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1997:296:21"
+              "src": "1757:190:20"
             },
-            "scope": 3344,
-            "src": "1731:1472:21",
+            "returnParameters": {
+              "id": 3284,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3277,
+                  "mutability": "mutable",
+                  "name": "buyerNetPrice",
+                  "nameLocation": "2020:13:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3358,
+                  "src": "2012:21:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3276,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2012:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3279,
+                  "mutability": "mutable",
+                  "name": "sellerNetProceeds",
+                  "nameLocation": "2083:17:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3358,
+                  "src": "2075:25:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3278,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2075:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3281,
+                  "mutability": "mutable",
+                  "name": "affiliatorNetReward",
+                  "nameLocation": "2154:19:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3358,
+                  "src": "2146:27:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3280,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2146:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3283,
+                  "mutability": "mutable",
+                  "name": "tokenHoldersNetReward",
+                  "nameLocation": "2229:21:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3358,
+                  "src": "2221:29:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3282,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2221:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1997:296:20"
+            },
+            "scope": 3359,
+            "src": "1731:1472:20",
             "stateMutability": "pure",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 3345,
-        "src": "229:2977:21",
+        "scope": 3360,
+        "src": "229:2977:20",
         "usedErrors": []
       }
     ],
-    "src": "33:3175:21"
+    "src": "33:3175:20"
   },
   "legacyAST": {
     "absolutePath": "project:/contracts/Referrals/NetValueCalculator.sol",
     "exportedSymbols": {
       "NetValueCalculator": [
-        3344
+        3359
       ]
     },
-    "id": 3345,
+    "id": 3360,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 3251,
+        "id": 3266,
         "literals": [
           "solidity",
           "^",
@@ -2712,7 +2712,7 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "33:23:21"
+        "src": "33:23:20"
       },
       {
         "abstract": false,
@@ -2721,19 +2721,19 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "id": 3344,
+        "id": 3359,
         "linearizedBaseContracts": [
-          3344
+          3359
         ],
         "name": "NetValueCalculator",
-        "nameLocation": "238:18:21",
+        "nameLocation": "238:18:20",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 3342,
+              "id": 3357,
               "nodeType": "Block",
-              "src": "2299:904:21",
+              "src": "2299:904:20",
               "statements": [
                 {
                   "expression": {
@@ -2743,18 +2743,18 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         },
-                        "id": 3273,
+                        "id": 3288,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
-                          "id": 3271,
+                          "id": 3286,
                           "name": "discountRatio",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 3259,
-                          "src": "2318:13:21",
+                          "referencedDeclaration": 3274,
+                          "src": "2318:13:20",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
@@ -2764,21 +2764,21 @@
                         "operator": "<=",
                         "rightExpression": {
                           "hexValue": "3530",
-                          "id": 3272,
+                          "id": 3287,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
                           "kind": "number",
                           "lValueRequested": false,
                           "nodeType": "Literal",
-                          "src": "2335:2:21",
+                          "src": "2335:2:20",
                           "typeDescriptions": {
                             "typeIdentifier": "t_rational_50_by_1",
                             "typeString": "int_const 50"
                           },
                           "value": "50"
                         },
-                        "src": "2318:19:21",
+                        "src": "2318:19:20",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
@@ -2786,14 +2786,14 @@
                       },
                       {
                         "hexValue": "496e76616c696420646973636f756e7420726174696f",
-                        "id": 3274,
+                        "id": 3289,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
                         "kind": "string",
                         "lValueRequested": false,
                         "nodeType": "Literal",
-                        "src": "2339:24:21",
+                        "src": "2339:24:20",
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_5b5cef3df079ac2390dc2d7c5d6d7d465d203acae997f5bbfd8551a930a1d22e",
                           "typeString": "literal_string \"Invalid discount ratio\""
@@ -2812,7 +2812,7 @@
                           "typeString": "literal_string \"Invalid discount ratio\""
                         }
                       ],
-                      "id": 3270,
+                      "id": 3285,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -2820,13 +2820,13 @@
                         4294967278
                       ],
                       "referencedDeclaration": 4294967278,
-                      "src": "2310:7:21",
+                      "src": "2310:7:20",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 3275,
+                    "id": 3290,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2835,31 +2835,31 @@
                     "nameLocations": [],
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "2310:54:21",
+                    "src": "2310:54:20",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 3276,
+                  "id": 3291,
                   "nodeType": "ExpressionStatement",
-                  "src": "2310:54:21"
+                  "src": "2310:54:20"
                 },
                 {
                   "assignments": [
-                    3278
+                    3293
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 3278,
+                      "id": 3293,
                       "mutability": "mutable",
                       "name": "baseFee",
-                      "nameLocation": "2420:7:21",
+                      "nameLocation": "2420:7:20",
                       "nodeType": "VariableDeclaration",
-                      "scope": 3342,
-                      "src": "2412:15:21",
+                      "scope": 3357,
+                      "src": "2412:15:20",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
@@ -2867,10 +2867,10 @@
                         "typeString": "uint256"
                       },
                       "typeName": {
-                        "id": 3277,
+                        "id": 3292,
                         "name": "uint256",
                         "nodeType": "ElementaryTypeName",
-                        "src": "2412:7:21",
+                        "src": "2412:7:20",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -2879,13 +2879,13 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 3285,
+                  "id": 3300,
                   "initialValue": {
                     "commonType": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     },
-                    "id": 3284,
+                    "id": 3299,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2897,18 +2897,18 @@
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           },
-                          "id": 3281,
+                          "id": 3296,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftExpression": {
-                            "id": 3279,
+                            "id": 3294,
                             "name": "fullItemPrice",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3253,
-                            "src": "2431:13:21",
+                            "referencedDeclaration": 3268,
+                            "src": "2431:13:20",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
@@ -2917,32 +2917,32 @@
                           "nodeType": "BinaryOperation",
                           "operator": "*",
                           "rightExpression": {
-                            "id": 3280,
+                            "id": 3295,
                             "name": "baseFeePercent",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3257,
-                            "src": "2447:14:21",
+                            "referencedDeclaration": 3272,
+                            "src": "2447:14:20",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
                             }
                           },
-                          "src": "2431:30:21",
+                          "src": "2431:30:20",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           }
                         }
                       ],
-                      "id": 3282,
+                      "id": 3297,
                       "isConstant": false,
                       "isInlineArray": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "nodeType": "TupleExpression",
-                      "src": "2430:32:21",
+                      "src": "2430:32:20",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -2952,43 +2952,43 @@
                     "operator": "/",
                     "rightExpression": {
                       "hexValue": "313030",
-                      "id": 3283,
+                      "id": 3298,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
                       "kind": "number",
                       "lValueRequested": false,
                       "nodeType": "Literal",
-                      "src": "2465:3:21",
+                      "src": "2465:3:20",
                       "typeDescriptions": {
                         "typeIdentifier": "t_rational_100_by_1",
                         "typeString": "int_const 100"
                       },
                       "value": "100"
                     },
-                    "src": "2430:38:21",
+                    "src": "2430:38:20",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
                   "nodeType": "VariableDeclarationStatement",
-                  "src": "2412:56:21"
+                  "src": "2412:56:20"
                 },
                 {
                   "assignments": [
-                    3287
+                    3302
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 3287,
+                      "id": 3302,
                       "mutability": "mutable",
                       "name": "discountedFee",
-                      "nameLocation": "2489:13:21",
+                      "nameLocation": "2489:13:20",
                       "nodeType": "VariableDeclaration",
-                      "scope": 3342,
-                      "src": "2481:21:21",
+                      "scope": 3357,
+                      "src": "2481:21:20",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
@@ -2996,10 +2996,10 @@
                         "typeString": "uint256"
                       },
                       "typeName": {
-                        "id": 3286,
+                        "id": 3301,
                         "name": "uint256",
                         "nodeType": "ElementaryTypeName",
-                        "src": "2481:7:21",
+                        "src": "2481:7:20",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -3008,42 +3008,42 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 3288,
+                  "id": 3303,
                   "nodeType": "VariableDeclarationStatement",
-                  "src": "2481:21:21"
+                  "src": "2481:21:20"
                 },
                 {
                   "condition": {
-                    "id": 3289,
+                    "id": 3304,
                     "name": "isBuyerAffiliated",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 3255,
-                    "src": "2607:17:21",
+                    "referencedDeclaration": 3270,
+                    "src": "2607:17:20",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
                     }
                   },
                   "falseBody": {
-                    "id": 3320,
+                    "id": 3335,
                     "nodeType": "Block",
-                    "src": "2781:82:21",
+                    "src": "2781:82:20",
                     "statements": [
                       {
                         "expression": {
-                          "id": 3314,
+                          "id": 3329,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftHandSide": {
-                            "id": 3312,
+                            "id": 3327,
                             "name": "discountedFee",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3287,
-                            "src": "2796:13:21",
+                            "referencedDeclaration": 3302,
+                            "src": "2796:13:20",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
@@ -3053,44 +3053,44 @@
                           "operator": "=",
                           "rightHandSide": {
                             "hexValue": "30",
-                            "id": 3313,
+                            "id": 3328,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
                             "kind": "number",
                             "lValueRequested": false,
                             "nodeType": "Literal",
-                            "src": "2812:1:21",
+                            "src": "2812:1:20",
                             "typeDescriptions": {
                               "typeIdentifier": "t_rational_0_by_1",
                               "typeString": "int_const 0"
                             },
                             "value": "0"
                           },
-                          "src": "2796:17:21",
+                          "src": "2796:17:20",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           }
                         },
-                        "id": 3315,
+                        "id": 3330,
                         "nodeType": "ExpressionStatement",
-                        "src": "2796:17:21"
+                        "src": "2796:17:20"
                       },
                       {
                         "expression": {
-                          "id": 3318,
+                          "id": 3333,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftHandSide": {
-                            "id": 3316,
+                            "id": 3331,
                             "name": "affiliatorNetReward",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3266,
-                            "src": "2828:19:21",
+                            "referencedDeclaration": 3281,
+                            "src": "2828:19:20",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
@@ -3100,54 +3100,54 @@
                           "operator": "=",
                           "rightHandSide": {
                             "hexValue": "30",
-                            "id": 3317,
+                            "id": 3332,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
                             "kind": "number",
                             "lValueRequested": false,
                             "nodeType": "Literal",
-                            "src": "2850:1:21",
+                            "src": "2850:1:20",
                             "typeDescriptions": {
                               "typeIdentifier": "t_rational_0_by_1",
                               "typeString": "int_const 0"
                             },
                             "value": "0"
                           },
-                          "src": "2828:23:21",
+                          "src": "2828:23:20",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           }
                         },
-                        "id": 3319,
+                        "id": 3334,
                         "nodeType": "ExpressionStatement",
-                        "src": "2828:23:21"
+                        "src": "2828:23:20"
                       }
                     ]
                   },
-                  "id": 3321,
+                  "id": 3336,
                   "nodeType": "IfStatement",
-                  "src": "2603:260:21",
+                  "src": "2603:260:20",
                   "trueBody": {
-                    "id": 3311,
+                    "id": 3326,
                     "nodeType": "Block",
-                    "src": "2626:149:21",
+                    "src": "2626:149:20",
                     "statements": [
                       {
                         "expression": {
-                          "id": 3297,
+                          "id": 3312,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftHandSide": {
-                            "id": 3290,
+                            "id": 3305,
                             "name": "discountedFee",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3287,
-                            "src": "2641:13:21",
+                            "referencedDeclaration": 3302,
+                            "src": "2641:13:20",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
@@ -3160,7 +3160,7 @@
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
                             },
-                            "id": 3296,
+                            "id": 3311,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -3172,18 +3172,18 @@
                                     "typeIdentifier": "t_uint256",
                                     "typeString": "uint256"
                                   },
-                                  "id": 3293,
+                                  "id": 3308,
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "leftExpression": {
-                                    "id": 3291,
+                                    "id": 3306,
                                     "name": "baseFee",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 3278,
-                                    "src": "2658:7:21",
+                                    "referencedDeclaration": 3293,
+                                    "src": "2658:7:20",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_uint256",
                                       "typeString": "uint256"
@@ -3192,32 +3192,32 @@
                                   "nodeType": "BinaryOperation",
                                   "operator": "*",
                                   "rightExpression": {
-                                    "id": 3292,
+                                    "id": 3307,
                                     "name": "discountRatio",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 3259,
-                                    "src": "2668:13:21",
+                                    "referencedDeclaration": 3274,
+                                    "src": "2668:13:20",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_uint256",
                                       "typeString": "uint256"
                                     }
                                   },
-                                  "src": "2658:23:21",
+                                  "src": "2658:23:20",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_uint256",
                                     "typeString": "uint256"
                                   }
                                 }
                               ],
-                              "id": 3294,
+                              "id": 3309,
                               "isConstant": false,
                               "isInlineArray": false,
                               "isLValue": false,
                               "isPure": false,
                               "lValueRequested": false,
                               "nodeType": "TupleExpression",
-                              "src": "2657:25:21",
+                              "src": "2657:25:20",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_uint256",
                                 "typeString": "uint256"
@@ -3227,50 +3227,50 @@
                             "operator": "/",
                             "rightExpression": {
                               "hexValue": "313030",
-                              "id": 3295,
+                              "id": 3310,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "kind": "number",
                               "lValueRequested": false,
                               "nodeType": "Literal",
-                              "src": "2685:3:21",
+                              "src": "2685:3:20",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_rational_100_by_1",
                                 "typeString": "int_const 100"
                               },
                               "value": "100"
                             },
-                            "src": "2657:31:21",
+                            "src": "2657:31:20",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
                             }
                           },
-                          "src": "2641:47:21",
+                          "src": "2641:47:20",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           }
                         },
-                        "id": 3298,
+                        "id": 3313,
                         "nodeType": "ExpressionStatement",
-                        "src": "2641:47:21"
+                        "src": "2641:47:20"
                       },
                       {
                         "expression": {
-                          "id": 3309,
+                          "id": 3324,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftHandSide": {
-                            "id": 3299,
+                            "id": 3314,
                             "name": "affiliatorNetReward",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3266,
-                            "src": "2703:19:21",
+                            "referencedDeclaration": 3281,
+                            "src": "2703:19:20",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
@@ -3283,7 +3283,7 @@
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
                             },
-                            "id": 3308,
+                            "id": 3323,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -3295,18 +3295,18 @@
                                     "typeIdentifier": "t_uint256",
                                     "typeString": "uint256"
                                   },
-                                  "id": 3305,
+                                  "id": 3320,
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "leftExpression": {
-                                    "id": 3300,
+                                    "id": 3315,
                                     "name": "baseFee",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 3278,
-                                    "src": "2726:7:21",
+                                    "referencedDeclaration": 3293,
+                                    "src": "2726:7:20",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_uint256",
                                       "typeString": "uint256"
@@ -3321,21 +3321,21 @@
                                           "typeIdentifier": "t_uint256",
                                           "typeString": "uint256"
                                         },
-                                        "id": 3303,
+                                        "id": 3318,
                                         "isConstant": false,
                                         "isLValue": false,
                                         "isPure": false,
                                         "lValueRequested": false,
                                         "leftExpression": {
                                           "hexValue": "3530",
-                                          "id": 3301,
+                                          "id": 3316,
                                           "isConstant": false,
                                           "isLValue": false,
                                           "isPure": true,
                                           "kind": "number",
                                           "lValueRequested": false,
                                           "nodeType": "Literal",
-                                          "src": "2737:2:21",
+                                          "src": "2737:2:20",
                                           "typeDescriptions": {
                                             "typeIdentifier": "t_rational_50_by_1",
                                             "typeString": "int_const 50"
@@ -3345,52 +3345,52 @@
                                         "nodeType": "BinaryOperation",
                                         "operator": "-",
                                         "rightExpression": {
-                                          "id": 3302,
+                                          "id": 3317,
                                           "name": "discountRatio",
                                           "nodeType": "Identifier",
                                           "overloadedDeclarations": [],
-                                          "referencedDeclaration": 3259,
-                                          "src": "2742:13:21",
+                                          "referencedDeclaration": 3274,
+                                          "src": "2742:13:20",
                                           "typeDescriptions": {
                                             "typeIdentifier": "t_uint256",
                                             "typeString": "uint256"
                                           }
                                         },
-                                        "src": "2737:18:21",
+                                        "src": "2737:18:20",
                                         "typeDescriptions": {
                                           "typeIdentifier": "t_uint256",
                                           "typeString": "uint256"
                                         }
                                       }
                                     ],
-                                    "id": 3304,
+                                    "id": 3319,
                                     "isConstant": false,
                                     "isInlineArray": false,
                                     "isLValue": false,
                                     "isPure": false,
                                     "lValueRequested": false,
                                     "nodeType": "TupleExpression",
-                                    "src": "2736:20:21",
+                                    "src": "2736:20:20",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_uint256",
                                       "typeString": "uint256"
                                     }
                                   },
-                                  "src": "2726:30:21",
+                                  "src": "2726:30:20",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_uint256",
                                     "typeString": "uint256"
                                   }
                                 }
                               ],
-                              "id": 3306,
+                              "id": 3321,
                               "isConstant": false,
                               "isInlineArray": false,
                               "isLValue": false,
                               "isPure": false,
                               "lValueRequested": false,
                               "nodeType": "TupleExpression",
-                              "src": "2725:32:21",
+                              "src": "2725:32:20",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_uint256",
                                 "typeString": "uint256"
@@ -3400,53 +3400,53 @@
                             "operator": "/",
                             "rightExpression": {
                               "hexValue": "313030",
-                              "id": 3307,
+                              "id": 3322,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "kind": "number",
                               "lValueRequested": false,
                               "nodeType": "Literal",
-                              "src": "2760:3:21",
+                              "src": "2760:3:20",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_rational_100_by_1",
                                 "typeString": "int_const 100"
                               },
                               "value": "100"
                             },
-                            "src": "2725:38:21",
+                            "src": "2725:38:20",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
                             }
                           },
-                          "src": "2703:60:21",
+                          "src": "2703:60:20",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           }
                         },
-                        "id": 3310,
+                        "id": 3325,
                         "nodeType": "ExpressionStatement",
-                        "src": "2703:60:21"
+                        "src": "2703:60:20"
                       }
                     ]
                   }
                 },
                 {
                   "expression": {
-                    "id": 3326,
+                    "id": 3341,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
-                      "id": 3322,
+                      "id": 3337,
                       "name": "buyerNetPrice",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3262,
-                      "src": "2917:13:21",
+                      "referencedDeclaration": 3277,
+                      "src": "2917:13:20",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -3459,18 +3459,18 @@
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       },
-                      "id": 3325,
+                      "id": 3340,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "leftExpression": {
-                        "id": 3323,
+                        "id": 3338,
                         "name": "fullItemPrice",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3253,
-                        "src": "2933:13:21",
+                        "referencedDeclaration": 3268,
+                        "src": "2933:13:20",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -3479,47 +3479,47 @@
                       "nodeType": "BinaryOperation",
                       "operator": "-",
                       "rightExpression": {
-                        "id": 3324,
+                        "id": 3339,
                         "name": "discountedFee",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3287,
-                        "src": "2949:13:21",
+                        "referencedDeclaration": 3302,
+                        "src": "2949:13:20",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         }
                       },
-                      "src": "2933:29:21",
+                      "src": "2933:29:20",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "src": "2917:45:21",
+                    "src": "2917:45:20",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 3327,
+                  "id": 3342,
                   "nodeType": "ExpressionStatement",
-                  "src": "2917:45:21"
+                  "src": "2917:45:20"
                 },
                 {
                   "expression": {
-                    "id": 3332,
+                    "id": 3347,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
-                      "id": 3328,
+                      "id": 3343,
                       "name": "sellerNetProceeds",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3264,
-                      "src": "3021:17:21",
+                      "referencedDeclaration": 3279,
+                      "src": "3021:17:20",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -3532,18 +3532,18 @@
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       },
-                      "id": 3331,
+                      "id": 3346,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "leftExpression": {
-                        "id": 3329,
+                        "id": 3344,
                         "name": "fullItemPrice",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3253,
-                        "src": "3041:13:21",
+                        "referencedDeclaration": 3268,
+                        "src": "3041:13:20",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -3552,47 +3552,47 @@
                       "nodeType": "BinaryOperation",
                       "operator": "-",
                       "rightExpression": {
-                        "id": 3330,
+                        "id": 3345,
                         "name": "baseFee",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3278,
-                        "src": "3057:7:21",
+                        "referencedDeclaration": 3293,
+                        "src": "3057:7:20",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         }
                       },
-                      "src": "3041:23:21",
+                      "src": "3041:23:20",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "src": "3021:43:21",
+                    "src": "3021:43:20",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 3333,
+                  "id": 3348,
                   "nodeType": "ExpressionStatement",
-                  "src": "3021:43:21"
+                  "src": "3021:43:20"
                 },
                 {
                   "expression": {
-                    "id": 3340,
+                    "id": 3355,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
-                      "id": 3334,
+                      "id": 3349,
                       "name": "tokenHoldersNetReward",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3268,
-                      "src": "3126:21:21",
+                      "referencedDeclaration": 3283,
+                      "src": "3126:21:20",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -3605,7 +3605,7 @@
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       },
-                      "id": 3339,
+                      "id": 3354,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -3615,18 +3615,18 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         },
-                        "id": 3337,
+                        "id": 3352,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
-                          "id": 3335,
+                          "id": 3350,
                           "name": "baseFee",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 3278,
-                          "src": "3150:7:21",
+                          "referencedDeclaration": 3293,
+                          "src": "3150:7:20",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
@@ -3635,18 +3635,18 @@
                         "nodeType": "BinaryOperation",
                         "operator": "-",
                         "rightExpression": {
-                          "id": 3336,
+                          "id": 3351,
                           "name": "discountedFee",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 3287,
-                          "src": "3160:13:21",
+                          "referencedDeclaration": 3302,
+                          "src": "3160:13:20",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           }
                         },
-                        "src": "3150:23:21",
+                        "src": "3150:23:20",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -3655,252 +3655,56 @@
                       "nodeType": "BinaryOperation",
                       "operator": "-",
                       "rightExpression": {
-                        "id": 3338,
+                        "id": 3353,
                         "name": "affiliatorNetReward",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3266,
-                        "src": "3176:19:21",
+                        "referencedDeclaration": 3281,
+                        "src": "3176:19:20",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         }
                       },
-                      "src": "3150:45:21",
+                      "src": "3150:45:20",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "src": "3126:69:21",
+                    "src": "3126:69:20",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 3341,
+                  "id": 3356,
                   "nodeType": "ExpressionStatement",
-                  "src": "3126:69:21"
+                  "src": "3126:69:20"
                 }
               ]
             },
             "functionSelector": "42ba2f24",
-            "id": 3343,
+            "id": 3358,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "calculateNetValue",
-            "nameLocation": "1740:17:21",
+            "nameLocation": "1740:17:20",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3260,
+              "id": 3275,
               "nodeType": "ParameterList",
               "parameters": [
-                {
-                  "constant": false,
-                  "id": 3253,
-                  "mutability": "mutable",
-                  "name": "fullItemPrice",
-                  "nameLocation": "1776:13:21",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 3343,
-                  "src": "1768:21:21",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  },
-                  "typeName": {
-                    "id": 3252,
-                    "name": "uint256",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "1768:7:21",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 3255,
-                  "mutability": "mutable",
-                  "name": "isBuyerAffiliated",
-                  "nameLocation": "1805:17:21",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 3343,
-                  "src": "1800:22:21",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_bool",
-                    "typeString": "bool"
-                  },
-                  "typeName": {
-                    "id": 3254,
-                    "name": "bool",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "1800:4:21",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_bool",
-                      "typeString": "bool"
-                    }
-                  },
-                  "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 3257,
-                  "mutability": "mutable",
-                  "name": "baseFeePercent",
-                  "nameLocation": "1841:14:21",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 3343,
-                  "src": "1833:22:21",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  },
-                  "typeName": {
-                    "id": 3256,
-                    "name": "uint256",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "1833:7:21",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 3259,
-                  "mutability": "mutable",
-                  "name": "discountRatio",
-                  "nameLocation": "1874:13:21",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 3343,
-                  "src": "1866:21:21",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  },
-                  "typeName": {
-                    "id": 3258,
-                    "name": "uint256",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "1866:7:21",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "visibility": "internal"
-                }
-              ],
-              "src": "1757:190:21"
-            },
-            "returnParameters": {
-              "id": 3269,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 3262,
-                  "mutability": "mutable",
-                  "name": "buyerNetPrice",
-                  "nameLocation": "2020:13:21",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 3343,
-                  "src": "2012:21:21",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  },
-                  "typeName": {
-                    "id": 3261,
-                    "name": "uint256",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "2012:7:21",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 3264,
-                  "mutability": "mutable",
-                  "name": "sellerNetProceeds",
-                  "nameLocation": "2083:17:21",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 3343,
-                  "src": "2075:25:21",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  },
-                  "typeName": {
-                    "id": 3263,
-                    "name": "uint256",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "2075:7:21",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 3266,
-                  "mutability": "mutable",
-                  "name": "affiliatorNetReward",
-                  "nameLocation": "2154:19:21",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 3343,
-                  "src": "2146:27:21",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  },
-                  "typeName": {
-                    "id": 3265,
-                    "name": "uint256",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "2146:7:21",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "visibility": "internal"
-                },
                 {
                   "constant": false,
                   "id": 3268,
                   "mutability": "mutable",
-                  "name": "tokenHoldersNetReward",
-                  "nameLocation": "2229:21:21",
+                  "name": "fullItemPrice",
+                  "nameLocation": "1776:13:20",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3343,
-                  "src": "2221:29:21",
+                  "scope": 3358,
+                  "src": "1768:21:20",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -3911,7 +3715,88 @@
                     "id": 3267,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2221:7:21",
+                    "src": "1768:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3270,
+                  "mutability": "mutable",
+                  "name": "isBuyerAffiliated",
+                  "nameLocation": "1805:17:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3358,
+                  "src": "1800:22:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 3269,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1800:4:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3272,
+                  "mutability": "mutable",
+                  "name": "baseFeePercent",
+                  "nameLocation": "1841:14:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3358,
+                  "src": "1833:22:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3271,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1833:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3274,
+                  "mutability": "mutable",
+                  "name": "discountRatio",
+                  "nameLocation": "1874:13:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3358,
+                  "src": "1866:21:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3273,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1866:7:20",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -3920,21 +3805,136 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1997:296:21"
+              "src": "1757:190:20"
             },
-            "scope": 3344,
-            "src": "1731:1472:21",
+            "returnParameters": {
+              "id": 3284,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3277,
+                  "mutability": "mutable",
+                  "name": "buyerNetPrice",
+                  "nameLocation": "2020:13:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3358,
+                  "src": "2012:21:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3276,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2012:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3279,
+                  "mutability": "mutable",
+                  "name": "sellerNetProceeds",
+                  "nameLocation": "2083:17:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3358,
+                  "src": "2075:25:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3278,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2075:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3281,
+                  "mutability": "mutable",
+                  "name": "affiliatorNetReward",
+                  "nameLocation": "2154:19:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3358,
+                  "src": "2146:27:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3280,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2146:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3283,
+                  "mutability": "mutable",
+                  "name": "tokenHoldersNetReward",
+                  "nameLocation": "2229:21:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3358,
+                  "src": "2221:29:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3282,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2221:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1997:296:20"
+            },
+            "scope": 3359,
+            "src": "1731:1472:20",
             "stateMutability": "pure",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 3345,
-        "src": "229:2977:21",
+        "scope": 3360,
+        "src": "229:2977:20",
         "usedErrors": []
       }
     ],
-    "src": "33:3175:21"
+    "src": "33:3175:20"
   },
   "compiler": {
     "name": "solc",
@@ -3942,7 +3942,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.3",
-  "updatedAt": "2023-07-24T07:07:37.205Z",
+  "updatedAt": "2023-08-22T17:36:56.436Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},
