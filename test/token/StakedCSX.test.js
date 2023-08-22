@@ -9,7 +9,7 @@ const WETH9Mock = artifacts.require("WETH9Mock");
 
 contract("StakedCSX", (accounts) => {
     let stakedCSX, usdc, usdt, weth;
-    const [owner, user1, user2, ...potentialStakers] = accounts;
+    const [deployer, user1, user2, ...potentialStakers] = accounts;
     const stakeAmount = new BN("1000");
 
     beforeEach(async () => {
@@ -75,7 +75,7 @@ contract("StakedCSX", (accounts) => {
              const minDeposit = new BN(1000).mul(USDC_DECIMALS);
              const randomDeposit = new BN(Math.floor(Math.random() * 19900)).mul(USDC_DECIMALS);
              const depositAmount = minDeposit.add(randomDeposit);
-             await usdc.transfer(owner, depositAmount);
+             await usdc.transfer(deployer, depositAmount);
              await usdc.approve(stakedCSX.address, depositAmount);
              await stakedCSX.depositDividend(usdc.address, depositAmount);
      
