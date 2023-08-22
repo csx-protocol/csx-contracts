@@ -1,7 +1,7 @@
 // //SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.19;
 
-import "./ITradeFactoryBaseStorage.sol";
+import {IKeepers, ReentrancyGuard, CSXTrade, IUsers, TradeUrl, SkinInfo} from "./ITradeFactoryBaseStorage.sol";
 
 contract TradeFactoryBaseStorage is ReentrancyGuard {
     uint256 public totalContracts;

@@ -1,8 +1,8 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.19;
 
-import "../Keepers/IKeepers.sol";
-import "../TradeFactory/ITradeFactory.sol";
+import {IKeepers} from "../Keepers/IKeepers.sol";
+import {ITradeFactory, PriceType, UserInteraction, Role, TradeStatus, TradeInfo} from "../TradeFactory/ITradeFactory.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 contract Users is ReentrancyGuard {

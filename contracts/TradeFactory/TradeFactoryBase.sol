@@ -4,10 +4,9 @@ pragma solidity 0.8.19;
 import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import {ITradeFactoryBaseStorage} from "./storage/ITradeFactoryBaseStorage.sol";
-import "./ITradeFactory.sol";
-import "../Keepers/IKeepers.sol";
-import "../Users/IUsers.sol";
-
+import {IKeepers} from "../Keepers/IKeepers.sol";
+import {IUsers, TradeStatus} from "../Users/IUsers.sol";
+import {TradeInfo, Strings} from "../TradeFactory/ITradeFactory.sol";
 
 abstract contract TradeFactoryBase is ReentrancyGuard {
     uint256 public baseFee;

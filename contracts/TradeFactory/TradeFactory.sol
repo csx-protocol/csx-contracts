@@ -1,7 +1,8 @@
 // //SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.19;
 
-import "./TradeFactoryBase.sol";
+import {CSXTrade, PriceType, TradeUrl, SkinInfo, Sticker} from "../Trade/Trade.sol";
+import {TradeFactoryBase, TradeInfo, TradeStatus, Strings} from "./TradeFactoryBase.sol";
 
 struct TradeIndex {
     uint256 index;

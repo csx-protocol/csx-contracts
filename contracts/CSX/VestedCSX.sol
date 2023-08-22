@@ -4,9 +4,9 @@
 pragma solidity 0.8.19;
 
 import {ERC20, IERC20, ReentrancyGuard, IWETH, IERC20Burnable} from "./Interfaces.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import {ERC20Burnable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
-import "./VestedStaking.sol";
+import {VestedStaking, IStakedCSX} from "./VestedStaking.sol";
 
 contract VestedCSX is ReentrancyGuard, ERC20Burnable {
     IERC20Burnable public EscrowedCSX;

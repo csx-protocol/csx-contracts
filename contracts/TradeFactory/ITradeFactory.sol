@@ -1,10 +1,8 @@
 // //SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.19;
 
-import "../Trade/Trade.sol";
 import {Strings} from "../utils/Strings.sol";
-import "../Users/IUsers.sol";
-
+import {Role, TradeStatus} from "../Users/IUsers.sol";
 import {IReferralRegistry} from "../Referrals/IReferralRegistry.sol";
 
 struct Sticker {
