@@ -3,14 +3,14 @@ pragma solidity 0.8.19;
 
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 
-import "../Keepers/IKeepers.sol";
-import "../Users/IUsers.sol";
-import {ITradeFactory, TradeUrl, Sticker, SkinInfo, PriceType } from "../TradeFactory/ITradeFactory.sol";
+import {IKeepers} from "../Keepers/IKeepers.sol";
+import {IUsers, TradeStatus, Role} from "../Users/IUsers.sol";
+import {ITradeFactory, TradeUrl, Sticker, SkinInfo, PriceType} from "../TradeFactory/ITradeFactory.sol";
 import {Strings} from "../utils/Strings.sol";
 
 import {IStakedCSX} from "../CSX/Interfaces.sol";
 
-import "../Referrals/IReferralRegistry.sol";
+import {IReferralRegistry} from "../Referrals/IReferralRegistry.sol";
 
 contract CSXTrade {
     IERC20 public paymentToken;
@@ -78,6 +78,7 @@ contract CSXTrade {
         itemImageUrl = _itemImageUrl;
         skinInfo = _skinInfo;
     }
+
     bool public hasInit;
 
     function initExtraInfo(
@@ -156,26 +157,29 @@ contract CSXTrade {
     // Buyer commits tokens to buy if status-state allows & Sends trade-offer to sellers trade-link off-chain.
     function commitBuy(
         TradeUrl memory _buyerTradeUrl,
-        bytes32 _affLink, 
+        bytes32 _affLink,
         address _buyerAddress
     ) public {
         require(status == TradeStatus.ForSale, "!fs");
 
         address _buyer;
-        if(msg.sender == factoryContract.buyAssistoor()){
+        if (msg.sender == factoryContract.buyAssistoor()) {
             _buyer = _buyerAddress;
         } else {
             _buyer = msg.sender;
         }
 
-        require(_buyer != seller, '!seller');
+        require(_buyer != seller, "!seller");
 
-        (uint256 buyerNetValue,,,) = getNetValue(_affLink);
+        (uint256 buyerNetValue, , , ) = getNetValue(_affLink);
 
-        require(paymentToken.transferFrom(msg.sender, address(this), buyerNetValue), 'transfer failed');
+        require(
+            paymentToken.transferFrom(msg.sender, address(this), buyerNetValue),
+            "transfer failed"
+        );
 
         referralCode = _affLink;
-        
+
         status = TradeStatus.BuyerCommitted;
         buyerCommitTimestamp = block.timestamp;
         usersContract.startDeliveryTimer(address(this), seller);
@@ -184,20 +188,24 @@ contract CSXTrade {
 
         depositedValue = paymentToken.balanceOf(address(this));
 
+        // string memory data = string(
+        //     abi.encodePacked(
+        //         Strings.toString(sellerTradeUrl.partner),
+        //         "+",
+        //         sellerTradeUrl.token,
+        //         "||",
+        //         Strings.toString(_buyerTradeUrl.partner),
+        //         "+",
+        //         _buyerTradeUrl.token,
+        //         "||",
+        //         Strings.toHexString(buyer),
+        //         "||",
+        //         Strings.toString(weiPrice)
+        //     )
+        // );
+
         string memory data = string(
-            abi.encodePacked(
-                Strings.toString(sellerTradeUrl.partner),
-                "+",
-                sellerTradeUrl.token,
-                "||",
-                Strings.toString(_buyerTradeUrl.partner),
-                "+",
-                _buyerTradeUrl.token,
-                "||",
-                Strings.toHexString(buyer),
-                "||",
-                Strings.toString(weiPrice)
-            )
+            abi.encodePacked(Strings.toString(weiPrice))
         );
 
         usersContract.changeUserInteractionStatus(
@@ -226,8 +234,7 @@ contract CSXTrade {
             seller,
             status
         );
-        usersContract.changeUserInteractionStatus(address(this), buyer, status);       
- 
+        usersContract.changeUserInteractionStatus(address(this), buyer, status);
 
         require(paymentToken.transfer(buyer, depositedValue), "!snt");
 
@@ -252,7 +259,23 @@ contract CSXTrade {
                 buyer,
                 status
             );
-            factoryContract.onStatusChange(status, "", seller, buyer);
+            string memory data = string(
+                abi.encodePacked(
+                    Strings.toString(sellerTradeUrl.partner),
+                    "+",
+                    sellerTradeUrl.token,
+                    "||",
+                    Strings.toString(buyerTradeUrl.partner),
+                    "+",
+                    buyerTradeUrl.token,
+                    "||",
+                    Strings.toHexString(buyer),
+                    "||",
+                    Strings.toString(weiPrice)
+                )
+            );
+
+            factoryContract.onStatusChange(status, data, seller, buyer);
         } else {
             status = TradeStatus.SellerCancelledAfterBuyerCommitted;
             usersContract.changeUserInteractionStatus(
@@ -284,10 +307,14 @@ contract CSXTrade {
             seller
         );
         require(success, "didn't remove tradeId");
-        
+
         _distributeProceeds();
 
-        usersContract.changeUserInteractionStatus(address(this), seller, status);
+        usersContract.changeUserInteractionStatus(
+            address(this),
+            seller,
+            status
+        );
         usersContract.changeUserInteractionStatus(address(this), buyer, status);
         string memory data = string(
             abi.encodePacked(Strings.toString(weiPrice), "||", "MANUAL")
@@ -310,7 +337,7 @@ contract CSXTrade {
             status
         );
         usersContract.changeUserInteractionStatus(address(this), buyer, status);
-        
+
         //require(paymentToken.transfer(seller, depositedValue), "!snt");
 
         _distributeProceeds();
@@ -341,7 +368,7 @@ contract CSXTrade {
                 buyer,
                 status
             );
-            
+
             // require(paymentToken.transfer(seller, depositedValue), "!snt");
             _distributeProceeds();
 
@@ -363,7 +390,7 @@ contract CSXTrade {
                     buyer,
                     status
                 );
-            }            
+            }
             require(paymentToken.transfer(buyer, depositedValue), "!snt");
             factoryContract.onStatusChange(status, "KO_DEFAULT", seller, buyer);
         }
@@ -437,46 +464,93 @@ contract CSXTrade {
     // Private Functions
     function _distributeProceeds() private {
         // Fetch the referral code from the registry for the buyer
-        bytes32 storageRefCode = referralRegistryContract.getReferralCode(buyer);
+        bytes32 storageRefCode = referralRegistryContract.getReferralCode(
+            buyer
+        );
 
         // If the fetched referral code is not zero (i.e., it exists), then check if it's different from the current referral code.
         // If it's different, then update the current referral code to the fetched one.
-        if(storageRefCode != bytes32(0)){
-            if(storageRefCode != referralCode){
+        if (storageRefCode != bytes32(0)) {
+            if (storageRefCode != referralCode) {
                 referralCode = storageRefCode;
             }
-        // If the fetched referral code is zero (i.e., it doesn't exist), then check if the current referral code is not zero.
-        // If the current referral code is not zero, then we need to validate it.
-        } else if(referralCode != bytes32(0)) { 
+            // If the fetched referral code is zero (i.e., it doesn't exist), then check if the current referral code is not zero.
+            // If the current referral code is not zero, then we need to validate it.
+        } else if (referralCode != bytes32(0)) {
             // Check if the current referral code is registered. If it's not, then we set the referral code to zero and skip further checks.
-            if(!referralRegistryContract.isReferralCodeRegistered(referralCode)){
+            if (
+                !referralRegistryContract.isReferralCodeRegistered(referralCode)
+            ) {
                 referralCode = bytes32(0);
             } else {
                 // If the referral code is valid, then we fetch the owner of the referral code.
-                address refOwner = referralRegistryContract.getReferralCodeOwner(referralCode);
+                address refOwner = referralRegistryContract
+                    .getReferralCodeOwner(referralCode);
                 // Check if the owner of the referral code is not the buyer.
                 // If it's the buyer, then we set the referral code to zero.
                 // If it's not the buyer, then we set the referral code as Primary for the buyer.
-                if(refOwner == buyer){
+                if (refOwner == buyer) {
                     referralCode = bytes32(0);
                 } else {
-                    referralRegistryContract.setReferralCodeAsTC(referralCode, buyer);
-                } 
+                    referralRegistryContract.setReferralCodeAsTC(
+                        referralCode,
+                        buyer
+                    );
+                }
             }
         }
 
-        (uint256 buyerNetPrice, uint256 sellerNetProceeds, uint256 affiliatorNetReward, uint256 tokenHoldersNetReward) = getNetValue(referralCode);
+        (
+            uint256 buyerNetPrice,
+            uint256 sellerNetProceeds,
+            uint256 affiliatorNetReward,
+            uint256 tokenHoldersNetReward
+        ) = getNetValue(referralCode);
         require(paymentToken.transfer(seller, sellerNetProceeds), "!ssnt");
-        if(affiliatorNetReward > 0){
-            require(paymentToken.transfer(referralRegistryContract.getReferralCodeOwner(referralCode), affiliatorNetReward), "!rsnt");
-            referralRegistryContract.emitReferralCodeRebateUpdated(address(this), address(paymentToken), referralCode, affiliatorNetReward);
+        if (affiliatorNetReward > 0) {
+            require(
+                paymentToken.transfer(
+                    referralRegistryContract.getReferralCodeOwner(referralCode),
+                    affiliatorNetReward
+                ),
+                "!rsnt"
+            );
+            referralRegistryContract.emitReferralCodeRebateUpdated(
+                address(this),
+                address(paymentToken),
+                referralCode,
+                affiliatorNetReward
+            );
         }
         paymentToken.approve(address(sCSXToken), tokenHoldersNetReward);
-        require(sCSXToken.depositDividend(address(paymentToken), tokenHoldersNetReward), '!tsnt');
-        usersContract.emitNewTrade(seller, buyer, referralCode, priceType, buyerNetPrice);        
+        require(
+            sCSXToken.depositDividend(
+                address(paymentToken),
+                tokenHoldersNetReward
+            ),
+            "!tsnt"
+        );
+        usersContract.emitNewTrade(
+            seller,
+            buyer,
+            referralCode,
+            priceType,
+            buyerNetPrice
+        );
     }
 
-    function getNetValue(bytes32 _affLink) public view returns (uint256 buyerNetPrice, uint256 sellerNetProceeds, uint256 affiliatorNetReward, uint256 tokenHoldersNetReward) {
+    function getNetValue(
+        bytes32 _affLink
+    )
+        public
+        view
+        returns (
+            uint256 buyerNetPrice,
+            uint256 sellerNetProceeds,
+            uint256 affiliatorNetReward,
+            uint256 tokenHoldersNetReward
+        )
+    {
         bool hasReferral = referralRegistryContract.getReferralCodeOwner(
             _affLink
         ) != address(0);
@@ -484,11 +558,14 @@ contract CSXTrade {
         //uint256 ownerRatio;
         uint256 buyerRatio;
 
-        if(hasReferral){
-            (/*uint256 _ownerRatio*/, uint256 _buyerRatio) = referralRegistryContract.getReferralCodeRatios(_affLink);
+        if (hasReferral) {
+            (
+                ,
+                /*uint256 _ownerRatio*/ uint256 _buyerRatio
+            ) = referralRegistryContract.getReferralCodeRatios(_affLink);
             //ownerRatio = _ownerRatio;
             buyerRatio = (_buyerRatio / 2);
-        }    
+        }
 
         (
             buyerNetPrice,
@@ -496,10 +573,10 @@ contract CSXTrade {
             affiliatorNetReward,
             tokenHoldersNetReward
         ) = referralRegistryContract.calculateNetValue(
-                weiPrice,
-                hasReferral,
-                factoryContract.baseFee(),
-                buyerRatio
+            weiPrice,
+            hasReferral,
+            factoryContract.baseFee(),
+            buyerRatio
         );
     }
 }
