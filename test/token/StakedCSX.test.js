@@ -47,7 +47,6 @@ contract("StakedCSX", (accounts) => {
         }
     });
 
-
     it("fuzz test for staking and dividend distribution", async () => {
         const iterations = 1;
         const PRECISION = new BN('10').pow(new BN('33'));
@@ -116,6 +115,5 @@ contract("StakedCSX", (accounts) => {
 
         }
     });
-    
 });
 
