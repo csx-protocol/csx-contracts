@@ -39,6 +39,31 @@ contract("CSXTrade", accounts => {
     Clawbacked: 9
   };
 
+  const listingParams = {
+    itemMarketName: "itemMarketName",
+    tradeUrl: {
+      partner: '225482466',
+      token: 'EP2Wgs2R'
+    },
+    assetId: "assetId",
+    inspectLink: "inspectLink",
+    itemImageUrl: "itemImageUrl",
+    weiPrice: "1000000000000000000",
+    skinInfo: [
+      '[0.8, 0.06, 0.35223010182380676]',
+      '8',
+      '27'
+    ],
+    stickers: [{
+      name: 'Sticker',
+      material: 'sticker/sticker',
+      slot: 0,
+      imageLink: 'imageLink'
+    }],
+    weaponType: "weaponType",
+    priceType: "0"
+  };
+
   beforeEach(async () => {
     csx = await CSXToken.new();
     weth = await WETH9Mock.new();
@@ -68,34 +93,9 @@ contract("CSXTrade", accounts => {
     await referralRegistryInstance.initFactory(tradeFactory.address, { from: deployer });
     assert.equal(await referralRegistryInstance.factory(), tradeFactory.address, "Factory initialization failed");
     await users.setFactoryAddress(tradeFactory.address, { from: council });
-    await tradeFactoryBaseStorage.init(tradeFactory.address, { from: council });
-
-    const listingParams = {
-        itemMarketName: "itemMarketName",
-        tradeUrl: {
-          partner: '225482466',
-          token: 'EP2Wgs2R'
-        },
-        assetId: "assetId",
-        inspectLink: "inspectLink",
-        itemImageUrl: "itemImageUrl",
-        weiPrice: "1000000000000000000",
-        skinInfo: [
-          '[0.8, 0.06, 0.35223010182380676]',
-          '8',
-          '27'
-        ],
-        stickers: [{
-          name: 'Sticker',
-          material: 'sticker/sticker',
-          slot: 0,
-          imageLink: 'imageLink'
-        }],
-        weaponType: "weaponType",
-        priceType: "0"
-    };
+    await tradeFactoryBaseStorage.init(tradeFactory.address, { from: council });    
   
-    tradeFactory.createListingContract(listingParams, { from: user1 });
+    await tradeFactory.createListingContract(listingParams, { from: user1 });
 
     const tradeAddress = await tradeFactoryBaseStorage.getTradeContractByIndex('0');
 
@@ -108,8 +108,12 @@ contract("CSXTrade", accounts => {
         expect(await csxTrade.itemMarketName()).to.equal(listingParams.itemMarketName);
 
         const sellerTradeUrl = await csxTrade.sellerTradeUrl();
-        expect(sellerTradeUrl.partner).to.equal(listingParams.tradeUrl.partner);
-        expect(sellerTradeUrl.token).to.equal(listingParams.tradeUrl.token);
+
+        const _partner = sellerTradeUrl.partner.toString();
+        const _tradeUrl = sellerTradeUrl.token.toString();
+
+        expect(_partner).to.equal(listingParams.tradeUrl.partner);
+        expect(_tradeUrl).to.equal(listingParams.tradeUrl.token);
     });
   });
 
@@ -128,5 +132,4 @@ contract("CSXTrade", accounts => {
         );
     });
   });
-
 });
