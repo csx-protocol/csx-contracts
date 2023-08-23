@@ -230,6 +230,8 @@ contract Users is ReentrancyGuard {
         address tradeAddrs,
         bool isPositive
     ) external nonReentrant {
+        require(tradeAddrs != address(0), "0 tradeAddrs");
+
         TradeInfo memory _tradeContract = factory.getTradeDetailsByAddress(
             tradeAddrs
         );
