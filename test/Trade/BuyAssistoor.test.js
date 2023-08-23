@@ -1,8 +1,4 @@
 
-
-const TradeContract = artifacts.require("CSXTrade");
-
-
 const ReferralRegistry = artifacts.require("ReferralRegistry");
 const Keepers = artifacts.require("Keepers");
 const Users = artifacts.require("Users");
@@ -17,7 +13,6 @@ const USDCToken = artifacts.require("USDCToken");
 const USDTToken = artifacts.require("USDTToken");
 const WETH9Mock = artifacts.require("WETH9Mock");
 
-
 const { expectRevert } = require("@openzeppelin/test-helpers");
 
 contract("BuyAssistoor", function(accounts) {
@@ -29,7 +24,6 @@ contract("BuyAssistoor", function(accounts) {
     user1, 
     user2
   ] = accounts;
-
 
   beforeEach(async function() {
     csx = await CSXToken.new();
