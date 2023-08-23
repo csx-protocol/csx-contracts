@@ -1,10 +1,8 @@
-// trade_factory.test.js
-
 const TradeFactory = artifacts.require("CSXTradeFactory");
 
 contract("TradeFactory", (accounts) => {
     let tradeFactory;
-    const owner = accounts[0];
+    const [deployer] = accounts;
 
     before(async () => {
         tradeFactory = await TradeFactory.deployed();
