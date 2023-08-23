@@ -8,8 +8,8 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
     mapping(uint256 => CSXTrade) tradeContracts;
     IKeepers public keepersContract;
     IUsers public usersContract;
-    address factoryAddress;
-    bool hasInit;
+    address public factoryAddress;
+    bool public hasInit;
 
     constructor(address _keepers, address _users) {
         keepersContract = IKeepers(_keepers);
