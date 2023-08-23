@@ -91,9 +91,9 @@ contract("StakedCSX", (accounts) => {
      
                  try {
                     const depositAmountInUSDC = depositAmount.div(USDC_DECIMALS);
-                    console.log(`Fuzz Iteration ${i} testing with deposited amount ${depositAmountInUSDC.toString()} and staked amount ${stakerBalance.toString()}, and expected dividend ${expectedDividend.toString()} with total staked ${totalStaked.toString()} and total stakers ${numStakers}`);
+                     //console.log(`Fuzz Iteration ${i} testing with deposited amount ${depositAmountInUSDC.toString()} and staked amount ${stakerBalance.toString()}, and expected dividend ${expectedDividend.toString()} with total staked ${totalStaked.toString()} and total stakers ${numStakers}`);
+                     //console.log(`claimAmount: ${claimAmount.toString()} and expectedDividend: ${expectedDividend.toString()}`);
                      //expect(claimAmount).to.be.bignumber.equal(expectedDividend);
-                     console.log(`claimAmount: ${claimAmount.toString()} and expectedDividend: ${expectedDividend.toString()}`);
                      expect(claimAmount).to.be.bignumber.closeTo(expectedDividend, USDC_DECIMALS);
 
                      
