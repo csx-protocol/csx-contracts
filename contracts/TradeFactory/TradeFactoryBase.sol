@@ -41,7 +41,7 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
     }
 
     function changeBaseFee(uint256 _baseFee) external {
-        require(keepersContract.isCouncil(msg.sender));
+        require(keepersContract.isCouncil(msg.sender), "!c");
         baseFee = _baseFee;
     }
 
