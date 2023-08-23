@@ -1,14 +1,16 @@
 const TradeFactory = artifacts.require("CSXTradeFactory");
+const { expectRevert } = require("@openzeppelin/test-helpers");
 
 contract("TradeFactory", (accounts) => {
     let tradeFactory;
-    const [deployer] = accounts;
+    const [deployer, user1, user2] = accounts;
 
     before(async () => {
         tradeFactory = await TradeFactory.deployed();
     });
 
-    it("should create test listings that returns correct data", async () => {
+    describe("Initialization", () => {
+      it("should create test listings that returns correct data", async () => {
         // Prepare the data (same as in the provided code snippet)
         const _tradeUrl = {
             partner: '225482466',
@@ -16,10 +18,10 @@ contract("TradeFactory", (accounts) => {
         };
         const stickers = [
             [{
-              name: 'Heroic (Glitter) | Antwerp 2022',
-              material: 'antwerp2022/hero_glitter',
-              slot: 0,
-              imageLink: 'https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXQ9QVcJY8gulRcQljHQva9hZ-BARJ8IBZYib2pIhN01uH3fTxQ69n4wtCKxfOhY-6JxzsAsJcliLyXooqt2AS3-0NqazyhJY7EcFI4N1rVr0_-n7kARJEYLg'
+                name: 'Heroic (Glitter) | Antwerp 2022',
+                material: 'antwerp2022/hero_glitter',
+                slot: 0,
+                imageLink: 'https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXQ9QVcJY8gulRcQljHQva9hZ-BARJ8IBZYib2pIhN01uH3fTxQ69n4wtCKxfOhY-6JxzsAsJcliLyXooqt2AS3-0NqazyhJY7EcFI4N1rVr0_-n7kARJEYLg'
             }],
             [],
             [],
@@ -36,39 +38,39 @@ contract("TradeFactory", (accounts) => {
         const inspctLink = ['steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S76561198185748194A28591758742D769815130885352460', 'steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S76561198185748194A28492787574D16143929557675144168', 'steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S76561198185748194A28433491397D9821478250864647424', 'steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S76561198185748194A28315956209D14460612990892731053', 'steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S76561198185748194A28315874929D12397849034060993453', 'steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S76561198185748194A28229768155D11574396181669127541', 'steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S76561198185748194A27955299910D14756333338738051571']
         const skinInfo = [
             {
-              floatValues: '[0.8, 0.06, 0.35223010182380676]',
-              paintSeed: '8',
-              paintIndex: '27'
+                floatValues: '[0.8, 0.06, 0.35223010182380676]',
+                paintSeed: '8',
+                paintIndex: '27'
             },
             {
-              floatValues: '[0.5, 0, 0.08516129851341248]',
-              paintSeed: '317',
-              paintIndex: '783'
+                floatValues: '[0.5, 0, 0.08516129851341248]',
+                paintSeed: '317',
+                paintIndex: '783'
             },
             {
-              floatValues: '[0.15, 0.07, 0.09403269737958908]',
-              paintSeed: '274',
-              paintIndex: '298'
+                floatValues: '[0.15, 0.07, 0.09403269737958908]',
+                paintSeed: '274',
+                paintIndex: '298'
             },
             {
-              floatValues: '[0.38, 0.15, 0.2573419511318207]',
-              paintSeed: '848',
-              paintIndex: '372'
+                floatValues: '[0.38, 0.15, 0.2573419511318207]',
+                paintSeed: '848',
+                paintIndex: '372'
             },
             {
-              floatValues: '[0.07, 0, 0.057323157787323]',
-              paintSeed: '256',
-              paintIndex: '478'
+                floatValues: '[0.07, 0, 0.057323157787323]',
+                paintSeed: '256',
+                paintIndex: '478'
             },
             {
-              floatValues: '[1, 0, 0.055094581097364426]',
-              paintSeed: '859',
-              paintIndex: '1035'
+                floatValues: '[1, 0, 0.055094581097364426]',
+                paintSeed: '859',
+                paintIndex: '1035'
             },
             {
-              floatValues: '[0.8, 0.06, 0.10778621584177017]',
-              paintSeed: '556',
-              paintIndex: '10069'
+                floatValues: '[0.8, 0.06, 0.10778621584177017]',
+                paintSeed: '556',
+                paintIndex: '10069'
             },
         ]
 
@@ -88,7 +90,7 @@ contract("TradeFactory", (accounts) => {
                 weaponType: weaponTypes[i],
                 priceType: priceTypes[i]
             }
-            await tradeFactory.createListingContract(params);
+            await tradeFactory.createListingContract(params, { from: deployer });
         }
 
         // Get the total number of listing contracts
@@ -100,12 +102,47 @@ contract("TradeFactory", (accounts) => {
         // Check if each contract was created with the correct data
         for (let i = 0; i < prices.length; i++) {
             const listing = await tradeFactory.getTradeDetailsByIndex(i);
-          
+            
             // Assert that each property of the listing matches the expected value
             assert.equal(listing.itemMarketName, names[i], `The itemMarketName for listing ${i} should match`);
             assert.equal(listing.sellerTradeUrl.partner, _tradeUrl.partner, `The tradeUrl partner for listing ${i} should match`);
             assert.equal(listing.sellerTradeUrl.token, _tradeUrl.token, `The tradeUrl token for listing ${i} should match`);
             // Add more assertions for other properties...
         }
+      });
+    });
+
+    describe("Base Fee Operations", () => {
+      it("should change the base fee", async () => {
+        const newBaseFee = '8';
+        const oldBaseFee = '26'
+        await tradeFactory.changeBaseFee(newBaseFee, { from: deployer });
+        assert.equal(await tradeFactory.baseFee(), newBaseFee);
+        await tradeFactory.changeBaseFee(oldBaseFee, { from: deployer });
+      });
+    
+      it("should not allow unauthorized user to change the base fee", async () => {
+        const newBaseFee = '7';
+
+        await expectRevert(
+        tradeFactory.changeBaseFee(newBaseFee, { from: user2 }),
+        "!c"
+        );
+      });
+    });
+    
+    describe("Asset ID Operations", () => {
+      const assetId = "uniqueAssetId";
+      const assetId2 = "GG1";
+
+      it("should check that an asset is not already listed", async () => {
+        const hasListed = await tradeFactory.hasAlreadyListedItem(assetId, user1);
+        assert.isFalse(hasListed);
+      });
+
+      it("should check that an asset is already listed", async () => {
+        const hasListed = await tradeFactory.hasAlreadyListedItem(assetId2, deployer);
+        assert.isTrue(hasListed);
+      });
     });
 });
