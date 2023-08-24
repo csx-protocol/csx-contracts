@@ -121,6 +121,4 @@ contract('VestedCSX', function(accounts) {
       "NonTransferableToken: Token transfers are disabled."
     );
   });
-  
-
 });
