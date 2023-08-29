@@ -205,7 +205,11 @@ contract CSXTrade {
         // );
 
         string memory data = string(
-            abi.encodePacked(Strings.toString(weiPrice))
+            abi.encodePacked(
+                Strings.toString(weiPrice),
+                "||",
+                Strings.toHexString(buyer)
+            )
         );
 
         usersContract.changeUserInteractionStatus(
@@ -322,12 +326,12 @@ contract CSXTrade {
         factoryContract.onStatusChange(status, data, seller, buyer);
     }
 
-    // Seller confirms the trade has been made after 3 days from acceptance.
+    // Seller confirms the trade has been made after 8 days from acceptance.
     function sellerConfirmsTrade() external onlyAddress(seller) {
         require(status == TradeStatus.SellerCommitted, "trdsts!comm");
         require(
-            block.timestamp >= sellerAcceptedTimestamp + 3 days,
-            "3 days not passed"
+            block.timestamp >= sellerAcceptedTimestamp + 8 days,
+            "8 days not passed"
         );
         status = TradeStatus.Completed;
         usersContract.endDeliveryTimer(address(this), seller);
