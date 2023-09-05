@@ -42,6 +42,8 @@ contract CSXTrade {
 
     TradeStatus public status;
 
+    TradeStatus[] public statusHistory;
+
     IKeepers public keepersContract;
     IUsers public usersContract;
     ITradeFactory public factoryContract;
@@ -138,7 +140,7 @@ contract CSXTrade {
     // Seller can cancel the listing up til any buyer has committed tokens.
     function sellerCancel() external onlyAddress(seller) {
         require(status == TradeStatus.ForSale, "st !pen");
-        status = TradeStatus.SellerCancelled;
+        _changeStatus(TradeStatus.SellerCancelled);
         usersContract.changeUserInteractionStatus(
             address(this),
             seller,
@@ -180,7 +182,7 @@ contract CSXTrade {
 
         referralCode = _affLink;
 
-        status = TradeStatus.BuyerCommitted;
+        _changeStatus(TradeStatus.BuyerCommitted);
         buyerCommitTimestamp = block.timestamp;
         usersContract.startDeliveryTimer(address(this), seller);
         buyer = _buyer;
@@ -232,7 +234,7 @@ contract CSXTrade {
         // require(block.timestamp >= buyerCommitTimestamp + 24 hours, "!24hrs");
         // TODO: REMOVE THIS REQUIREMENT FOR TESTING
         // require(block.timestamp >= buyerCommitTimestamp + 5 minutes, "!5mnts"); // FOR TESTING
-        status = TradeStatus.BuyerCancelled;
+        _changeStatus(TradeStatus.BuyerCancelled);
         usersContract.changeUserInteractionStatus(
             address(this),
             seller,
@@ -251,7 +253,7 @@ contract CSXTrade {
     ) public onlyAddress(seller) {
         require(status == TradeStatus.BuyerCommitted, "trdsts!comm");
         if (sellerCommited) {
-            status = TradeStatus.SellerCommitted;
+            _changeStatus(TradeStatus.SellerCommitted);
             sellerAcceptedTimestamp = block.timestamp;
             usersContract.changeUserInteractionStatus(
                 address(this),
@@ -281,7 +283,7 @@ contract CSXTrade {
 
             factoryContract.onStatusChange(status, data, seller, buyer);
         } else {
-            status = TradeStatus.SellerCancelledAfterBuyerCommitted;
+            _changeStatus(TradeStatus.SellerCancelledAfterBuyerCommitted);
             usersContract.changeUserInteractionStatus(
                 address(this),
                 seller,
@@ -304,7 +306,7 @@ contract CSXTrade {
                 status == TradeStatus.SellerCommitted,
             "trdsts!comm|act."
         );
-        status = TradeStatus.Completed;
+        _changeStatus(TradeStatus.Completed);
         usersContract.endDeliveryTimer(address(this), seller);
         bool success = factoryContract.removeAssetIdUsed(
             itemSellerAssetId,
@@ -333,7 +335,7 @@ contract CSXTrade {
             block.timestamp >= sellerAcceptedTimestamp + 8 days,
             "8 days not passed"
         );
-        status = TradeStatus.Completed;
+        _changeStatus(TradeStatus.Completed);
         usersContract.endDeliveryTimer(address(this), seller);
         usersContract.changeUserInteractionStatus(
             address(this),
@@ -360,7 +362,7 @@ contract CSXTrade {
             "trdsts!>comm"
         );
         if (isTradeMade) {
-            status = TradeStatus.Completed;
+            _changeStatus(TradeStatus.Completed);
             usersContract.endDeliveryTimer(address(this), seller);
             usersContract.changeUserInteractionStatus(
                 address(this),
@@ -382,7 +384,7 @@ contract CSXTrade {
             factoryContract.onStatusChange(status, data, seller, buyer);
         } else {
             TradeStatus oldStatus = status;
-            status = TradeStatus.Clawbacked;
+            _changeStatus(TradeStatus.Clawbacked);
             usersContract.changeUserInteractionStatus(
                 address(this),
                 seller,
@@ -413,7 +415,7 @@ contract CSXTrade {
                 status != TradeStatus.Clawbacked,
             "alreadyDis"
         );
-        status = TradeStatus.Disputed;
+        _changeStatus(TradeStatus.Disputed);
         disputeer = msg.sender;
         disputeComplaint = _complaint;
         usersContract.changeUserInteractionStatus(
@@ -444,7 +446,7 @@ contract CSXTrade {
                 require(paymentToken.transfer(buyer, depositedValue), "!snt");
             }
         } else {
-            status = TradeStatus.Resolved;
+            _changeStatus(TradeStatus.Resolved);
             if (isWithValue) {
                 // require(paymentToken.transfer(seller, depositedValue), "!snt");
                 _distributeProceeds();
@@ -543,6 +545,12 @@ contract CSXTrade {
         );
     }
 
+    function _changeStatus(TradeStatus _status) private {
+        status = _status;
+        statusHistory.push(_status);
+    }
+
+    // Public Functions
     function getNetValue(
         bytes32 _affLink
     )
@@ -582,5 +590,9 @@ contract CSXTrade {
             factoryContract.baseFee(),
             buyerRatio
         );
+    }
+
+    function getStatusCount() public view returns (uint) {
+        return statusHistory.length;
     }
 }
