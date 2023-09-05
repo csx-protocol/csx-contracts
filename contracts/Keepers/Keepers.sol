@@ -44,6 +44,14 @@ contract Keepers {
         }
     }
 
+    function isKeeper(address _address) external view returns (bool) {
+        if (indexOf(_address) != 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     function changeKeeperNode(address _newAddres) external onlyCouncil {
         keeperNodeAddress = _newAddres;
     }
