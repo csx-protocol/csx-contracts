@@ -36,7 +36,7 @@ contract EscrowedCSX is ERC20Burnable, ReentrancyGuard {
 
     function mintEscrow(uint256 _amount) external nonReentrant {
         if(_amount == 0) revert AmountMustBeGreaterThanZero();
-        if(!csxToken.transferFrom(msg.sender, address(this), _amount)) revert TransferFailed();
+        if(!csxToken.transferFrom(msg.sender, address(vestedCSX), _amount)) revert TransferFailed();
         _mint(msg.sender, _amount);
         emit Minted(msg.sender, _amount);
     }
