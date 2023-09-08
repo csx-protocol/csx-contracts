@@ -1,5 +1,6 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import deployCSXToken from "./deploy/1_CSXToken.deploy";
+import deployStakedCSX from "./deploy/2_StakedCSX.deploy";
 
 const contractNames = [
   "csxToken",
@@ -25,6 +26,11 @@ const main = async () => {
   // Deploy CSX Token
   addressMap.set("csxToken", await deployCSXToken(hre));
 
+  const [stakedCSX, wethAddress, usdcAddress, usdtAddress] = await deployStakedCSX(hre, addressMap.get("csxToken")!);
+  addressMap.set("stakedCSX", stakedCSX);
+  addressMap.set("weth", wethAddress);
+  addressMap.set("usdc", usdcAddress);
+  addressMap.set("usdt", usdtAddress);
   // Deploy other contracts as needed
   // ...
 
