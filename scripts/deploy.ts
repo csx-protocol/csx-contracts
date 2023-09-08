@@ -4,6 +4,12 @@ import deployStakedCSX from "./deploy/2_StakedCSX.deploy";
 import deployEscrowedCSX from "./deploy/3_EscrowedCSX.deploy";
 import deployVestedCSX from "./deploy/4_VestedCSX.deploy";
 import deployKeepers from "./deploy/5_Keepers.deploy";
+import deployUsers from "./deploy/6_Users.deploy";
+import deployUserProfileLevel from "./deploy/7_UserProfileLevel.deploy";
+import deployReferralRegistry from "./deploy/8_ReferralRegistry.deploy";
+import deployTradeFactoryBaseStorage from "./deploy/9_TradeFactoryBaseStorage.deploy";
+import deployBuyAssistoor from "./deploy/10_BuyAssistoor.deploy";
+import deployCSXTradeFactory from "./deploy/11_TradeFactory.deploy";
 
 const contractNames = [
   "csxToken",
@@ -53,6 +59,34 @@ const main = async () => {
   // Deploy Keepers contract
   addressMap.set("keepers", await deployKeepers(hre)); 
 
+  // Deploy Users contract
+  addressMap.set("users", await deployUsers(hre, addressMap.get("keepers")!));
+
+  // Deploy UserProfileLevel
+  addressMap.set("userProfileLevel", await deployUserProfileLevel(hre, addressMap.get("csxToken")!));
+
+  // Deploy ReferralRegistry
+  addressMap.set("referralRegistry", await deployReferralRegistry(hre)); // Deploy the ReferralRegistry contract
+  
+  // Deploy TradeFactoryBaseStorage
+  addressMap.set("tradeFactoryBaseStorage", await deployTradeFactoryBaseStorage(hre, addressMap.get("keepers")!, addressMap.get("users")!));
+
+  // Deploy BuyAssistoor
+  addressMap.set("buyAssistoor", await deployBuyAssistoor(hre, addressMap.get("weth")!));
+
+  // Deploy CSXTradeFactory
+  addressMap.set("tradeFactory", await deployCSXTradeFactory(
+    hre,
+    addressMap.get("keepers")!,
+    addressMap.get("users")!,
+    addressMap.get("tradeFactoryBaseStorage")!,
+    addressMap.get("weth")!,
+    addressMap.get("usdc")!,
+    addressMap.get("usdt")!,
+    addressMap.get("referralRegistry")!,
+    addressMap.get("tradeFactoryBaseStorage")!,
+    addressMap.get("buyAssistoor")!
+  ));  
 
   // Logging contract addresses
   contractNames.forEach((contractName) => {
