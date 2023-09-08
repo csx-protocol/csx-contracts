@@ -16,4 +16,6 @@ Env file in root .env:
 ```shell
 HEXKEY=''
 RPCURL=''
+COUNCIL_ADDRESS=''
+ORACLE_NODE_ADDRESS=''
 ```
