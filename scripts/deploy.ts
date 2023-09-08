@@ -1,27 +1,42 @@
-import { ethers } from "hardhat";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+import deployCSXToken from "./deploy/1_CSXToken.deploy";
 
-async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+const contractNames = [
+  "csxToken",
+  "stakedCSX",
+  "escrowedCSX",
+  "usdc",
+  "usdt",
+  "weth",
+  "vestedCSX",
+  "keepers",
+  "users",
+  "userProfileLevel",
+  "referralRegistry",
+  "tradeFactoryBaseStorage",
+  "buyAssistoor",
+  "tradeFactory",
+];
 
-  const lockedAmount = ethers.parseEther("0.001");
+const main = async () => {
+  const hre: HardhatRuntimeEnvironment = await import("hardhat");
+  const addressMap: Map<string, string> = new Map();
 
-  const lock = await ethers.deployContract("Lock", [unlockTime], {
-    value: lockedAmount,
+  // Deploy CSX Token
+  addressMap.set("csxToken", await deployCSXToken(hre));
+
+  // Deploy other contracts as needed
+  // ...
+
+  // Logging contract addresses
+  contractNames.forEach((contractName) => {
+    console.log(`${contractName.padEnd(24)} ${addressMap.get(contractName)}`);
   });
+};
 
-  await lock.waitForDeployment();
-
-  console.log(
-    `Lock with ${ethers.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.target}`
-  );
-}
-
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+main()
+  .then(() => process.exit(0))
+  .catch((error: Error) => {
+    console.error(error);
+    process.exit(1);
+  });
