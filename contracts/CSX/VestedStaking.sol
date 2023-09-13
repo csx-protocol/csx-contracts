@@ -16,6 +16,7 @@ error OnlyVesterAllowed();
 error OnlyVCSXContract();
 error DepositFailed();
 error TransferFailed();
+error InvalidSender();
 
 contract VestedStaking {
     Vesting public vesting;
@@ -79,7 +80,7 @@ contract VestedStaking {
     /// @return wethAmount
     /// @return vestTimeStart
     function getClaimableAmountAndVestTimeStart() external view returns (uint256 usdcAmount, uint256 usdtAmount, uint256 wethAmount, uint256 vestTimeStart) {
-        (usdcAmount, usdtAmount, wethAmount) = sCsxToken.getClaimableAmount(address(this));
+        (usdcAmount, usdtAmount, wethAmount) = sCsxToken.rewardOf(address(this));
 
         vestTimeStart = vesting.startTime;
     }
@@ -97,7 +98,7 @@ contract VestedStaking {
         bool convertWethToEth
     ) external onlyVester {
         (uint256 usdcAmount, uint256 usdtAmount, uint256 wethAmount) = sCsxToken
-            .getClaimableAmount(address(this));
+            .rewardOf(address(this));
 
         sCsxToken.claim(claimUsdc, claimUsdt, claimWeth, convertWethToEth);
 
@@ -115,6 +116,12 @@ contract VestedStaking {
             if (!success) {
                 revert TransferFailed();
             }
+        }
+    }
+
+    receive() external payable {
+        if (address(wethToken) != msg.sender) {
+            revert InvalidSender();
         }
     }
 
