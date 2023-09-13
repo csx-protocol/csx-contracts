@@ -14,7 +14,7 @@ interface IWETH is IERC20 {
 }
 
 interface IStakedCSX {
-    function getClaimableAmount(
+    function rewardOf(
         address _account
     )
         external
