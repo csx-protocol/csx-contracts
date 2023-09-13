@@ -7,9 +7,16 @@ Try running some of the following tasks:
 ```shell
 npx hardhat help
 npx hardhat test
-REPORT_GAS=true npx hardhat test
+npx hardhat test test/tradeFactory/CSXTradeFactory.test.ts
 npx hardhat node
 npx hardhat run scripts/deploy.ts
+npx hadhat run scripts/deploy/<contract>
+```
+
+```shell
+npm run compile
+npm run deploy
+npm run test
 ```
 
 Env file in root .env:
