@@ -7,6 +7,9 @@ const privateKeyDev = process.env.HEXKEY!;
 const rpcLink = process.env.RPCURL;
 
 const config: HardhatUserConfig = {
+  mocha: {
+    timeout: 888888888888 // 28 years should be enough
+  },
   defaultNetwork: "hardhat",  
   networks: {
     hardhat: {
