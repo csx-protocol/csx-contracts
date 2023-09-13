@@ -34,7 +34,6 @@ const main = async () => {
 
   // Deploy CSX Token
   addressMap.set("csxToken", await deployCSXToken(hre));
-
   // Deploy Staked CSX
   const [stakedCSX, wethAddress, usdcAddress, usdtAddress] = await deployStakedCSX(hre, addressMap.get("csxToken")!);
   addressMap.set("stakedCSX", stakedCSX);
