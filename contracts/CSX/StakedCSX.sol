@@ -1,151 +1,120 @@
 // SPDX-License-Identifier: MIT
-// CSX Staking Contract v2
+pragma solidity ^0.8.19;
 
-pragma solidity 0.8.19;
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-import {IERC20, IWETH, ReentrancyGuard, ERC20} from "./Interfaces.sol";
+interface IWETH is IERC20 {
+    function deposit() external payable;
 
-error AmountSurpassesMaxSupply();
+    function transfer(address to, uint value) external returns (bool);
 
-error AmountMustBeGreaterThanZero();
-error TokenTransferFailed();
-error InvalidToken();
-error NoTokensMinted();
-error InvalidSender();
-error InsufficientBalance();
-error EthTransferFailed();
+    function withdraw(uint) external;
+}
 
 contract StakedCSX is ReentrancyGuard, ERC20 {
-    IERC20 public CSX;
-    IWETH public WETH;
-    IERC20 public USDC;
-    IERC20 public USDT;
+    using SafeERC20 for IERC20;
 
-    uint256 public constant MAX_SUPPLY = 100000000 ether;
+    /* ========== STATE VARIABLES ========== */
 
-    /// @notice PRECISION is a constant used for calculations in the contract.
-    /// It is set to 10**33 to ensure accuracy in calculations.
-    /// This allows for up to 100 million tokens with:
-    /// - A maximum dividend per token of 10^26 ether (for 18 decimals, lowest fraction is gwei)
-    /// - A maximum dividend per token of 10^32 tokens (for 6 decimals, lowest fraction is Mwei / Lovelace / Picoether)
-    uint256 private constant PRECISION = 10 ** 33; // used for higher precision calculations
+    // Staking Token
+    IERC20 public immutable tokenCSX;
 
-    /// @notice Token (usdc,weth, usdt) share of each token in gwei.
-    // USDC, WETH, USDT => totalDividendPerToken
-    mapping(address => uint256) dividendPerToken;
+    // Reward Tokens
+    IWETH public immutable tokenWETH;
+    IERC20 public immutable tokenUSDC;
+    IERC20 public immutable tokenUSDT;
 
-    /// @notice Token (usdc,weth, usdt) user's share of each token in gwei.
-    // USDC, WETH, USDT => user => xDividendPerToken
-    mapping(address => mapping(address => uint256)) xDividendPerToken;
+    uint256 public constant DIVISION = 10 ** 33; // to prevent float calculation
 
-    /// @notice Amount that should have been withdrawn
-    // USDC, WETH, USDT => user => credit
-    mapping(address => mapping(address => uint256)) credit;
+    //uint256 public lastRewardRate; // S = 0;
+    // rewardToken -> lastRewardRate
+    mapping(address => uint256) public lastRewardRate; // S0 = {};
 
-    /// @notice State variable representing amount claimed by account in WETH, USDC, USDT
-    // USDC, WETH, USDT => user => totalClaimed
-    mapping(address => mapping(address => uint256)) totalClaimed;
+    // rewardToken -> user -> rewardRate
+    mapping(address => mapping (address => uint256)) public rewardRate; // S0 = {};
+    //mapping(address => uint256) public rewardRate; // S0 = {};
+    
+    //mapping(address => uint256) public credit; // C = {};
+    mapping(address => mapping(address => uint256)) credit; // C = {};
 
-    event FundsReceived(
-        uint256 amount,
-        uint256 dividendPerToken,
-        address token
-    );
+    event Stake(address indexed user, uint256 amount);
+    event Unstake(address indexed user, uint256 amount);
+    event ClaimReward(address indexed user, uint256 reward);
+    event Distribute(address indexed user, uint256 reward);
 
-    event FundsClaimed(uint256 amount, uint256 dividendPerToken, address token);
-
-    modifier mintable(uint256 amount) {
-        if (amount + totalSupply() > MAX_SUPPLY) {
-            revert AmountSurpassesMaxSupply();
-        }
-        _;
-    }
+    error AmountSurpassesMaxSupply();
+    error AmountMustBeGreaterThanZero();
+    error TokenTransferFailed();
+    error InvalidToken();
+    error NoTokensMinted();
+    error InvalidSender();
+    error InsufficientBalance();
+    error EthTransferFailed();
 
     constructor(
-        address _csxAddress,
-        address _weth,
-        address _usdc,
-        address _usdt
+        address _csxToken,
+        address _wethToken,
+        address _usdcToken,
+        address _usdtToken
     ) ERC20("Staked CSX", "sCSX") {
-        CSX = IERC20(_csxAddress);
-        WETH = IWETH(_weth);
-        USDC = IERC20(_usdc);
-        USDT = IERC20(_usdt);
+        tokenCSX = IERC20(_csxToken);
+        tokenWETH = IWETH(_wethToken);
+        tokenUSDC = IERC20(_usdcToken);
+        tokenUSDT = IERC20(_usdtToken);
     }
 
-    //=================================== EXTERNAL ==============================================
-
-    /// @notice Function to getClaimableAmount
-    /// @param _account address of the user
-    /// @return usdcAmount
-    /// @return usdtAmount
-    /// @return wethAmount
-    function getClaimableAmount(
-        address _account
-    )
-        external
-        view
-        returns (uint256 usdcAmount, uint256 usdtAmount, uint256 wethAmount)
-    {
-        uint256 recipientBalance = balanceOf(_account);
-        usdcAmount = (((dividendPerToken[address(USDC)] -
-            xDividendPerToken[address(USDC)][_account]) * recipientBalance) /
-            PRECISION);
-        usdtAmount = (((dividendPerToken[address(USDT)] -
-            xDividendPerToken[address(USDT)][_account]) * recipientBalance) /
-            PRECISION);
-        wethAmount = (((dividendPerToken[address(WETH)] -
-            xDividendPerToken[address(WETH)][_account]) * recipientBalance) /
-            PRECISION);
+    function stake(uint256 _amount) external nonReentrant {
+        if (_amount == 0) {
+            revert AmountMustBeGreaterThanZero();
+        }
+        tokenCSX.safeTransferFrom(msg.sender, address(this), _amount);
+        _mint(msg.sender, _amount);
+        _updateRewardRate(msg.sender, address(tokenWETH));
+        _updateRewardRate(msg.sender, address(tokenUSDC));
+        _updateRewardRate(msg.sender, address(tokenUSDT));
+        emit Stake(msg.sender, _amount);
     }
 
-    /// @notice Function to reward stakers.
-    function depositDividend(
-        address token,
-        uint256 amount
-    ) external returns (bool) {
-        if (totalSupply() == 0) {
+    function unStake(uint256 _amount) external nonReentrant {
+        if (_amount == 0) {
+            revert AmountMustBeGreaterThanZero();
+        }
+        if (balanceOf(msg.sender) < _amount) {
+            revert InsufficientBalance();
+        }    
+
+        _claimToCredit(msg.sender);
+        _burn(msg.sender, _amount);
+
+        tokenCSX.safeTransfer(msg.sender, _amount);
+
+        emit Unstake(msg.sender, _amount);
+    }
+
+    mapping(address => uint256) public roundingErrors;
+    function depositDividend(address _token, uint256 _reward) external {
+        if(_reward == 0) {
+            revert AmountMustBeGreaterThanZero();
+        }
+        if(totalSupply() == 0) {
             revert NoTokensMinted();
         }
         if (
-            token != address(WETH) &&
-            token != address(USDC) &&
-            token != address(USDT)
+            _token != address(tokenWETH) &&
+            _token != address(tokenUSDC) &&
+            _token != address(tokenUSDT)
         ) {
             revert InvalidToken();
         }
-        if (!IERC20(token).transferFrom(msg.sender, address(this), amount)) {
-            revert TokenTransferFailed();
-        }
 
-        dividendPerToken[token] += (amount * PRECISION) / totalSupply();
-        emit FundsReceived(amount, dividendPerToken[token], token);
+        IERC20(_token).safeTransferFrom(msg.sender, address(this), _reward);
 
-        return true;
-    }
-
-    function stake(uint256 amount) external mintable(amount) nonReentrant {
-        if (amount == 0) {
-            revert AmountMustBeGreaterThanZero();
-        }
-        if (!CSX.transferFrom(msg.sender, address(this), amount)) {
-            revert TokenTransferFailed();
-        }
-        _mint(msg.sender, amount);
-    }
-
-    function unStake(uint256 amount) external nonReentrant {
-        if (amount == 0) {
-            revert AmountMustBeGreaterThanZero();
-        }
-        if (balanceOf(msg.sender) < amount) {
-            revert InsufficientBalance();
-        }
-        _claimToCredit(msg.sender);
-        _burn(msg.sender, amount);
-        if (!CSX.transfer(msg.sender, amount)) {
-            revert TokenTransferFailed();
-        }
+        lastRewardRate[address(_token)] += ((_reward * DIVISION) / totalSupply());
+        
+        emit Distribute(msg.sender, _reward);
     }
 
     function claim(
@@ -155,23 +124,46 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         bool convertWethToEth
     ) external nonReentrant {
         if (claimWeth) {
-            _claim(address(WETH), convertWethToEth);
+            _claim(msg.sender, address(tokenWETH), convertWethToEth);
         }
         if (claimUsdc) {
-            _claim(address(USDC), false);
+            _claim(msg.sender, address(tokenUSDC), false);
         }
         if (claimUsdt) {
-            _claim(address(USDT), false);
+            _claim(msg.sender, address(tokenUSDT), false);
+        }       
+    }
+
+    function rewardOf(address _account) public view returns (uint256 usdcAmount, uint256 usdtAmount, uint256 wethAmount) {
+        uint256 deposited = balanceOf(_account);
+        
+        if(deposited != 0) {
+            wethAmount = (deposited * (lastRewardRate[address(tokenWETH)] - rewardRate[address(tokenWETH)][_account])) / DIVISION; // reward = deposited * (S - S0[address]);
+            usdcAmount = (deposited * (lastRewardRate[address(tokenUSDC)] - rewardRate[address(tokenUSDC)][_account])) / DIVISION; // reward = deposited * (S - S0[address]);
+            usdtAmount = (deposited * (lastRewardRate[address(tokenUSDT)] - rewardRate[address(tokenUSDT)][_account])) / DIVISION; // reward = deposited * (S - S0[address]);
+        }
+        
+        if(credit[address(tokenWETH)][_account] > 0) {
+            wethAmount += credit[address(tokenWETH)][_account];
+        }
+       
+        if(credit[address(tokenUSDC)][_account] > 0) {
+            usdcAmount += credit[address(tokenUSDC)][_account];
+        }
+       
+        if(credit[address(tokenUSDT)][_account] > 0) {
+            usdtAmount += credit[address(tokenUSDT)][_account];
         }
     }
 
     receive() external payable {
-        if (address(WETH) != msg.sender) {
+        if (address(tokenWETH) != msg.sender) {
             revert InvalidSender();
         }
     }
 
     //=================================== INTERNAL ==============================================
+
     function _beforeTokenTransfer(
         address from,
         address to,
@@ -179,87 +171,65 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
     ) internal override {
         super._beforeTokenTransfer(from, to, amount);
         if (from == address(0) || to == address(0)) return;
-        // receiver first withdraw funds to credit
         _claimToCredit(to);
         _claimToCredit(from);
     }
 
     //=================================== PRIVATE ==============================================
 
-    function _claimToCredit(address to_) private {
-        uint256 recipientBalance = balanceOf(to_);
-        if (recipientBalance != 0) {
-            uint256 usdcAmount = (((dividendPerToken[address(USDC)] -
-                xDividendPerToken[address(USDC)][to_]) * recipientBalance) /
-                PRECISION);
-            uint256 usdtAmount = (((dividendPerToken[address(USDT)] -
-                xDividendPerToken[address(USDT)][to_]) * recipientBalance) /
-                PRECISION);
-            uint256 wethAmount = (((dividendPerToken[address(WETH)] -
-                xDividendPerToken[address(WETH)][to_]) * recipientBalance) /
-                PRECISION);
-
-            if (usdcAmount != 0) {
-                credit[address(USDC)][to_] =
-                    credit[address(USDC)][to_] +
-                    usdcAmount;
+    function _claimToCredit(address _to) private {
+        if(balanceOf(_to) != 0) {
+            (,,uint256 rewardWETH) = rewardOf(_to);
+            if (rewardWETH > 0) {
+                credit[address(tokenWETH)][_to] += rewardWETH;
             }
-
-            if (usdtAmount != 0) {
-                credit[address(USDT)][to_] =
-                    credit[address(USDT)][to_] +
-                    usdtAmount;
+            (uint256 rewardUSDC,,) = rewardOf(_to);
+            if(rewardUSDC > 0) {
+                credit[address(tokenUSDC)][_to] += rewardUSDC;
             }
-
-            if (wethAmount != 0) {
-                credit[address(WETH)][to_] =
-                    credit[address(WETH)][to_] +
-                    wethAmount;
+            (,uint256 rewardUSDT,) = rewardOf(_to);
+            if(rewardUSDT > 0) {
+                credit[address(tokenUSDT)][_to] += rewardUSDT;
             }
         }
-        xDividendPerToken[address(USDC)][to_] = dividendPerToken[address(USDC)];
-        xDividendPerToken[address(USDT)][to_] = dividendPerToken[address(USDT)];
-        xDividendPerToken[address(WETH)][to_] = dividendPerToken[address(WETH)];
+        _updateRewardRate(_to, address(tokenWETH));
+        _updateRewardRate(_to, address(tokenUSDC));
+        _updateRewardRate(_to, address(tokenUSDT));
     }
 
-    function _claim(address token, bool convertWethToEth) private {
-        uint256 amount;
-        uint256 csxBalance = balanceOf(msg.sender);
-        uint256 creditBalance = credit[token][msg.sender];
-
-        if (csxBalance != 0) {
-            uint256 userDividendPerToken = xDividendPerToken[token][msg.sender];
-
-            xDividendPerToken[token][msg.sender] = dividendPerToken[token];
-
-            amount = (((dividendPerToken[token] - userDividendPerToken) *
-                csxBalance) / PRECISION);
+    function _claim(address _to, address _token, bool convertWethToEth) private {
+        uint256 reward;
+        if(_token == address(tokenWETH)) {
+            (,,reward) = rewardOf(_to);
+        } else
+        if(_token == address(tokenUSDC)) {
+            (reward,,) = rewardOf(_to);
+        } else 
+        if(_token == address(tokenUSDT)) {
+            (,reward,) = rewardOf(_to);
         }
+        if(reward > 0) {
+            credit[_token][_to] = 0;
+            _updateRewardRate(_to, _token);
 
-        if (creditBalance != 0) {
-            credit[token][msg.sender] = 0;
-            amount += creditBalance;
-        }
-
-        if (amount != 0) {
-            if (token == address(WETH) && convertWethToEth) {
-                if (WETH.balanceOf(address(this)) < amount) {
+            if (_token == address(tokenWETH) && convertWethToEth) {
+                if (tokenWETH.balanceOf(address(this)) < reward) {
                     revert InsufficientBalance();
                 }
-                // Convert WETH to ETH and send to user
-                WETH.withdraw(amount);
-                // Check if the transfer is successful
-                (bool success, ) = payable(msg.sender).call{value: amount}("");
+                tokenWETH.withdraw(reward);
+
+                (bool success, ) = payable(msg.sender).call{value: reward}("");
                 if (!success) {
                     revert EthTransferFailed();
                 }
             } else {
-                if (!IERC20(token).transfer(msg.sender, amount)) {
-                    revert TokenTransferFailed();
-                }
-            }
-            totalClaimed[token][msg.sender] += amount;
-            emit FundsClaimed(amount, dividendPerToken[token], token);
+                IERC20(_token).safeTransfer(_to, reward);
+            }            
         }
+        emit ClaimReward(msg.sender, reward);
+    }
+
+    function _updateRewardRate(address _to, address _token) private {
+        rewardRate[_token][_to] = lastRewardRate[_token];
     }
 }
