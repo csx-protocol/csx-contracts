@@ -1,9 +1,9 @@
-import { USDCToken, USDTToken, WETH9Mock } from "../typechain-types/contracts/CSX/mock";
-import { CSXToken } from "../typechain-types/contracts/CSX";
+import { USDCToken, USDTToken, WETH9Mock } from "../../typechain-types/contracts/CSX/mock";
+import { CSXToken } from "../../typechain-types/contracts/CSX";
 import { expect } from "chai";
 import { Signer } from "ethers";
 import { ethers } from "hardhat";
-import { StakedCSX } from "../typechain-types";
+import { StakedCSX } from "../../typechain-types";
 
 describe("Staking", function () {
     let CSXToken: CSXToken;
@@ -99,7 +99,7 @@ describe("Staking", function () {
         });   
 
         it("Fuzz Distribute USDC Rewards", async()=> {
-            const ITERATIONS = 0;
+            let ITERATIONS = 0;
             if(ITERATIONS === 0) return;
             let totalDividendDeposited = 0n;
             let onlyOnce = false;
@@ -173,8 +173,8 @@ describe("Staking", function () {
         });
 
         it("Fuzz Distribute USDC Rewards in Ranges", async () => {
-            const ITERATIONS = 0;  // Increase iterations for more thorough fuzzing
-            const MAX_STAKER_ACCOUNTS = 0; // Increase account amount for more thorough fuzzing¨
+            let ITERATIONS = 0;  // Increase iterations for more thorough fuzzing
+            const MAX_STAKER_ACCOUNTS = 10; // Increase account amount for more thorough fuzzing¨
 
             if(ITERATIONS === 0) return;
 
@@ -529,117 +529,114 @@ describe("Staking", function () {
             console.log("-------------  Summary End ---------------");
         });        
 
-        // it("Distribute WETH Rewards", async()=> {
+        it("Distribute WETH Rewards", async()=> {
+
+            const user1amount = ethers.parseEther("500");
+            await CSXToken.connect(deployer).transfer(user1.getAddress(), user1amount);
+            await CSXToken.connect(user1).approve(staking.target, user1amount);
+            await staking.connect(user1).stake(user1amount);
+
+            const distributeAmount = ethers.parseUnits("500", 6);
+            await WETHToken.connect(deployer).deposit({value: ethers.parseEther("50")});
+            await WETHToken.connect(deployer).approve(staking.target, MAX_SUPPLY);           
             
-        //     await CSXToken.connect(deployer).transfer(user1.getAddress(), MAX_SUPPLY);
-        //     await CSXToken.connect(deployer).transfer(user2.getAddress(), MAX_SUPPLY);
+            await staking.connect(deployer).depositDividend(WETHToken.target, distributeAmount);
 
-        //     await CSXToken.connect(user1).approve(staking.target, MAX_SUPPLY);
-        //     await CSXToken.connect(user2).approve(staking.target, MAX_SUPPLY);
+            // Check reward balance of staking contract
+            const rewardBalance = await WETHToken.balanceOf(staking.target);    
+            expect(distributeAmount).to.equal(rewardBalance);
 
-        //     const user1amount = ethers.parseEther("500");
-        //     await staking.connect(user1).stake(user1amount);
+            // Check last reward
+            const lastRewardRate = await staking.lastRewardRate(WETHToken.target);
+            //console.log(lastRewardRate.toString());      
+            // 10**33 is the precision of the reward rate
+            const precision = 10n**33n;
+            expect(Number(lastRewardRate.toString())).to.equal(Number((distributeAmount * precision / user1amount).toString()));
+        });
 
-        //     const distributeAmount = ethers.parseEther("50");
-        //     await WETHToken.connect(deployer).deposit({value: ethers.parseEther("50")});
-        //     await WETHToken.connect(deployer).approve(staking.target, MAX_SUPPLY);           
+        it("Fuzz Distribute WETH Rewards", async()=> {
+            let ITERATIONS = 0;
+            if(ITERATIONS === 0) return;
+            const convertWethToEth = true;
+            let totalDividendDeposited = 0n;
             
-        //     await staking.connect(deployer).depositDividend(distributeAmount, WETHToken.target);
+            for (let i = 0; i < ITERATIONS; i++) {
+                const numStakers = Math.floor(Math.random() * potentialStakers.length) + 1;
+                const stakersForThisIteration = potentialStakers.slice(0, 1);
 
-        //     // Check reward balance of staking contract
-        //     const rewardBalance = await WETHToken.balanceOf(staking.target);    
-        //     expect(distributeAmount).to.equal(rewardBalance);
+                let totalStaked = 0n;
 
-        //     // Check last reward
-        //     const lastRewardRate = await staking.lastRewardRate(WETHToken.target);
-        //     //console.log(lastRewardRate.toString());      
-        //     // 10**33 is the precision of the reward rate
-        //     const precision = 10**33;      
-        //     expect(Number(lastRewardRate.toString())).to.equal(Number((50 * (precision) / 500).toString()));
-        // });
+                for (const staker of stakersForThisIteration) {
+                    const amount = BigInt(Math.floor(Math.random() * 1000000000000) + 1);
+                    await CSXToken.connect(deployer).transfer(staker.getAddress(), amount);
+                    await CSXToken.connect(staker).approve(staking.target, MAX_SUPPLY);
+                    await staking.connect(staker).stake(amount);
+                    totalStaked += amount;
+                }
 
-        // it("Fuzz Distribute WETH Rewards", async()=> {
-        //     const iterations = 0;
-        //     const convertWethToEth = true;
-        //     let totalDividendDeposited = 0n;
-            
-        //     for (let i = 0; i < iterations; i++) {
-        //         const numStakers = Math.floor(Math.random() * potentialStakers.length) + 1;
-        //         const stakersForThisIteration = potentialStakers.slice(0, 1);
-
-        //         let totalStaked = 0n;
-
-        //         for (const staker of stakersForThisIteration) {
-        //             const amount = BigInt(Math.floor(Math.random() * 1000000000000) + 1);
-        //             await CSXToken.connect(deployer).transfer(staker.getAddress(), amount);
-        //             await CSXToken.connect(staker).approve(staking.target, MAX_SUPPLY);
-        //             await staking.connect(staker).stake(amount);
-        //             totalStaked += amount;
-        //         }
-
-        //         //const minDeposit = 100000n;
-        //         // min deposit is 1 eth
-        //         const minDeposit = ethers.parseEther("1");
-        //         const randomDeposit = BigInt(Math.floor(Math.random() * 1000000000000));
-        //         const depositAmount = randomDeposit + minDeposit;
-        //         console.log(`RandomDeposit`, randomDeposit.toString());
-        //         console.log(`MinDeposit`, minDeposit.toString());                
+                //const minDeposit = 100000n;
+                // min deposit is 1 eth
+                const minDeposit = ethers.parseEther("1");
+                const randomDeposit = BigInt(Math.floor(Math.random() * 1000000000000));
+                const depositAmount = randomDeposit + minDeposit;
+                console.log(`RandomDeposit`, randomDeposit.toString());
+                console.log(`MinDeposit`, minDeposit.toString());                
                 
-        //         totalDividendDeposited += depositAmount;
-        //         console.log(`---------- Iteration ${i+1} ----------`);
-        //         console.log(`Total staked: ${totalStaked.toString()}`);
-        //         console.log(`Deposit amount: ${depositAmount.toString()}`);
-        //         console.log(`Stakers: ${stakersForThisIteration.length}`);
+                totalDividendDeposited += depositAmount;
+                console.log(`---------- Iteration ${i+1} ----------`);
+                console.log(`Total staked: ${totalStaked.toString()}`);
+                console.log(`Deposit amount: ${depositAmount.toString()}`);
+                console.log(`Stakers: ${stakersForThisIteration.length}`);
 
-        //         await WETHToken.connect(deployer).deposit({value: depositAmount});                
-        //         await WETHToken.connect(deployer).approve(staking.target, depositAmount);
-        //         await staking.connect(deployer).depositDividend(depositAmount, WETHToken.target);
+                await WETHToken.connect(deployer).deposit({value: depositAmount});                
+                await WETHToken.connect(deployer).approve(staking.target, depositAmount);
+                await staking.connect(deployer).depositDividend(WETHToken.target, depositAmount);
                 
-        //         for (const staker of stakersForThisIteration) {
-        //             console.log(`Checking staker ${await staker.getAddress()}`);
-        //             console.log(`Percentage of total staked: ${(BigInt(await staking.balanceOf(staker.getAddress())) / totalStaked * 100n).toString()}%`);
+                for (const staker of stakersForThisIteration) {
+                    console.log(`Checking staker ${await staker.getAddress()}`);
+                    console.log(`Percentage of total staked: ${(BigInt(await staking.balanceOf(staker.getAddress())) / totalStaked * 100n).toString()}%`);
                     
-        //             const stakedBalance = await staking.balanceOf(staker.getAddress());
-        //             const claimAmount = await staking.rewardOf(staker.getAddress());
-        //             console.log(`> Staked balance: ${stakedBalance.toString()}`);
-        //             console.log(`> Claim amount: ${claimAmount.toString()}`);                    
+                    const stakedBalance = await staking.balanceOf(staker.getAddress());
+                    const claimAmount = await staking.rewardOf(staker.getAddress());
+                    console.log(`> Staked balance: ${stakedBalance.toString()}`);
+                    console.log(`> Claim amount: ${claimAmount.toString()}`);                    
                     
-        //             const ethBalanceBefore = await ethers.provider.getBalance(staker.getAddress());
+                    const ethBalanceBefore = await ethers.provider.getBalance(staker.getAddress());
                     
-        //             // claimUsdc, claimUsdt, claimWeth, convertWethToEth
-        //             await staking.connect(staker).claim(false, false, true, convertWethToEth);
-        //             console.log(`> Claimed reward`);
+                    // claimUsdc, claimUsdt, claimWeth, convertWethToEth
+                    await staking.connect(staker).claim(false, false, true, convertWethToEth);
+                    console.log(`> Claimed reward`);
                     
-        //             const newClaimAmount = await staking.rewardOf(staker.getAddress());
-        //             console.log(`> New claim amount: ${newClaimAmount.toString()}`);
-        //             expect(newClaimAmount.wethAmount).to.equal(0n);
+                    const newClaimAmount = await staking.rewardOf(staker.getAddress());
+                    console.log(`> New claim amount: ${newClaimAmount.toString()}`);
+                    expect(newClaimAmount.wethAmount).to.equal(0n);
 
-        //             let rewardBalance;
-        //             if (convertWethToEth) {
-        //                 const ethBalanceNow = await ethers.provider.getBalance(staker.getAddress());
-        //                 console.log(`> Eth balance before: ${ethBalanceBefore.toString()}`);
-        //                 console.log(`> Eth balance now: ${ethBalanceNow.toString()}`);                        
-        //                 rewardBalance = ethBalanceNow - ethBalanceBefore;
-        //                 // expect closeTo with delta of based on small percentage of the reward since eth is self-consuming.
-        //                 expect(rewardBalance).to.closeTo(claimAmount.wethAmount, 100000000000000000n);
-        //                 await staker.sendTransaction({to: deployer.getAddress(), value: rewardBalance});
-        //             } else {
-        //                 rewardBalance = await WETHToken.balanceOf(staker.getAddress());
-        //                 expect(rewardBalance).to.equal(claimAmount.wethAmount);
-        //                 await WETHToken.connect(staker).transfer(deployer.getAddress(), claimAmount.wethAmount);
-        //             }
+                    let rewardBalance;
+                    if (convertWethToEth) {
+                        const ethBalanceNow = await ethers.provider.getBalance(staker.getAddress());
+                        console.log(`> Eth balance before: ${ethBalanceBefore.toString()}`);
+                        console.log(`> Eth balance now: ${ethBalanceNow.toString()}`);                        
+                        rewardBalance = ethBalanceNow - ethBalanceBefore;
+                        // expect closeTo with delta of based on small percentage of the reward since eth is self-consuming.
+                        expect(rewardBalance).to.closeTo(claimAmount.wethAmount, 100000000000000000n);
+                        await staker.sendTransaction({to: deployer.getAddress(), value: rewardBalance});
+                    } else {
+                        rewardBalance = await WETHToken.balanceOf(staker.getAddress());
+                        expect(rewardBalance).to.equal(claimAmount.wethAmount);
+                        await WETHToken.connect(staker).transfer(deployer.getAddress(), claimAmount.wethAmount);
+                    }
 
-        //             console.log(`> Reward balance: ${rewardBalance.toString()}`);
-        //             await staking.connect(staker).unStake(stakedBalance); 
-        //         }
+                    console.log(`> Reward balance: ${rewardBalance.toString()}`);
+                    await staking.connect(staker).unStake(stakedBalance); 
+                }
 
-        //         const stakingContractBalance = await WETHToken.balanceOf(staking.target);
-        //         console.log(`Inital deposit reward amount before all claimed: ${depositAmount.toString()}`);
-        //         console.log(`Accumulated Staking contract balance after all claimed: ${stakingContractBalance.toString()}`);
-        //         console.log(`Total dividend deposited: ${totalDividendDeposited.toString()}`);           
-        //         console.log(`---------- End iteration ${i+1} ----------`);
-        //         //await rewardToken.connect(staking.runner).transfer(deployer.getAddress(), stakingContractBalance);
-        //     }
-        // });
-    });    
+                const stakingContractBalance = await WETHToken.balanceOf(staking.target);
+                console.log(`Inital deposit reward amount before all claimed: ${depositAmount.toString()}`);
+                console.log(`Accumulated Staking contract balance after all claimed: ${stakingContractBalance.toString()}`);
+                console.log(`Total dividend deposited: ${totalDividendDeposited.toString()}`);           
+                console.log(`---------- End iteration ${i+1} ----------`);
+                //await rewardToken.connect(staking.runner).transfer(deployer.getAddress(), stakingContractBalance);
+            }
+        });
+    });
 });
