@@ -174,7 +174,7 @@ describe("Staking", function () {
 
         it("Fuzz Distribute USDC Rewards in Ranges", async () => {
             let ITERATIONS = 0;  // Increase iterations for more thorough fuzzing
-            const MAX_STAKER_ACCOUNTS = 10; // Increase account amount for more thorough fuzzing¨
+            const MAX_TOTAL_STAKERS = 10; // Increase account amount for more thorough fuzzing¨
 
             if(ITERATIONS === 0) return;
 
@@ -188,19 +188,19 @@ describe("Staking", function () {
             const [defaultAccount] = await ethers.getSigners();
 
            
-            for (let i = 0; i < MAX_STAKER_ACCOUNTS; i++) {
+            for (let i = 0; i < MAX_TOTAL_STAKERS; i++) {
               const wallet = ethers.Wallet.createRandom();
               const signer = wallet.connect(ethers.provider);
               randomAccounts.push(signer);            
 
               // percentage left iteration vs total iterations
-              const percentage = (i + 1) / MAX_STAKER_ACCOUNTS * 100;
+              const percentage = (i + 1) / MAX_TOTAL_STAKERS * 100;
 
               // percentage to String then max two decimal places
               const percentageString = percentage.toFixed(2);
 
               // iterations left
-              const iterationsLeft = MAX_STAKER_ACCOUNTS - i;
+              const iterationsLeft = MAX_TOTAL_STAKERS - i;
         
               console.log(`[Fuzz Distribute USDC Rewards in Ranges] Creating Accounts with ETH Queue: ${iterationsLeft}. Progress: ${percentageString}%.`);
 
