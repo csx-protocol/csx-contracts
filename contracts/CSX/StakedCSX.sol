@@ -5,6 +5,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {IKeepers} from "../Keepers/IKeepers.sol";
 
 interface IWETH is IERC20 {
     function deposit() external payable;
@@ -27,6 +28,9 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
     IERC20 public immutable tokenUSDC;
     IERC20 public immutable tokenUSDT;
 
+    // Keepers
+    IKeepers public immutable keepers;
+
     uint256 public constant DIVISION = 10 ** 33; // to prevent float calculation
 
     //uint256 public lastRewardRate; // S = 0;
@@ -43,7 +47,8 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
     event Stake(address indexed user, uint256 amount);
     event Unstake(address indexed user, uint256 amount);
     event ClaimReward(address indexed user, uint256 reward);
-    event Distribute(address indexed user, uint256 reward);
+    event Distribute(uint256 wethAmount, uint256 usdcAmount, uint256 usdtAmount);
+    event DepositedDividend(address indexed contractAddress, address indexed token, uint256 amount);
 
     error AmountSurpassesMaxSupply();
     error AmountMustBeGreaterThanZero();
@@ -53,17 +58,20 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
     error InvalidSender();
     error InsufficientBalance();
     error EthTransferFailed();
+    error InvalidUser();
 
     constructor(
         address _csxToken,
         address _wethToken,
         address _usdcToken,
-        address _usdtToken
+        address _usdtToken,
+        address _keepers
     ) ERC20("Staked CSX", "sCSX") {
         tokenCSX = IERC20(_csxToken);
         tokenWETH = IWETH(_wethToken);
         tokenUSDC = IERC20(_usdcToken);
         tokenUSDT = IERC20(_usdtToken);
+        keepers = IKeepers(_keepers);
     }
 
     function stake(uint256 _amount) external nonReentrant {
@@ -110,11 +118,40 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
             revert InvalidToken();
         }
 
-        IERC20(_token).safeTransferFrom(msg.sender, address(this), _reward);
+        nonDistributedRewardsPerToken[_token] += _reward;
 
-        lastRewardRate[address(_token)] += ((_reward * DIVISION) / totalSupply());
-        
-        emit Distribute(msg.sender, _reward);
+        IERC20(_token).safeTransferFrom(msg.sender, address(this), _reward);        
+
+        emit DepositedDividend(msg.sender, _token, _reward);
+    }
+
+    mapping (address => uint) public nonDistributedRewardsPerToken;
+    function distribute(bool dWeth, bool dUsdc, bool dUsdt) external {
+        if(!keepers.isCouncil(msg.sender) && !keepers.isKeeperNode(msg.sender)) {
+            revert InvalidUser();
+        }
+        if(totalSupply() == 0) {
+            revert NoTokensMinted();
+        }
+        uint256 rewardWETH = nonDistributedRewardsPerToken[address(tokenWETH)];
+        uint256 rewardUSDC = nonDistributedRewardsPerToken[address(tokenUSDC)];
+        uint256 rewardUSDT = nonDistributedRewardsPerToken[address(tokenUSDT)];
+        if(rewardWETH == 0 && rewardUSDC == 0 && rewardUSDT == 0) {
+            revert NoTokensMinted();
+        }
+        if(rewardWETH > 0 && dWeth) {
+            nonDistributedRewardsPerToken[address(tokenWETH)] = 0;
+            lastRewardRate[address(tokenWETH)] += ((rewardWETH * DIVISION) / totalSupply());
+        }
+        if(rewardUSDC > 0 && dUsdc) {
+            nonDistributedRewardsPerToken[address(tokenUSDC)] = 0;
+            lastRewardRate[address(tokenUSDC)] += ((rewardUSDC * DIVISION) / totalSupply());
+        }
+        if(rewardUSDT > 0 && dUsdt) {
+            nonDistributedRewardsPerToken[address(tokenUSDT)] = 0;
+            lastRewardRate[address(tokenUSDT)] += ((rewardUSDT * DIVISION) / totalSupply());
+        }
+        emit Distribute(rewardWETH, rewardUSDC, rewardUSDT);
     }
 
     function claim(

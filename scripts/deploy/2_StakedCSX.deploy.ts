@@ -33,8 +33,12 @@ const deployContract = async (
     usdtAddress = "0x..";  // Replace with actual address
   }
 
+  const Keepers = await hre.ethers.getContractFactory("Keepers");
+  const keepers: any = await Keepers.deploy(process.env.COUNCIL_ADDRESS!, process.env.ORACLE_NODE_ADDRESS!);
+  await keepers.waitForDeployment();
+
   const StakedCSX = await hre.ethers.getContractFactory("StakedCSX");
-  const stakedCSX: any = await StakedCSX.deploy(csxTokenAddress, wethAddress, usdcAddress, usdtAddress);
+  const stakedCSX: any = await StakedCSX.deploy(csxTokenAddress, wethAddress, usdcAddress, usdtAddress, keepers.target);
   await stakedCSX.waitForDeployment();
 
   return [stakedCSX.target, wethAddress, usdcAddress, usdtAddress];
