@@ -2,14 +2,11 @@
 pragma solidity 0.8.19;
 
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
-
 import {IKeepers} from "../Keepers/IKeepers.sol";
 import {IUsers, TradeStatus, Role} from "../Users/IUsers.sol";
 import {ITradeFactory, TradeUrl, Sticker, SkinInfo, PriceType} from "../TradeFactory/ITradeFactory.sol";
 import {Strings} from "../utils/Strings.sol";
-
-import {IStakedCSX} from "../CSX/Interfaces.sol";
-
+import {IStakedCSX, SafeERC20} from "../CSX/Interfaces.sol";
 import {IReferralRegistry} from "../Referrals/IReferralRegistry.sol";
 
 error NotFactory();
@@ -33,6 +30,7 @@ error DividendDepositFailed();
 error TimeNotElapsed();
 
 contract CSXTrade {
+    using SafeERC20 for IERC20;
     IERC20 public paymentToken;
     bytes32 public referralCode;
     PriceType public priceType;
@@ -201,17 +199,10 @@ contract CSXTrade {
             revert NotSeller();
         }
 
-        (uint256 buyerNetValue, , , ) = getNetValue(_affLink);
-
-        if (
-            !paymentToken.transferFrom(msg.sender, address(this), buyerNetValue)
-        ) {
-            revert TransferFailed();
-        }
-
         referralCode = _affLink;
 
         _changeStatus(TradeStatus.BuyerCommitted);
+        
         buyerCommitTimestamp = block.timestamp;
         usersContract.startDeliveryTimer(address(this), seller);
         buyer = _buyer;
@@ -255,6 +246,9 @@ contract CSXTrade {
             status
         );
         factoryContract.onStatusChange(status, data, seller, buyer);
+
+        (uint256 buyerNetValue, , , ) = getNetValue(_affLink);
+        paymentToken.safeTransferFrom(msg.sender, address(this), buyerNetValue);    
     }
 
     // Buyer can cancel the trade up til the seller has accepted the trade offer.
