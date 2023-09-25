@@ -10,6 +10,18 @@ import deployReferralRegistry from "./deploy/8_ReferralRegistry.deploy";
 import deployTradeFactoryBaseStorage from "./deploy/9_TradeFactoryBaseStorage.deploy";
 import deployBuyAssistoor from "./deploy/10_BuyAssistoor.deploy";
 import deployCSXTradeFactory from "./deploy/11_TradeFactory.deploy";
+import {
+  _tradeUrl,
+  assetIds,
+  imgs,
+  inspctLink,
+  names,
+  priceTypes,
+  prices,
+  skinInfo,
+  stickers,
+  weaponTypes,
+} from "./deploy/utils/list-demo";
 
 const contractNames = [
   "csxToken",
@@ -28,6 +40,9 @@ const contractNames = [
   "tradeFactory",
 ];
 
+const initContracts: boolean = true;
+const listTestItems: boolean = true;
+
 const main = async () => {
   const hre: HardhatRuntimeEnvironment = await import("hardhat");
   const addressMap: Map<string, string> = new Map();
@@ -36,14 +51,15 @@ const main = async () => {
   const CSXToken = await deployCSXToken(hre);
   addressMap.set("csxToken", CSXToken.target as string);
   // Deploy Staked CSX
-  const [stakedCSX, wethAddress, usdcAddress, usdtAddress] = await deployStakedCSX(hre, addressMap.get("csxToken")!);
+  const [stakedCSX, wethAddress, usdcAddress, usdtAddress] =
+    await deployStakedCSX(hre, addressMap.get("csxToken")!);
   addressMap.set("stakedCSX", stakedCSX.target as string);
   addressMap.set("weth", wethAddress);
   addressMap.set("usdc", usdcAddress);
   addressMap.set("usdt", usdtAddress);
-  
+
   // Deploy Escrowed CSX
-  const EscrowedCSX = await deployEscrowedCSX(hre, addressMap.get("csxToken")!);
+  const EscrowedCSX = await deployEscrowedCSX(hre, CSXToken.target as string);
   addressMap.set("escrowedCSX", EscrowedCSX.target as string);
 
   // Deploy VestedCSX
@@ -67,16 +83,26 @@ const main = async () => {
   addressMap.set("users", Users.target as string);
 
   // Deploy UserProfileLevel
-  const UserProfileLevel = await deployUserProfileLevel(hre, addressMap.get("csxToken")!)
+  const UserProfileLevel = await deployUserProfileLevel(
+    hre,
+    addressMap.get("csxToken")!
+  );
   addressMap.set("userProfileLevel", UserProfileLevel.target as string);
 
   // Deploy ReferralRegistry
   const ReferralRegistry = await deployReferralRegistry(hre);
   addressMap.set("referralRegistry", ReferralRegistry.target as string); // Deploy the ReferralRegistry contract
-  
+
   // Deploy TradeFactoryBaseStorage
-  const TradeFactoryBaseStorage = await deployTradeFactoryBaseStorage(hre, addressMap.get("keepers")!, addressMap.get("users")!);
-  addressMap.set("tradeFactoryBaseStorage", TradeFactoryBaseStorage.target as string);
+  const TradeFactoryBaseStorage = await deployTradeFactoryBaseStorage(
+    hre,
+    addressMap.get("keepers")!,
+    addressMap.get("users")!
+  );
+  addressMap.set(
+    "tradeFactoryBaseStorage",
+    TradeFactoryBaseStorage.target as string
+  );
 
   // Deploy BuyAssistoor
   const BuyAssistoor = await deployBuyAssistoor(hre, addressMap.get("weth")!);
@@ -97,10 +123,42 @@ const main = async () => {
   );
   addressMap.set("tradeFactory", TradeFactory.target as string);
 
+  console.log(`\n\n${"=".repeat(50)}\n\n`);
+
+  if (initContracts) {
+    await EscrowedCSX.init(TradeFactory.target);
+
+    await TradeFactoryBaseStorage.init(TradeFactory.target);
+
+    await ReferralRegistry.initFactory(TradeFactory.target);
+
+    await Users.setFactoryAddress(TradeFactory.target);
+  }
+
   // Logging contract addresses
   contractNames.forEach((contractName) => {
     console.log(`${contractName.padEnd(24)} ${addressMap.get(contractName)}`);
   });
+
+  if (listTestItems) {
+    for (let i = 0; i < prices.length; i++) {
+      const params = {
+        itemMarketName: names[i],
+        tradeUrl: _tradeUrl,
+        assetId: assetIds[i],
+        inspectLink: inspctLink[i],
+        itemImageUrl: imgs[i],
+        weiPrice: prices[i],
+        skinInfo: skinInfo[i],
+        stickers: stickers[i],
+        weaponType: weaponTypes[i],
+        priceType: priceTypes[i],
+      };
+      await TradeFactory.createListingContract(params);
+    }
+    const totalListings = await TradeFactory.totalContracts();
+    console.log(`Total Demo Listings: ${totalListings}`);    
+  }
 };
 
 main()
