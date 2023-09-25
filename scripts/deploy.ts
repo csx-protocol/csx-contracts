@@ -123,8 +123,6 @@ const main = async () => {
   );
   addressMap.set("tradeFactory", TradeFactory.target as string);
 
-  console.log(`\n\n${"=".repeat(50)}\n\n`);
-
   if (initContracts) {
     await EscrowedCSX.init(TradeFactory.target);
 
@@ -139,6 +137,8 @@ const main = async () => {
   contractNames.forEach((contractName) => {
     console.log(`${contractName.padEnd(24)} ${addressMap.get(contractName)}`);
   });
+
+  console.log(`\n\n${"=".repeat(50)}\n\n`);
 
   if (listTestItems) {
     for (let i = 0; i < prices.length; i++) {
