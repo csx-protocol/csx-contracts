@@ -1,6 +1,6 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
-const deployContract = async (
+const deployStakedCSX = async (
   hre: HardhatRuntimeEnvironment, 
   csxTokenAddress: string
 ): Promise<[string, string, string, string]> => {  
@@ -10,7 +10,7 @@ const deployContract = async (
   let usdcAddress: string;
   let usdtAddress: string;
 
-  if (network.name === 'ganache' || network.name === 'hardhat') {
+  if (network.name === 'ganache' || network.name === 'hardhat' || network.name === 'localhost') {
     const WETH9Mock = await hre.ethers.getContractFactory("WETH9Mock");
     const weth9Mock: any = await WETH9Mock.deploy();
     await weth9Mock.waitForDeployment();
@@ -44,4 +44,4 @@ const deployContract = async (
   return [stakedCSX.target, wethAddress, usdcAddress, usdtAddress];
 };
 
-export default deployContract;
+export default deployStakedCSX;
