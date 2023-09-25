@@ -175,7 +175,8 @@ contract CSXTrade {
             )
         );
         factoryContract.onStatusChange(status, data, seller, buyer);
-        factoryContract.removeAssetIdUsed(itemSellerAssetId, seller);
+        //factoryContract.removeAssetIdUsed(itemSellerAssetId, seller);
+        usersContract.removeAssetIdUsed(itemSellerAssetId, seller);
     }
 
     // Buyer commits tokens to buy if status-state allows & Sends trade-offer to sellers trade-link off-chain.
@@ -202,7 +203,7 @@ contract CSXTrade {
         referralCode = _affLink;
 
         _changeStatus(TradeStatus.BuyerCommitted);
-        
+
         buyerCommitTimestamp = block.timestamp;
         usersContract.startDeliveryTimer(address(this), seller);
         buyer = _buyer;

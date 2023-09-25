@@ -71,29 +71,29 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
         return tradeFactoryBaseStorage.totalContracts();
     }
 
-    mapping(string => mapping(address => address))
-        public assetIdFromUserAddrssToTradeAddrss;
+    // mapping(string => mapping(address => address))
+    //     public assetIdFromUserAddrssToTradeAddrss;
 
-    function removeAssetIdUsed(string memory _assetId, address sellerAddrss)
-        external
-        onlyTradeContracts
-        returns (bool)
-    {
-        assetIdFromUserAddrssToTradeAddrss[_assetId][sellerAddrss] = address(0);
-        return true;
-    }
+    // function removeAssetIdUsed(string memory _assetId, address sellerAddrss)
+    //     external
+    //     onlyTradeContracts
+    //     returns (bool)
+    // {
+    //     assetIdFromUserAddrssToTradeAddrss[_assetId][sellerAddrss] = address(0);
+    //     return true;
+    // }
 
-    function hasAlreadyListedItem(string memory _assetId, address sellerAddrss)
-        external
-        view
-        returns (bool)
-    {
-        if (
-            assetIdFromUserAddrssToTradeAddrss[_assetId][sellerAddrss] == address(0)
-        ) {
-            return false;
-        } else {
-            return true;
-        }
-    }
+    // function hasAlreadyListedItem(string memory _assetId, address sellerAddrss)
+    //     external
+    //     view
+    //     returns (bool)
+    // {
+    //     if (
+    //         assetIdFromUserAddrssToTradeAddrss[_assetId][sellerAddrss] == address(0)
+    //     ) {
+    //         return false;
+    //     } else {
+    //         return true;
+    //     }
+    // }
 }

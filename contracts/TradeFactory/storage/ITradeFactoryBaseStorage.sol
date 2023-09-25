@@ -18,7 +18,7 @@ interface ITradeFactoryBaseStorage {
         string memory _itemImageUrl,
         uint256 _weiPrice,
         SkinInfo memory _skinInfo
-    ) external;
+    ) external returns (bool);
 
     function getTradeContractByIndex(
         uint256 index

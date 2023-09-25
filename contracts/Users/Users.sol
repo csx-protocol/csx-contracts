@@ -25,7 +25,7 @@ contract Users is ReentrancyGuard {
         uint256 warnings;
         bool isBanned;
         DeliveryTimes deliveryInfo;
-        uint256 totalTradesAsSeller; 
+        uint256 totalTradesAsSeller;
         uint256 totalTradesAsBuyer;
     }
 
@@ -81,7 +81,10 @@ contract Users is ReentrancyGuard {
     }
 
     modifier onlyTradeContracts(address contractAddress) {
-        if (msg.sender != contractAddress || !factory.isThisTradeContract(contractAddress)) {
+        if (
+            msg.sender != contractAddress ||
+            !factory.isThisTradeContract(contractAddress)
+        ) {
             revert NotTradeContract();
         }
         _;
@@ -89,9 +92,9 @@ contract Users is ReentrancyGuard {
 
     modifier onlyKeepers() {
         if (
-        keepers.indexOf(msg.sender) == 0 &&
-        keepers.indexOf(tx.origin) == 0 &&
-        !keepers.isKeeperNode(msg.sender)
+            keepers.indexOf(msg.sender) == 0 &&
+            keepers.indexOf(tx.origin) == 0 &&
+            !keepers.isKeeperNode(msg.sender)
         ) {
             revert NotKeeper();
         }
@@ -161,7 +164,6 @@ contract Users is ReentrancyGuard {
     ) external view returns (uint256) {
         return users[user].deliveryInfo.averageDeliveryTime;
     }
- 
 
     //User to Trades
     mapping(address => UserInteraction[]) userTrades;
@@ -258,7 +260,10 @@ contract Users is ReentrancyGuard {
             revert TradeNotCompleted();
         }
 
-        if (msg.sender != _tradeContract.buyer && msg.sender != _tradeContract.seller) {
+        if (
+            msg.sender != _tradeContract.buyer &&
+            msg.sender != _tradeContract.seller
+        ) {
             revert NotPartOfTrade();
         }
 
@@ -289,5 +294,42 @@ contract Users is ReentrancyGuard {
         hasBuyer = tradeAdrsToRoleToHasRep[tradeAddrs][Role.BUYER];
 
         hasSeller = tradeAdrsToRoleToHasRep[tradeAddrs][Role.SELLER];
+    }
+
+    //
+    mapping(string => mapping(address => address))
+        public assetIdFromUserAddrssToTradeAddrss;
+
+    function removeAssetIdUsed(
+        string memory _assetId,
+        address sellerAddrss
+    ) external onlyTradeContracts(msg.sender) returns (bool) {
+        assetIdFromUserAddrssToTradeAddrss[_assetId][sellerAddrss] = address(0);
+        return true;
+    }
+
+    function hasAlreadyListedItem(
+        string memory _assetId,
+        address sellerAddrss
+    ) external view returns (bool) {
+        if (
+            assetIdFromUserAddrssToTradeAddrss[_assetId][sellerAddrss] ==
+            address(0)
+        ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function setAssetIdUsed(
+        string memory _assetId,
+        address sellerAddrss,
+        address tradeAddrss
+    ) external onlyFactory returns (bool) {
+        assetIdFromUserAddrssToTradeAddrss[_assetId][
+            sellerAddrss
+        ] = tradeAddrss;
+        return true;
     }
 }

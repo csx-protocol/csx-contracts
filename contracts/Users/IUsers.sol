@@ -50,5 +50,11 @@ interface IUsers {
 
     function changeUserInteractionStatus(address tradeAddress, address userAddress, TradeStatus status) external;
 
+    function setAssetIdUsed(string memory _assetId, address sellerAddrss, address tradeAddrss) external returns (bool);
+
+    function removeAssetIdUsed(string memory _assetId, address sellerAddrss) external returns (bool);
+
+    function hasAlreadyListedItem(string memory _assetId, address sellerAddrss) external view returns (bool);
+
     function emitNewTrade(address seller, address buyer, bytes32 refCode, PriceType priceType, uint256 value) external;
 }

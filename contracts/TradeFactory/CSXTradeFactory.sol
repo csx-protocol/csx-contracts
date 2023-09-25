@@ -40,6 +40,7 @@ struct PaymentTokens {
 error UserBanned();
 error AssetIDAlreadyExists();
 error InvalidPriceType();
+error NoTradeCreated();
 
 contract CSXTradeFactory is TradeFactoryBase {
     PaymentTokens public paymentTokens;
@@ -70,8 +71,9 @@ contract CSXTradeFactory is TradeFactoryBase {
             revert UserBanned();
         }
         if (
-            assetIdFromUserAddrssToTradeAddrss[params.assetId][msg.sender] !=
-            address(0)
+            // assetIdFromUserAddrssToTradeAddrss[params.assetId][msg.sender] !=
+            // address(0)
+            usersContract.hasAlreadyListedItem(params.assetId, msg.sender)
         ) {
             revert AssetIDAlreadyExists();
         }
@@ -83,7 +85,7 @@ contract CSXTradeFactory is TradeFactoryBase {
             revert InvalidPriceType();
         }
 
-        tradeFactoryBaseStorage.newTradeContract(
+        bool nS = tradeFactoryBaseStorage.newTradeContract(
             params.itemMarketName,
             params.tradeUrl,
             params.assetId,
@@ -93,6 +95,10 @@ contract CSXTradeFactory is TradeFactoryBase {
             params.skinInfo
         );
 
+        if (!nS) {
+            revert NoTradeCreated();
+        }
+
         uint256 totalContracts = tradeFactoryBaseStorage.totalContracts();
         address newAddress = tradeFactoryBaseStorage
             .getLastTradeContractAddress();
@@ -100,9 +106,10 @@ contract CSXTradeFactory is TradeFactoryBase {
         isTradeContract[newAddress] = true;
 
         contractAddressToIndex[newAddress] = totalContracts - 1;
-        assetIdFromUserAddrssToTradeAddrss[params.assetId][
-            msg.sender
-        ] = newAddress;
+        // assetIdFromUserAddrssToTradeAddrss[params.assetId][
+        //     msg.sender
+        // ] = newAddress;
+        usersContract.setAssetIdUsed(params.assetId, msg.sender, newAddress);
 
         CSXTrade _contract = tradeFactoryBaseStorage.getTradeContractByIndex(
             totalContracts - 1

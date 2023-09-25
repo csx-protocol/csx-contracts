@@ -39,7 +39,7 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
         string memory _itemImageUrl,
         uint256 _weiPrice,
         SkinInfo memory _skinInfo
-    ) external nonReentrant {
+    ) external nonReentrant returns (bool) {
         if (factoryAddress != msg.sender) {
             revert NotFactory();
         }
@@ -57,6 +57,7 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
             _skinInfo
         );
         ++totalContracts;
+        return true;
     }
 
     function getTradeContractByIndex(uint256 index)

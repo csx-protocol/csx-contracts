@@ -221,31 +221,31 @@ describe("TradeFactory", function () {
         });
     });
 
-    describe("Asset ID Operations", function () {
-        const assetId = "uniqueAssetId";
-        const assetId2 = "GG1";
+    // describe("Asset ID Operations", function () {
+    //     const assetId = "uniqueAssetId";
+    //     const assetId2 = "GG1";
 
-        it("should check that an asset is not already listed", async function () {
-            const hasListed = await tradeFactory.hasAlreadyListedItem(assetId, await user1.getAddress());
-            expect(hasListed).to.be.false;
-        });
+    //     it("should check that an asset is not already listed", async function () {
+    //         const hasListed = await tradeFactory.hasAlreadyListedItem(assetId, await user1.getAddress());
+    //         expect(hasListed).to.be.false;
+    //     });
 
-        it("should check that an asset is already listed", async function () {
-            const params = {
-                itemMarketName: names[0],
-                tradeUrl: _tradeUrl,
-                assetId: assetIds[0],
-                inspectLink: inspctLink[0],
-                itemImageUrl: imgs[0],
-                weiPrice: prices[0],
-                skinInfo: skinInfo[0],
-                stickers: stickers[0],
-                weaponType: weaponTypes[0],
-                priceType: priceTypes[0]
-            };
-            await tradeFactory.connect(deployer).createListingContract(params);
-            const hasListed = await tradeFactory.hasAlreadyListedItem(assetId2, await deployer.getAddress());
-            expect(hasListed).to.be.true;
-        });
-    });
+    //     it("should check that an asset is already listed", async function () {
+    //         const params = {
+    //             itemMarketName: names[0],
+    //             tradeUrl: _tradeUrl,
+    //             assetId: assetIds[0],
+    //             inspectLink: inspctLink[0],
+    //             itemImageUrl: imgs[0],
+    //             weiPrice: prices[0],
+    //             skinInfo: skinInfo[0],
+    //             stickers: stickers[0],
+    //             weaponType: weaponTypes[0],
+    //             priceType: priceTypes[0]
+    //         };
+    //         await tradeFactory.connect(deployer).createListingContract(params);
+    //         const hasListed = await tradeFactory.hasAlreadyListedItem(assetId2, await deployer.getAddress());
+    //         expect(hasListed).to.be.true;
+    //     });
+    // });
 });
