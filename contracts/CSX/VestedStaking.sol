@@ -4,6 +4,7 @@
 pragma solidity ^0.8.19;
 
 import {IERC20, IStakedCSX, IERC20Burnable} from "./Interfaces.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 struct Vesting {
     uint256 amount;
@@ -19,6 +20,8 @@ error TransferFailed();
 error InvalidSender();
 
 contract VestedStaking {
+    using SafeERC20 for IERC20;
+    
     Vesting public vesting;
 
     //uint256 public constant VESTING_PERIOD = 24 * 30 days; // 24 months
@@ -103,13 +106,13 @@ contract VestedStaking {
         sCsxToken.claim(claimUsdc, claimUsdt, claimWeth, convertWethToEth);
 
         if (claimUsdc && usdcAmount != 0) {
-            usdcToken.transfer(msg.sender, usdcAmount);
+            usdcToken.safeTransfer(msg.sender, usdcAmount);
         }
         if (claimUsdt && usdtAmount != 0) {
-            usdtToken.transfer(msg.sender, usdtAmount);
+            usdtToken.safeTransfer(msg.sender, usdtAmount);
         }
         if (claimWeth && !convertWethToEth && wethAmount != 0) {
-            wethToken.transfer(msg.sender, wethAmount);
+            wethToken.safeTransfer(msg.sender, wethAmount);
         }
         if (claimWeth && convertWethToEth && wethAmount != 0) {
             (bool success, ) = msg.sender.call{value: wethAmount}("");
