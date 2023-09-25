@@ -6,7 +6,7 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IKeepers} from "../Keepers/IKeepers.sol";
-import {IWETH} from "../Interfaces.sol";
+import {IWETH} from "./Interfaces.sol";
 
 contract StakedCSX is ReentrancyGuard, ERC20 {
     using SafeERC20 for IERC20;
