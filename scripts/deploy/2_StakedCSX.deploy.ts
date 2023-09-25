@@ -1,9 +1,10 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import { StakedCSX } from '../../typechain-types';
 
 const deployStakedCSX = async (
   hre: HardhatRuntimeEnvironment, 
   csxTokenAddress: string
-): Promise<[string, string, string, string]> => {  
+): Promise<[StakedCSX, string, string, string]> => {  
   const { network } = hre;
 
   let wethAddress: string;
@@ -41,7 +42,7 @@ const deployStakedCSX = async (
   const stakedCSX: any = await StakedCSX.deploy(csxTokenAddress, wethAddress, usdcAddress, usdtAddress, keepers.target);
   await stakedCSX.waitForDeployment();
 
-  return [stakedCSX.target, wethAddress, usdcAddress, usdtAddress];
+  return [stakedCSX, wethAddress, usdcAddress, usdtAddress];
 };
 
 export default deployStakedCSX;

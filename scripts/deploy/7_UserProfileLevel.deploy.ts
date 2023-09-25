@@ -1,10 +1,11 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import { UserProfileLevel } from '../../typechain-types';
 
-const deployUserProfileLevel = async (hre: HardhatRuntimeEnvironment, csxTokenAddress: string): Promise<string> => {
+const deployUserProfileLevel = async (hre: HardhatRuntimeEnvironment, csxTokenAddress: string): Promise<UserProfileLevel> => {
   const UserProfileLevel = await hre.ethers.getContractFactory("UserProfileLevel");
   const userProfileLevel: any = await UserProfileLevel.deploy(csxTokenAddress);
   await userProfileLevel.waitForDeployment();
-  return userProfileLevel.target;
+  return userProfileLevel;
 };
 
 export default deployUserProfileLevel;

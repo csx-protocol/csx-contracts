@@ -33,19 +33,21 @@ const main = async () => {
   const addressMap: Map<string, string> = new Map();
 
   // Deploy CSX Token
-  addressMap.set("csxToken", await deployCSXToken(hre));
+  const CSXToken = await deployCSXToken(hre);
+  addressMap.set("csxToken", CSXToken.target as string);
   // Deploy Staked CSX
   const [stakedCSX, wethAddress, usdcAddress, usdtAddress] = await deployStakedCSX(hre, addressMap.get("csxToken")!);
-  addressMap.set("stakedCSX", stakedCSX);
+  addressMap.set("stakedCSX", stakedCSX.target as string);
   addressMap.set("weth", wethAddress);
   addressMap.set("usdc", usdcAddress);
   addressMap.set("usdt", usdtAddress);
   
   // Deploy Escrowed CSX
-  addressMap.set("escrowedCSX", await deployEscrowedCSX(hre, addressMap.get("csxToken")!));
+  const EscrowedCSX = await deployEscrowedCSX(hre, addressMap.get("csxToken")!);
+  addressMap.set("escrowedCSX", EscrowedCSX.target as string);
 
   // Deploy VestedCSX
-  addressMap.set("vestedCSX", await deployVestedCSX(
+  const VestedCSX = await deployVestedCSX(
     hre,
     addressMap.get("escrowedCSX")!,
     addressMap.get("stakedCSX")!,
@@ -53,28 +55,35 @@ const main = async () => {
     addressMap.get("usdc")!,
     addressMap.get("csxToken")!,
     addressMap.get("usdt")!
-  ));
+  );
+  addressMap.set("vestedCSX", VestedCSX.target as string);
 
   // Deploy Keepers contract
-  addressMap.set("keepers", await deployKeepers(hre)); 
+  const Keepers = await deployKeepers(hre);
+  addressMap.set("keepers", Keepers.target as string);
 
   // Deploy Users contract
-  addressMap.set("users", await deployUsers(hre, addressMap.get("keepers")!));
+  const Users = await deployUsers(hre, addressMap.get("keepers")!);
+  addressMap.set("users", Users.target as string);
 
   // Deploy UserProfileLevel
-  addressMap.set("userProfileLevel", await deployUserProfileLevel(hre, addressMap.get("csxToken")!));
+  const UserProfileLevel = await deployUserProfileLevel(hre, addressMap.get("csxToken")!)
+  addressMap.set("userProfileLevel", UserProfileLevel.target as string);
 
   // Deploy ReferralRegistry
-  addressMap.set("referralRegistry", await deployReferralRegistry(hre)); // Deploy the ReferralRegistry contract
+  const ReferralRegistry = await deployReferralRegistry(hre);
+  addressMap.set("referralRegistry", ReferralRegistry.target as string); // Deploy the ReferralRegistry contract
   
   // Deploy TradeFactoryBaseStorage
-  addressMap.set("tradeFactoryBaseStorage", await deployTradeFactoryBaseStorage(hre, addressMap.get("keepers")!, addressMap.get("users")!));
+  const TradeFactoryBaseStorage = await deployTradeFactoryBaseStorage(hre, addressMap.get("keepers")!, addressMap.get("users")!);
+  addressMap.set("tradeFactoryBaseStorage", TradeFactoryBaseStorage.target as string);
 
   // Deploy BuyAssistoor
-  addressMap.set("buyAssistoor", await deployBuyAssistoor(hre, addressMap.get("weth")!));
+  const BuyAssistoor = await deployBuyAssistoor(hre, addressMap.get("weth")!);
+  addressMap.set("buyAssistoor", BuyAssistoor.target as string);
 
   // Deploy CSXTradeFactory
-  addressMap.set("tradeFactory", await deployCSXTradeFactory(
+  const TradeFactory = await deployCSXTradeFactory(
     hre,
     addressMap.get("keepers")!,
     addressMap.get("users")!,
@@ -85,7 +94,8 @@ const main = async () => {
     addressMap.get("referralRegistry")!,
     addressMap.get("tradeFactoryBaseStorage")!,
     addressMap.get("buyAssistoor")!
-  ));  
+  );
+  addressMap.set("tradeFactory", TradeFactory.target as string);
 
   // Logging contract addresses
   contractNames.forEach((contractName) => {

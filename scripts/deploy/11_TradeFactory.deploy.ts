@@ -1,5 +1,5 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { PaymentTokensStruct } from '../../typechain-types/contracts/TradeFactory/CSXTradeFactory';
+import { CSXTradeFactory, PaymentTokensStruct } from '../../typechain-types/contracts/TradeFactory/CSXTradeFactory';
 
 const deployCSXTradeFactory = async (
   hre: HardhatRuntimeEnvironment,
@@ -12,7 +12,7 @@ const deployCSXTradeFactory = async (
   referralRegistryAddress: string,
   stakedCSXAddress: string,
   buyAssistoorAddress: string
-): Promise<string> => {
+): Promise<CSXTradeFactory> => {
   const CSXTradeFactory = await hre.ethers.getContractFactory("CSXTradeFactory");
   
   const csxTradeFactory: any = await CSXTradeFactory.deploy(
@@ -27,7 +27,7 @@ const deployCSXTradeFactory = async (
   );
 
   await csxTradeFactory.waitForDeployment();
-  return csxTradeFactory.target;
+  return csxTradeFactory;
 };
 
 export default deployCSXTradeFactory;

@@ -1,4 +1,5 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { VestedCSX } from "../../typechain-types";
 
 const deployVestedCSX = async (
   hre: HardhatRuntimeEnvironment,
@@ -8,7 +9,7 @@ const deployVestedCSX = async (
   usdcAddress: string,
   csxTokenAddress: string,
   usdtAddress: string
-): Promise<string> => {
+): Promise<VestedCSX> => {
   const VestedCSX = await hre.ethers.getContractFactory("VestedCSX");
   const vestedCSX: any = await VestedCSX.deploy(
     escrowedCSXAddress,
@@ -19,7 +20,7 @@ const deployVestedCSX = async (
     usdtAddress
   );
   await vestedCSX.waitForDeployment();
-  return vestedCSX.target;
+  return vestedCSX;
 };
 
 export default deployVestedCSX;
