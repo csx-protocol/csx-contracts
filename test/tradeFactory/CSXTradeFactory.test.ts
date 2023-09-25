@@ -102,17 +102,17 @@ describe("TradeFactory", function () {
         usdt = await USDTToken.deploy();
         await usdt.waitForDeployment();
 
+        const Keepers = await ethers.getContractFactory("Keepers");
+        keepers = await Keepers.deploy(await council.getAddress(), await keeperNodeAddress.getAddress());
+        await keepers.waitForDeployment();
+
         const StakedCSX = await ethers.getContractFactory("StakedCSX");
-        scsx = await StakedCSX.deploy(csx.target, weth.target, usdc.target, usdt.target);
+        scsx = await StakedCSX.deploy(csx.target, weth.target, usdc.target, usdt.target, keepers.target);
         await scsx.waitForDeployment();
 
         const ReferralRegistry = await ethers.getContractFactory("ReferralRegistry");
         referralRegistryInstance = await ReferralRegistry.deploy();
         await referralRegistryInstance.waitForDeployment();
-
-        const Keepers = await ethers.getContractFactory("Keepers");
-        keepers = await Keepers.deploy(await council.getAddress(), await keeperNodeAddress.getAddress());
-        await keepers.waitForDeployment();
 
         const Users = await ethers.getContractFactory("Users");
         users = await Users.deploy(keepers.target);

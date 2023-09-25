@@ -6,6 +6,7 @@ describe("VestedCSX", async function() {
   let vestedCSX: any;
   let escrowedCSX: any;
   let csx: any;
+  let keepers: any;
   let stakedCSX: any;
   let usdc: any;
   let usdt: any;
@@ -14,9 +15,12 @@ describe("VestedCSX", async function() {
   let user1: Signer;
   let user2: Signer;
   let deployer: Signer;
+  let council: Signer;
+  let keeperNodeAddress: Signer;
 
   beforeEach(async function() {
-    [deployer, user1, user2] = await ethers.getSigners();
+    [deployer, council, keeperNodeAddress, user1, user2] = await ethers.getSigners();
+
    
     const CSXToken = await ethers.getContractFactory("CSXToken");
     csx = await CSXToken.deploy();
@@ -37,9 +41,13 @@ describe("VestedCSX", async function() {
     const EscrowedCSX = await ethers.getContractFactory("EscrowedCSX");
     escrowedCSX = await EscrowedCSX.deploy(csx.target);
     await escrowedCSX.waitForDeployment();
+
+    const Keepers = await ethers.getContractFactory("Keepers");
+    keepers = await Keepers.deploy(council.getAddress(), keeperNodeAddress.getAddress());
+    await keepers.waitForDeployment();
    
     const StakedCSX = await ethers.getContractFactory("StakedCSX");
-    stakedCSX = await StakedCSX.deploy(csx.target, weth.target, usdc.target, usdt.target);
+    stakedCSX = await StakedCSX.deploy(csx.target, weth.target, usdc.target, usdt.target, keepers.target);
     await stakedCSX.waitForDeployment();
     
     const VestedCSXContract = await ethers.getContractFactory("VestedCSX");
