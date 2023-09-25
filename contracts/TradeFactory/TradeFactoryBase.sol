@@ -71,10 +71,6 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
         return tradeFactoryBaseStorage.totalContracts();
     }
 
-    /* 
-    Move to Users Contract to free up space if needed
-    */
-
     mapping(string => mapping(address => address))
         public assetIdFromUserAddrssToTradeAddrss;
 
@@ -100,9 +96,4 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
             return true;
         }
     }
-    
-
-    /*
-     END Move to Users Contract to free up space if needed
-    */
 }
