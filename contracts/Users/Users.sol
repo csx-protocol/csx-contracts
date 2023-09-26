@@ -268,13 +268,13 @@ contract Users is ReentrancyGuard {
         }
 
         if (msg.sender == _tradeContract.buyer) {
-            if (tradeAdrsToRoleToHasRep[tradeAddrs][Role.BUYER] == true) {
+            if (tradeAdrsToRoleToHasRep[tradeAddrs][Role.BUYER]) {
                 revert AlreadyRepresentedAsBuyer();
             }
             tradeAdrsToRoleToHasRep[tradeAddrs][Role.BUYER] = true;
             _repAfterTrade(_tradeContract.seller, isPositive);
         } else if (msg.sender == _tradeContract.seller) {
-            if (tradeAdrsToRoleToHasRep[tradeAddrs][Role.SELLER] == true) {
+            if (tradeAdrsToRoleToHasRep[tradeAddrs][Role.SELLER]) {
                 revert AlreadyRepresentedAsSeller();
             }
             tradeAdrsToRoleToHasRep[tradeAddrs][Role.SELLER] = true;
