@@ -175,7 +175,6 @@ contract CSXTrade {
             )
         );
         factoryContract.onStatusChange(status, data, seller, buyer);
-        //factoryContract.removeAssetIdUsed(itemSellerAssetId, seller);
         usersContract.removeAssetIdUsed(itemSellerAssetId, seller);
     }
 
@@ -330,7 +329,7 @@ contract CSXTrade {
         }
         _changeStatus(TradeStatus.Completed);
         usersContract.endDeliveryTimer(address(this), seller);
-        bool success = factoryContract.removeAssetIdUsed(itemSellerAssetId, seller);
+        bool success = usersContract.removeAssetIdUsed(itemSellerAssetId, seller);
 
         if (!success) {
             revert TradeIDNotRemoved();
@@ -412,7 +411,7 @@ contract CSXTrade {
             factoryContract.onStatusChange(status, "KO_DEFAULT", seller, buyer);
         }
 
-        bool raS = factoryContract.removeAssetIdUsed(itemSellerAssetId, seller);
+        bool raS = usersContract.removeAssetIdUsed(itemSellerAssetId, seller);
         if (!raS) {
             revert TradeIDNotRemoved();
         }
@@ -447,10 +446,6 @@ contract CSXTrade {
         if (status != TradeStatus.Disputed) {
             revert StatusNotDisputeReady();
         }
-        bool success = factoryContract.removeAssetIdUsed(itemSellerAssetId, seller);
-        if (!success) {
-            revert TradeIDNotRemoved();
-        }
         if (isFavourOfBuyer) {
             status == TradeStatus.Clawbacked;
             if (isWithValue) {
@@ -463,6 +458,10 @@ contract CSXTrade {
             if (isWithValue) {
                 _distributeProceeds();
             }
+        }
+        bool success = usersContract.removeAssetIdUsed(itemSellerAssetId, seller);
+        if (!success) {
+            revert TradeIDNotRemoved();
         }
         if (giveWarningToSeller) {
             usersContract.warnUser(seller);
