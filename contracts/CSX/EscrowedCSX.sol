@@ -6,7 +6,7 @@ pragma solidity 0.8.19;
 import {ERC20Burnable, ERC20} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 
-import {ReentrancyGuard} from "./Interfaces.sol";
+import {ReentrancyGuard, SafeERC20} from "./Interfaces.sol";
 
 error AlreadyInitialized();
 error OnlyDeployerCanInitialize();
@@ -14,6 +14,7 @@ error AmountMustBeGreaterThanZero();
 error TransferFailed();
 
 contract EscrowedCSX is ERC20Burnable, ReentrancyGuard {
+    using SafeERC20 for IERC20;
     address deployer = msg.sender;
     bool public isInitialized = false;
     IERC20 public csxToken;
@@ -36,8 +37,8 @@ contract EscrowedCSX is ERC20Burnable, ReentrancyGuard {
 
     function mintEscrow(uint256 _amount) external nonReentrant {
         if(_amount == 0) revert AmountMustBeGreaterThanZero();
-        if(!csxToken.transferFrom(msg.sender, address(vestedCSX), _amount)) revert TransferFailed();
         _mint(msg.sender, _amount);
         emit Minted(msg.sender, _amount);
+        csxToken.safeTransferFrom(msg.sender, address(vestedCSX), _amount);
     }
 }
