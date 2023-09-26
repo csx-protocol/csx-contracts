@@ -27,6 +27,9 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
         if (hasInit) {
             revert AlreadyInitialized();
         }
+        if(_factoryAddress == address(0)) {
+            revert NotFactory();
+        }
         hasInit = true;
         factoryAddress = _factoryAddress;
     }

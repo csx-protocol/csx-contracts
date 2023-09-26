@@ -113,6 +113,12 @@ contract CSXTrade {
         string memory _itemImageUrl,
         SkinInfo memory _skinInfo
     ) {
+        if (_factory == address(0)) {
+            revert NotFactory();
+        }
+        if(_seller == address(0)) {
+            revert NotSeller();
+        }
         factoryContract = ITradeFactory(_factory);
         keepersContract = IKeepers(_keepers);
         usersContract = IUsers(_users);

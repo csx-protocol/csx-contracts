@@ -41,6 +41,7 @@ error UserBanned();
 error AssetIDAlreadyExists();
 error InvalidPriceType();
 error NoTradeCreated();
+error InvalidAddress(address _address);
 
 contract CSXTradeFactory is TradeFactoryBase {
     PaymentTokens public paymentTokens;
@@ -58,6 +59,15 @@ contract CSXTradeFactory is TradeFactoryBase {
         address _sCSXTokenAddress,
         address _buyAssistoor
     ) TradeFactoryBase(_keepers, _users, _tradeFactoryBaseStorage, _baseFee) {
+        if(_referralRegistryAddress == address(0)) {
+            revert InvalidAddress(_referralRegistryAddress);
+        }
+        if(_sCSXTokenAddress == address(0)) {
+            revert InvalidAddress(_sCSXTokenAddress);
+        }
+        if(_buyAssistoor == address(0)) {
+            revert InvalidAddress(_buyAssistoor);
+        }
         paymentTokens = _paymentTokens;
         referralRegistryAddress = _referralRegistryAddress;
         sCSXTokenAddress = _sCSXTokenAddress;

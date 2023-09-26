@@ -17,6 +17,12 @@ contract Keepers {
     event KeeperNodeChanged(address newKeeperNode);
 
     constructor(address _council, address _keeperNodeAddress) {
+        if(_council == address(0)) {
+            revert NotCouncil();
+        }
+        if(_keeperNodeAddress == address(0)) {
+            revert NotAKeeper();
+        }
         council = _council;
         // Mocks index 0 to require(indexOf(_keeper) == 0)
         keepers.push(address(0));
@@ -77,11 +83,17 @@ contract Keepers {
     }
 
     function changeKeeperNode(address _newAddres) external onlyCouncil {
+        if(_newAddres == address(0)) {
+            revert NotAKeeper();
+        }
         keeperNodeAddress = _newAddres;
         emit KeeperNodeChanged(_newAddres);
     }
 
     function changeCouncil(address _newCouncil) public onlyCouncil {
+        if(_newCouncil == address(0)) {
+            revert NotCouncil();
+        }
         council = _newCouncil;
         emit CouncilChanged(_newCouncil);
     }

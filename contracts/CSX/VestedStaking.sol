@@ -45,6 +45,7 @@ contract VestedStaking {
         address _usdtTokenAddress,
         address _wethTokenAddress
     ) {
+        if(_vesterAddress == address(0)) revert InvalidSender();
         vesterAddress = _vesterAddress;
         sCsxToken = IStakedCSX(_sCsxTokenAddress);
         vCsxToken = IERC20Burnable(_vCsxTokenAddress);
