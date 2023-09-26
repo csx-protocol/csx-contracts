@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // MOCK USDC Contract 
 
-pragma solidity 0.8.19;
+pragma solidity 0.8.21;
 
 import {ERC20} from "../Interfaces.sol";
 
