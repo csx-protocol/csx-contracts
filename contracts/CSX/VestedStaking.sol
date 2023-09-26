@@ -143,6 +143,6 @@ contract VestedStaking {
         vesting.amount -= amount;
         vCsxToken.burnFrom(msg.sender, amount);
         sCsxToken.unStake(amount);
-        csxToken.transfer(msg.sender, amount);
+        csxToken.safeTransfer(msg.sender, amount);
     }
 }
