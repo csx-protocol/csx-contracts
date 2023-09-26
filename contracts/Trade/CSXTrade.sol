@@ -150,17 +150,17 @@ contract CSXTrade {
         for (uint256 i = 0; i < _stickers.length; i++) {
             stickers.push(_stickers[i]);
         }
+        weaponType = _weaponType;
+        paymentToken = IERC20(_paymentToken);
+        priceType = _priceType;
+        referralRegistryContract = IReferralRegistry(_referralRegistryContract);
+        sCSXToken = IStakedCSX(_sCSXToken);
         usersContract.addUserInteractionStatus(
             address(this),
             Role.SELLER,
             seller,
             TradeStatus.ForSale
         );
-        weaponType = _weaponType;
-        paymentToken = IERC20(_paymentToken);
-        priceType = _priceType;
-        referralRegistryContract = IReferralRegistry(_referralRegistryContract);
-        sCSXToken = IStakedCSX(_sCSXToken);
     }
 
     // Seller can cancel the listing up til any buyer has committed tokens.
@@ -210,7 +210,7 @@ contract CSXTrade {
         _changeStatus(TradeStatus.BuyerCommitted);
 
         buyerCommitTimestamp = block.timestamp;
-        usersContract.startDeliveryTimer(address(this), seller);
+        
         buyer = _buyer;
         buyerTradeUrl = _buyerTradeUrl;
 
@@ -252,6 +252,7 @@ contract CSXTrade {
             status
         );
         factoryContract.onStatusChange(status, data, seller, buyer);
+        usersContract.startDeliveryTimer(address(this), seller);
 
         (uint256 buyerNetValue, , , ) = getNetValue(_affLink);
         paymentToken.safeTransferFrom(msg.sender, address(this), buyerNetValue);    

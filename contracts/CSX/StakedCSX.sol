@@ -70,11 +70,11 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         if (_amount == 0) {
             revert AmountMustBeGreaterThanZero();
         }
-        tokenCSX.safeTransferFrom(msg.sender, address(this), _amount);
         _mint(msg.sender, _amount);
         _updateRewardRate(msg.sender, address(tokenWETH));
         _updateRewardRate(msg.sender, address(tokenUSDC));
         _updateRewardRate(msg.sender, address(tokenUSDT));
+        tokenCSX.safeTransferFrom(msg.sender, address(this), _amount);
         emit Stake(msg.sender, _amount);
     }
 
@@ -112,9 +112,9 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
 
         nonDistributedRewardsPerToken[_token] += _reward;
 
-        IERC20(_token).safeTransferFrom(msg.sender, address(this), _reward);        
-
         emit DepositedDividend(msg.sender, _token, _reward);
+
+        IERC20(_token).safeTransferFrom(msg.sender, address(this), _reward);        
     }
 
     mapping (address => uint) public nonDistributedRewardsPerToken;

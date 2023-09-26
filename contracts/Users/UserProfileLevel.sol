@@ -58,12 +58,12 @@ contract UserProfileLevel {
 
         // Update the user's level
         user.level += _levels;
-        
-        // Burn the _tokenAmount
-        csxToken.burnFrom(msg.sender, _tokenAmount);
 
         // Emit ProfileLeveledUp event
         emit ProfileLeveledUp(msg.sender, user.level, _levels);
+        
+        // Burn the _tokenAmount
+        csxToken.burnFrom(msg.sender, _tokenAmount);
     }
 
     /**

@@ -73,9 +73,9 @@ contract VestedStaking {
         if (!csxToken.transferFrom(msg.sender, address(this), amount)) {
             revert DepositFailed();
         }
+        vesting = Vesting(vesting.amount + amount, block.timestamp); // vesting time-lock (re)-starts when deposit is made
         csxToken.approve(address(sCsxToken), amount);
         sCsxToken.stake(amount);
-        vesting = Vesting(vesting.amount + amount, block.timestamp); // vesting time-lock (re)-starts when deposit is made
     }
 
     // @notice get Claimable Amount and Vesting Start Time
