@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.21;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IKeepers} from "../Keepers/IKeepers.sol";
-import {IWETH} from "../Interfaces.sol";
+import {IWETH, SafeERC20} from "./Interfaces.sol";
 
 contract StakedCSX is ReentrancyGuard, ERC20 {
     using SafeERC20 for IERC20;
@@ -71,11 +70,11 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         if (_amount == 0) {
             revert AmountMustBeGreaterThanZero();
         }
-        tokenCSX.safeTransferFrom(msg.sender, address(this), _amount);
         _mint(msg.sender, _amount);
         _updateRewardRate(msg.sender, address(tokenWETH));
         _updateRewardRate(msg.sender, address(tokenUSDC));
         _updateRewardRate(msg.sender, address(tokenUSDT));
+        tokenCSX.safeTransferFrom(msg.sender, address(this), _amount);
         emit Stake(msg.sender, _amount);
     }
 
@@ -113,9 +112,9 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
 
         nonDistributedRewardsPerToken[_token] += _reward;
 
-        IERC20(_token).safeTransferFrom(msg.sender, address(this), _reward);        
-
         emit DepositedDividend(msg.sender, _token, _reward);
+
+        IERC20(_token).safeTransferFrom(msg.sender, address(this), _reward);        
     }
 
     mapping (address => uint) public nonDistributedRewardsPerToken;

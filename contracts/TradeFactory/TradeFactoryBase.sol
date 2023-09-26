@@ -1,5 +1,5 @@
 // //SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.19;
+pragma solidity ^0.8.21;
 
 import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
@@ -67,33 +67,33 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
         emit TradeContractStatusChange(msg.sender, status, data, sellerAddress, buyerAddress);
     }
 
-    function totalContracts() external view returns (uint256) {
+    function totalContracts() public view returns (uint256) {
         return tradeFactoryBaseStorage.totalContracts();
     }
 
-    mapping(string => mapping(address => address))
-        public assetIdFromUserAddrssToTradeAddrss;
+    // mapping(string => mapping(address => address))
+    //     public assetIdFromUserAddrssToTradeAddrss;
 
-    function removeAssetIdUsed(string memory _assetId, address sellerAddrss)
-        external
-        onlyTradeContracts
-        returns (bool)
-    {
-        assetIdFromUserAddrssToTradeAddrss[_assetId][sellerAddrss] = address(0);
-        return true;
-    }
+    // function removeAssetIdUsed(string memory _assetId, address sellerAddrss)
+    //     external
+    //     onlyTradeContracts
+    //     returns (bool)
+    // {
+    //     assetIdFromUserAddrssToTradeAddrss[_assetId][sellerAddrss] = address(0);
+    //     return true;
+    // }
 
-    function hasAlreadyListedItem(string memory _assetId, address sellerAddrss)
-        external
-        view
-        returns (bool)
-    {
-        if (
-            assetIdFromUserAddrssToTradeAddrss[_assetId][sellerAddrss] == address(0)
-        ) {
-            return false;
-        } else {
-            return true;
-        }
-    }
+    // function hasAlreadyListedItem(string memory _assetId, address sellerAddrss)
+    //     external
+    //     view
+    //     returns (bool)
+    // {
+    //     if (
+    //         assetIdFromUserAddrssToTradeAddrss[_assetId][sellerAddrss] == address(0)
+    //     ) {
+    //         return false;
+    //     } else {
+    //         return true;
+    //     }
+    // }
 }

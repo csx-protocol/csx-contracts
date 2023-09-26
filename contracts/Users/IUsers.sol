@@ -1,15 +1,5 @@
-// //SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.19;
-// enum TradeStatus {
-//     Pending,
-//     SellerCancelled,
-//     Committed,
-//     Accepted,
-//     Completed,
-//     Disputed,
-//     Resolved,
-//     Clawbacked
-// }
+// //SPDX-License-Identifier: MIT
+pragma solidity ^0.8.21;
 
 enum TradeStatus {
     ForSale, // Seller Lists Item
@@ -49,6 +39,12 @@ interface IUsers {
     function addUserInteractionStatus(address tradeAddress, Role role,  address userAddress, TradeStatus status) external;
 
     function changeUserInteractionStatus(address tradeAddress, address userAddress, TradeStatus status) external;
+
+    function setAssetIdUsed(string memory _assetId, address sellerAddrss, address tradeAddrss) external returns (bool);
+
+    function removeAssetIdUsed(string memory _assetId, address sellerAddrss) external returns (bool);
+
+    function hasAlreadyListedItem(string memory _assetId, address sellerAddrss) external view returns (bool);
 
     function emitNewTrade(address seller, address buyer, bytes32 refCode, PriceType priceType, uint256 value) external;
 }

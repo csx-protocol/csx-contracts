@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // CSX UserProfileLevel Contract v1
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.21;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Burnable} from "../CSX/Interfaces.sol";
@@ -55,15 +55,15 @@ contract UserProfileLevel {
         if (_tokenAmount < totalCost) {
             revert InsufficientTokens();
         }
-        
-        // Burn the _tokenAmount
-        csxToken.burnFrom(msg.sender, _tokenAmount);
 
         // Update the user's level
         user.level += _levels;
 
         // Emit ProfileLeveledUp event
         emit ProfileLeveledUp(msg.sender, user.level, _levels);
+        
+        // Burn the _tokenAmount
+        csxToken.burnFrom(msg.sender, _tokenAmount);
     }
 
     /**

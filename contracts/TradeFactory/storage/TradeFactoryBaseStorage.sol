@@ -1,5 +1,5 @@
 // //SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.19;
+pragma solidity ^0.8.21;
 
 import {IKeepers, ReentrancyGuard, CSXTrade, IUsers, TradeUrl, SkinInfo} from "./ITradeFactoryBaseStorage.sol";
 
@@ -27,6 +27,9 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
         if (hasInit) {
             revert AlreadyInitialized();
         }
+        if(_factoryAddress == address(0)) {
+            revert NotFactory();
+        }
         hasInit = true;
         factoryAddress = _factoryAddress;
     }
@@ -39,7 +42,7 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
         string memory _itemImageUrl,
         uint256 _weiPrice,
         SkinInfo memory _skinInfo
-    ) external nonReentrant {
+    ) external nonReentrant returns (bool) {
         if (factoryAddress != msg.sender) {
             revert NotFactory();
         }
@@ -57,6 +60,7 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
             _skinInfo
         );
         ++totalContracts;
+        return true;
     }
 
     function getTradeContractByIndex(uint256 index)

@@ -1,15 +1,12 @@
 // //SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity ^0.8.21;
 
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
-
 import {IKeepers} from "../Keepers/IKeepers.sol";
 import {IUsers, TradeStatus, Role} from "../Users/IUsers.sol";
 import {ITradeFactory, TradeUrl, Sticker, SkinInfo, PriceType} from "../TradeFactory/ITradeFactory.sol";
 import {Strings} from "../utils/Strings.sol";
-
-import {IStakedCSX} from "../CSX/Interfaces.sol";
-
+import {IStakedCSX, SafeERC20} from "../CSX/Interfaces.sol";
 import {IReferralRegistry} from "../Referrals/IReferralRegistry.sol";
 
 error NotFactory();
@@ -33,6 +30,7 @@ error DividendDepositFailed();
 error TimeNotElapsed();
 
 contract CSXTrade {
+    using SafeERC20 for IERC20;
     IERC20 public paymentToken;
     bytes32 public referralCode;
     PriceType public priceType;
@@ -115,6 +113,12 @@ contract CSXTrade {
         string memory _itemImageUrl,
         SkinInfo memory _skinInfo
     ) {
+        if (_factory == address(0)) {
+            revert NotFactory();
+        }
+        if(_seller == address(0)) {
+            revert NotSeller();
+        }
         factoryContract = ITradeFactory(_factory);
         keepersContract = IKeepers(_keepers);
         usersContract = IUsers(_users);
@@ -146,17 +150,17 @@ contract CSXTrade {
         for (uint256 i = 0; i < _stickers.length; i++) {
             stickers.push(_stickers[i]);
         }
+        weaponType = _weaponType;
+        paymentToken = IERC20(_paymentToken);
+        priceType = _priceType;
+        referralRegistryContract = IReferralRegistry(_referralRegistryContract);
+        sCSXToken = IStakedCSX(_sCSXToken);
         usersContract.addUserInteractionStatus(
             address(this),
             Role.SELLER,
             seller,
             TradeStatus.ForSale
         );
-        weaponType = _weaponType;
-        paymentToken = IERC20(_paymentToken);
-        priceType = _priceType;
-        referralRegistryContract = IReferralRegistry(_referralRegistryContract);
-        sCSXToken = IStakedCSX(_sCSXToken);
     }
 
     // Seller can cancel the listing up til any buyer has committed tokens.
@@ -177,7 +181,7 @@ contract CSXTrade {
             )
         );
         factoryContract.onStatusChange(status, data, seller, buyer);
-        factoryContract.removeAssetIdUsed(itemSellerAssetId, seller);
+        usersContract.removeAssetIdUsed(itemSellerAssetId, seller);
     }
 
     // Buyer commits tokens to buy if status-state allows & Sends trade-offer to sellers trade-link off-chain.
@@ -201,19 +205,12 @@ contract CSXTrade {
             revert NotSeller();
         }
 
-        (uint256 buyerNetValue, , , ) = getNetValue(_affLink);
-
-        if (
-            !paymentToken.transferFrom(msg.sender, address(this), buyerNetValue)
-        ) {
-            revert TransferFailed();
-        }
-
         referralCode = _affLink;
 
         _changeStatus(TradeStatus.BuyerCommitted);
+
         buyerCommitTimestamp = block.timestamp;
-        usersContract.startDeliveryTimer(address(this), seller);
+        
         buyer = _buyer;
         buyerTradeUrl = _buyerTradeUrl;
 
@@ -255,6 +252,10 @@ contract CSXTrade {
             status
         );
         factoryContract.onStatusChange(status, data, seller, buyer);
+        usersContract.startDeliveryTimer(address(this), seller);
+
+        (uint256 buyerNetValue, , , ) = getNetValue(_affLink);
+        paymentToken.safeTransferFrom(msg.sender, address(this), buyerNetValue);    
     }
 
     // Buyer can cancel the trade up til the seller has accepted the trade offer.
@@ -335,7 +336,7 @@ contract CSXTrade {
         }
         _changeStatus(TradeStatus.Completed);
         usersContract.endDeliveryTimer(address(this), seller);
-        bool success = factoryContract.removeAssetIdUsed(itemSellerAssetId, seller);
+        bool success = usersContract.removeAssetIdUsed(itemSellerAssetId, seller);
 
         if (!success) {
             revert TradeIDNotRemoved();
@@ -417,7 +418,7 @@ contract CSXTrade {
             factoryContract.onStatusChange(status, "KO_DEFAULT", seller, buyer);
         }
 
-        bool raS = factoryContract.removeAssetIdUsed(itemSellerAssetId, seller);
+        bool raS = usersContract.removeAssetIdUsed(itemSellerAssetId, seller);
         if (!raS) {
             revert TradeIDNotRemoved();
         }
@@ -452,10 +453,6 @@ contract CSXTrade {
         if (status != TradeStatus.Disputed) {
             revert StatusNotDisputeReady();
         }
-        bool success = factoryContract.removeAssetIdUsed(itemSellerAssetId, seller);
-        if (!success) {
-            revert TradeIDNotRemoved();
-        }
         if (isFavourOfBuyer) {
             status == TradeStatus.Clawbacked;
             if (isWithValue) {
@@ -468,6 +465,10 @@ contract CSXTrade {
             if (isWithValue) {
                 _distributeProceeds();
             }
+        }
+        bool success = usersContract.removeAssetIdUsed(itemSellerAssetId, seller);
+        if (!success) {
+            revert TradeIDNotRemoved();
         }
         if (giveWarningToSeller) {
             usersContract.warnUser(seller);

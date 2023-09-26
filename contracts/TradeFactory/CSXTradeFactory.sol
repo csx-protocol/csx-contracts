@@ -1,5 +1,5 @@
 // //SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.19;
+pragma solidity ^0.8.21;
 
 import {CSXTrade, PriceType, TradeUrl, SkinInfo, Sticker} from "../Trade/CSXTrade.sol";
 import {TradeFactoryBase, TradeInfo, TradeStatus, Strings} from "./TradeFactoryBase.sol";
@@ -40,6 +40,8 @@ struct PaymentTokens {
 error UserBanned();
 error AssetIDAlreadyExists();
 error InvalidPriceType();
+error NoTradeCreated();
+error InvalidAddress(address _address);
 
 contract CSXTradeFactory is TradeFactoryBase {
     PaymentTokens public paymentTokens;
@@ -57,6 +59,15 @@ contract CSXTradeFactory is TradeFactoryBase {
         address _sCSXTokenAddress,
         address _buyAssistoor
     ) TradeFactoryBase(_keepers, _users, _tradeFactoryBaseStorage, _baseFee) {
+        if(_referralRegistryAddress == address(0)) {
+            revert InvalidAddress(_referralRegistryAddress);
+        }
+        if(_sCSXTokenAddress == address(0)) {
+            revert InvalidAddress(_sCSXTokenAddress);
+        }
+        if(_buyAssistoor == address(0)) {
+            revert InvalidAddress(_buyAssistoor);
+        }
         paymentTokens = _paymentTokens;
         referralRegistryAddress = _referralRegistryAddress;
         sCSXTokenAddress = _sCSXTokenAddress;
@@ -69,11 +80,22 @@ contract CSXTradeFactory is TradeFactoryBase {
         if (usersContract.isBanned(msg.sender)) {
             revert UserBanned();
         }
-        if (assetIdFromUserAddrssToTradeAddrss[params.assetId][msg.sender] != address(0)) {
+        if (
+            // assetIdFromUserAddrssToTradeAddrss[params.assetId][msg.sender] !=
+            // address(0)
+            usersContract.hasAlreadyListedItem(params.assetId, msg.sender)
+        ) {
             revert AssetIDAlreadyExists();
         }
+        if (
+            params.priceType != PriceType.WETH &&
+            params.priceType != PriceType.USDC &&
+            params.priceType != PriceType.USDT
+        ) {
+            revert InvalidPriceType();
+        }
 
-        tradeFactoryBaseStorage.newTradeContract(
+        bool nS = tradeFactoryBaseStorage.newTradeContract(
             params.itemMarketName,
             params.tradeUrl,
             params.assetId,
@@ -83,18 +105,27 @@ contract CSXTradeFactory is TradeFactoryBase {
             params.skinInfo
         );
 
+        if (!nS) {
+            revert NoTradeCreated();
+        }
+
+        uint _tContracts = totalContracts();
         address newAddress = tradeFactoryBaseStorage
             .getLastTradeContractAddress();
-
-        uint256 totalContracts = tradeFactoryBaseStorage.totalContracts();
-
+        
         isTradeContract[newAddress] = true;
 
+        contractAddressToIndex[newAddress] = _tContracts - 1;
+        // assetIdFromUserAddrssToTradeAddrss[params.assetId][
+        //     msg.sender
+        // ] = newAddress;
+        usersContract.setAssetIdUsed(params.assetId, msg.sender, newAddress);
+
         CSXTrade _contract = tradeFactoryBaseStorage.getTradeContractByIndex(
-            totalContracts - 1
+            _tContracts - 1
         );
 
-        if(params.priceType == PriceType.WETH) {
+        if (params.priceType == PriceType.WETH) {
             _contract.initExtraInfo(
                 params.stickers,
                 params.weaponType,
@@ -103,7 +134,7 @@ contract CSXTradeFactory is TradeFactoryBase {
                 referralRegistryAddress,
                 sCSXTokenAddress
             );
-        } else if(params.priceType == PriceType.USDC) {
+        } else if (params.priceType == PriceType.USDC) {
             _contract.initExtraInfo(
                 params.stickers,
                 params.weaponType,
@@ -112,7 +143,7 @@ contract CSXTradeFactory is TradeFactoryBase {
                 referralRegistryAddress,
                 sCSXTokenAddress
             );
-        } else if(params.priceType == PriceType.USDT) {
+        } else if (params.priceType == PriceType.USDT) {
             _contract.initExtraInfo(
                 params.stickers,
                 params.weaponType,
@@ -121,18 +152,11 @@ contract CSXTradeFactory is TradeFactoryBase {
                 referralRegistryAddress,
                 sCSXTokenAddress
             );
-        } else {
-            revert InvalidPriceType();
         }
 
-        contractAddressToIndex[newAddress] = totalContracts - 1;
-        assetIdFromUserAddrssToTradeAddrss[params.assetId][msg.sender] = newAddress;
-
         ExtraTest memory _extraTest;
-
         _extraTest.tradeUrlPartner = Strings.toString(params.tradeUrl.partner);
         _extraTest.weiPriceStringed = Strings.toString(params.weiPrice);
-
         string memory data = string(
             abi.encodePacked(
                 params.itemMarketName,
@@ -143,11 +167,12 @@ contract CSXTradeFactory is TradeFactoryBase {
                 "+",
                 params.tradeUrl.token,
                 "||",
-                params.skinInfo.floatValues, // "[0.00, 0.00, 0.000000]" (max, min, value)
+                params.skinInfo.floatValues,
                 "||",
                 _extraTest.weiPriceStringed
             )
         );
+
         emit TradeContractStatusChange(
             newAddress,
             TradeStatus.ForSale,
@@ -161,7 +186,6 @@ contract CSXTradeFactory is TradeFactoryBase {
         uint256 index
     ) public view returns (TradeInfo memory result) {
         uint256 i = index;
-        //SMTrade _contract = tradeContracts[i];
         CSXTrade _contract = tradeFactoryBaseStorage.getTradeContractByIndex(i);
 
         result.contractAddress = address(_contract);
@@ -229,8 +253,8 @@ contract CSXTradeFactory is TradeFactoryBase {
         TradeIndex[] memory tradeIndexes = new TradeIndex[](maxResults);
         uint256 resultIndex;
         uint256 i = indexFrom;
-        uint256 totalContracts = tradeFactoryBaseStorage.totalContracts();
-        while (resultIndex < maxResults && i < totalContracts) {
+        uint256 _tC = totalContracts();
+        while (resultIndex < maxResults && i < _tC) {
             TradeInfo memory _trade = getTradeDetailsByIndex(i);
 
             if (_trade.status == status) {
@@ -254,8 +278,8 @@ contract CSXTradeFactory is TradeFactoryBase {
     ) external view returns (uint256) {
         uint256 count;
         uint256 i = 0;
-        uint256 totalContracts = tradeFactoryBaseStorage.totalContracts();
-        while (i < totalContracts) {
+        uint256 _tC = totalContracts();
+        while (i < _tC) {
             TradeInfo memory _trade = getTradeDetailsByIndex(i);
             if (_trade.status == status) {
                 ++count;

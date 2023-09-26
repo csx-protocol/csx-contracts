@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 // CSX Vesting Contract v2
 
-pragma solidity 0.8.19;
+pragma solidity ^0.8.21;
 
-import {ERC20, IERC20, ReentrancyGuard, IWETH, IERC20Burnable} from "./Interfaces.sol";
+import {ERC20, IERC20, ReentrancyGuard, IWETH, IERC20Burnable, SafeERC20} from "./Interfaces.sol";
 import {ERC20Burnable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
 import {VestedStaking, IStakedCSX} from "./VestedStaking.sol";
@@ -13,6 +13,7 @@ error AmountSurpassesMaxSupply();
 error TokenTransfersDisabled();
 
 contract VestedCSX is ReentrancyGuard, ERC20Burnable {
+    using SafeERC20 for IERC20;
     IERC20Burnable public EscrowedCSX;
     IStakedCSX public StakedCSX;
     IWETH public WETH;
@@ -54,9 +55,6 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
             revert AmountMustBeGreaterThanZero();
         }
 
-        // Burn the deposited escrow tokens
-        EscrowedCSX.burnFrom(msg.sender, amount);
-
         // Mint vCSX tokens to the user
         _mint(msg.sender, amount);
 
@@ -73,8 +71,11 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
             );
         }
 
+        // Burn the deposited escrow tokens
+        EscrowedCSX.burnFrom(msg.sender, amount);
+
         // Approve VestedStaking Contract to transfer CSX tokens
-        CSX.approve(address(vestedStakingContractPerUser[msg.sender]), amount);
+        CSX.safeApprove(address(vestedStakingContractPerUser[msg.sender]), amount);
 
         // Deposit CSX tokens to VestedStaking Contract for the user
         vestedStakingContractPerUser[msg.sender].deposit(amount);

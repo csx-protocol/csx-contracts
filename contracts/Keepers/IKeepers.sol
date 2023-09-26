@@ -1,5 +1,5 @@
 // //SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity ^0.8.21;
 
 interface IKeepers {
     function indexOf(address _keeper) external view returns (uint256);

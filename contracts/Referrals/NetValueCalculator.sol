@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.21;
 
 error InvalidDiscountRatio(uint256 provided, uint256 max);
 
@@ -62,8 +62,8 @@ contract NetValueCalculator {
         uint256 discountedFee;
         // Calculate the discounted fee and affiliator reward if the buyer is affiliated
         if (isBuyerAffiliated) {
-            discountedFee = (baseFee * discountRatio) / 100;
-            affiliatorNetReward = (baseFee * (50 - discountRatio)) / 100;
+            discountedFee = (fullItemPrice * baseFeePercent * discountRatio) / 10000;
+            affiliatorNetReward = (fullItemPrice * baseFeePercent * (50 - discountRatio)) / 10000;
         } else {
             discountedFee = 0;
             affiliatorNetReward = 0;

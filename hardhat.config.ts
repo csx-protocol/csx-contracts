@@ -22,16 +22,16 @@ const config: HardhatUserConfig = {
       // gas: 8721974,
       chainId: 1337,
     },
-    goerli: {
-      url: rpcLink,
-      accounts: [privateKeyDev],
-      gasPrice: 1000000000,
-      chainId: 421613,
-      timeout: 200000
-    }
+    // goerli: {
+    //   url: rpcLink,
+    //   accounts: [privateKeyDev],
+    //   gasPrice: 1000000000,
+    //   chainId: 421613,
+    //   timeout: 200000
+    // }
   },
   solidity: {
-    version: "0.8.19",
+    version: "0.8.21",
     settings: {
       optimizer: {
         enabled: true,

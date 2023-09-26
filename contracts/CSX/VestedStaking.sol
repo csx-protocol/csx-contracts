@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 // StakedCSXContract v1
 
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.21;
 
 import {IERC20, IStakedCSX, IERC20Burnable} from "./Interfaces.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 struct Vesting {
     uint256 amount;
@@ -19,6 +20,8 @@ error TransferFailed();
 error InvalidSender();
 
 contract VestedStaking {
+    using SafeERC20 for IERC20;
+    
     Vesting public vesting;
 
     //uint256 public constant VESTING_PERIOD = 24 * 30 days; // 24 months
@@ -42,6 +45,7 @@ contract VestedStaking {
         address _usdtTokenAddress,
         address _wethTokenAddress
     ) {
+        if(_vesterAddress == address(0)) revert InvalidSender();
         vesterAddress = _vesterAddress;
         sCsxToken = IStakedCSX(_sCsxTokenAddress);
         vCsxToken = IERC20Burnable(_vCsxTokenAddress);
@@ -66,12 +70,10 @@ contract VestedStaking {
         if (msg.sender != address(vCsxToken)) {
             revert OnlyVCSXContract();
         }        
-        if (!csxToken.transferFrom(msg.sender, address(this), amount)) {
-            revert DepositFailed();
-        }
+        vesting = Vesting(vesting.amount + amount, block.timestamp); // vesting time-lock (re)-starts when deposit is made
+        csxToken.safeTransferFrom(msg.sender, address(this), amount);
         csxToken.approve(address(sCsxToken), amount);
         sCsxToken.stake(amount);
-        vesting = Vesting(vesting.amount + amount, block.timestamp); // vesting time-lock (re)-starts when deposit is made
     }
 
     // @notice get Claimable Amount and Vesting Start Time
@@ -103,13 +105,13 @@ contract VestedStaking {
         sCsxToken.claim(claimUsdc, claimUsdt, claimWeth, convertWethToEth);
 
         if (claimUsdc && usdcAmount != 0) {
-            usdcToken.transfer(msg.sender, usdcAmount);
+            usdcToken.safeTransfer(msg.sender, usdcAmount);
         }
         if (claimUsdt && usdtAmount != 0) {
-            usdtToken.transfer(msg.sender, usdtAmount);
+            usdtToken.safeTransfer(msg.sender, usdtAmount);
         }
         if (claimWeth && !convertWethToEth && wethAmount != 0) {
-            wethToken.transfer(msg.sender, wethAmount);
+            wethToken.safeTransfer(msg.sender, wethAmount);
         }
         if (claimWeth && convertWethToEth && wethAmount != 0) {
             (bool success, ) = msg.sender.call{value: wethAmount}("");
@@ -140,6 +142,6 @@ contract VestedStaking {
         vesting.amount -= amount;
         vCsxToken.burnFrom(msg.sender, amount);
         sCsxToken.unStake(amount);
-        csxToken.transfer(msg.sender, amount);
+        csxToken.safeTransfer(msg.sender, amount);
     }
 }

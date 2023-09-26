@@ -1,5 +1,5 @@
 // //SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.19;
+pragma solidity ^0.8.21;
 
 import {TradeUrl, SkinInfo, CSXTrade, IKeepers, IUsers} from  "../../Trade/CSXTrade.sol";
 
@@ -18,7 +18,7 @@ interface ITradeFactoryBaseStorage {
         string memory _itemImageUrl,
         uint256 _weiPrice,
         SkinInfo memory _skinInfo
-    ) external;
+    ) external returns (bool);
 
     function getTradeContractByIndex(
         uint256 index
