@@ -1,15 +1,5 @@
-// //SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.21;
-// enum TradeStatus {
-//     Pending,
-//     SellerCancelled,
-//     Committed,
-//     Accepted,
-//     Completed,
-//     Disputed,
-//     Resolved,
-//     Clawbacked
-// }
+// //SPDX-License-Identifier: MIT
+pragma solidity ^0.8.21;
 
 enum TradeStatus {
     ForSale, // Seller Lists Item

@@ -1,5 +1,5 @@
 // //SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.21;
+pragma solidity ^0.8.21;
 
 import {Strings} from "../utils/Strings.sol";
 import {Role, TradeStatus} from "../Users/IUsers.sol";

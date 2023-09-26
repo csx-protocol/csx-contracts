@@ -8,6 +8,7 @@ npx hardhat test test/tradeFactory/CSXTradeFactory.test.ts
 npx hardhat node
 npx hardhat run scripts/deploy.ts
 npx hadhat run scripts/deploy/<contract>
+./mythrun.sh
 ```
 
 ```shell
