@@ -54,9 +54,6 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
             revert AmountMustBeGreaterThanZero();
         }
 
-        // Burn the deposited escrow tokens
-        EscrowedCSX.burnFrom(msg.sender, amount);
-
         // Mint vCSX tokens to the user
         _mint(msg.sender, amount);
 
@@ -72,6 +69,9 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
                 address(WETH)
             );
         }
+
+        // Burn the deposited escrow tokens
+        EscrowedCSX.burnFrom(msg.sender, amount);
 
         // Approve VestedStaking Contract to transfer CSX tokens
         CSX.approve(address(vestedStakingContractPerUser[msg.sender]), amount);
