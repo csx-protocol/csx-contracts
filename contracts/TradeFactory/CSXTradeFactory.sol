@@ -99,20 +99,20 @@ contract CSXTradeFactory is TradeFactoryBase {
             revert NoTradeCreated();
         }
 
-        uint256 totalContracts = tradeFactoryBaseStorage.totalContracts();
+        uint _tContracts = totalContracts();
         address newAddress = tradeFactoryBaseStorage
             .getLastTradeContractAddress();
         
         isTradeContract[newAddress] = true;
 
-        contractAddressToIndex[newAddress] = totalContracts - 1;
+        contractAddressToIndex[newAddress] = _tContracts - 1;
         // assetIdFromUserAddrssToTradeAddrss[params.assetId][
         //     msg.sender
         // ] = newAddress;
         usersContract.setAssetIdUsed(params.assetId, msg.sender, newAddress);
 
         CSXTrade _contract = tradeFactoryBaseStorage.getTradeContractByIndex(
-            totalContracts - 1
+            _tContracts - 1
         );
 
         if (params.priceType == PriceType.WETH) {
@@ -243,8 +243,8 @@ contract CSXTradeFactory is TradeFactoryBase {
         TradeIndex[] memory tradeIndexes = new TradeIndex[](maxResults);
         uint256 resultIndex;
         uint256 i = indexFrom;
-        uint256 totalContracts = tradeFactoryBaseStorage.totalContracts();
-        while (resultIndex < maxResults && i < totalContracts) {
+        uint256 _tC = totalContracts();
+        while (resultIndex < maxResults && i < _tC) {
             TradeInfo memory _trade = getTradeDetailsByIndex(i);
 
             if (_trade.status == status) {
@@ -268,8 +268,8 @@ contract CSXTradeFactory is TradeFactoryBase {
     ) external view returns (uint256) {
         uint256 count;
         uint256 i = 0;
-        uint256 totalContracts = tradeFactoryBaseStorage.totalContracts();
-        while (i < totalContracts) {
+        uint256 _tC = totalContracts();
+        while (i < _tC) {
             TradeInfo memory _trade = getTradeDetailsByIndex(i);
             if (_trade.status == status) {
                 ++count;
