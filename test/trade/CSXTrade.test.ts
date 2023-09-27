@@ -241,6 +241,21 @@ describe("CSXTrade", async function() {
       const status = await csxTrade.status();
       expect(status as number).to.equal(TradeStatus.SellerCancelledAfterBuyerCommitted);
     });
+    it("should not allow the buyer to confirm the trade", async function() {
+      await expect(csxTrade.connect(buyer).sellerTradeVeridict(true)).to.be.revertedWithCustomError(csxTrade, "NotParty");
+    });
+    it("should not allow the seller to confirm the trade twice", async function() {
+      const mockTradeUrl = listingParams.tradeUrl;
+      const affLink = ethers.encodeBytes32String("someRefCode");
+      const buyerAddress = await buyer.getAddress();
+      await weth.connect(buyer).deposit({value: ethers.parseEther("1")});
+      await weth.connect(buyer).approve(csxTrade.target, ethers.parseEther("1"));
+      await csxTrade.connect(buyer).commitBuy(mockTradeUrl, affLink, buyerAddress);
+      await csxTrade.connect(seller).sellerTradeVeridict(false);
+      const status = await csxTrade.status();
+      expect(status as number).to.equal(TradeStatus.SellerCancelledAfterBuyerCommitted);
+      await expect(csxTrade.connect(seller).sellerTradeVeridict(true)).to.be.revertedWithCustomError(csxTrade, "StatusNotBuyerCommitted");
+    });
   });
 
   describe("buyerConfirmReceived()", async function() {
