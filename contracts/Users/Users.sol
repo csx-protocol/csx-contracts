@@ -103,7 +103,7 @@ contract Users is ReentrancyGuard {
 
     function warnUser(address _user) public onlyKeepers {
         User storage user = users[_user];
-        user.reputationNeg += 5;
+        user.reputationNeg += 3;
         ++user.warnings;
         if (user.warnings >= 3) {
             user.isBanned = true;
