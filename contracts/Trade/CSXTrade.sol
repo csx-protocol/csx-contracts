@@ -207,30 +207,15 @@ contract CSXTrade {
 
         referralCode = _affLink;
 
-        _changeStatus(TradeStatus.BuyerCommitted);
-
         buyerCommitTimestamp = block.timestamp;
         
         buyer = _buyer;
         buyerTradeUrl = _buyerTradeUrl;
 
-        depositedValue = paymentToken.balanceOf(address(this));
+        (uint256 buyerNetValue, , , ) = getNetValue(_affLink);
+        depositedValue = buyerNetValue;
 
-        // string memory data = string(
-        //     abi.encodePacked(
-        //         Strings.toString(sellerTradeUrl.partner),
-        //         "+",
-        //         sellerTradeUrl.token,
-        //         "||",
-        //         Strings.toString(_buyerTradeUrl.partner),
-        //         "+",
-        //         _buyerTradeUrl.token,
-        //         "||",
-        //         Strings.toHexString(buyer),
-        //         "||",
-        //         Strings.toString(weiPrice)
-        //     )
-        // );
+        _changeStatus(TradeStatus.BuyerCommitted);
 
         string memory data = string(
             abi.encodePacked(
@@ -253,8 +238,6 @@ contract CSXTrade {
         );
         factoryContract.onStatusChange(status, data, seller, buyer);
         usersContract.startDeliveryTimer(address(this), seller);
-
-        (uint256 buyerNetValue, , , ) = getNetValue(_affLink);
         paymentToken.safeTransferFrom(msg.sender, address(this), buyerNetValue);    
     }
 
@@ -283,12 +266,12 @@ contract CSXTrade {
 
     // Seller Confirms or deny they have accepted the trade offer.
     function sellerTradeVeridict(
-        bool sellerCommited
+        bool _sellerCommited
     ) public onlyAddress(seller) {
         if (status != TradeStatus.BuyerCommitted) {
             revert StatusNotBuyerCommitted();
         }
-        if (sellerCommited) {
+        if (_sellerCommited) {
             _changeStatus(TradeStatus.SellerCommitted);
             sellerAcceptedTimestamp = block.timestamp;
             usersContract.changeUserInteractionStatus(
@@ -422,7 +405,7 @@ contract CSXTrade {
     function openDispute(
         string memory _complaint
     ) external onlyTheseAddresses(seller, buyer) {
-        if (status == TradeStatus.Disputed || status == TradeStatus.Resolved || status == TradeStatus.Clawbacked) {
+        if (status == TradeStatus.Disputed || status == TradeStatus.Resolved || status == TradeStatus.Clawbacked || status == TradeStatus.ForSale) {
             revert StatusNotDisputeReady();
         }
         _changeStatus(TradeStatus.Disputed);
