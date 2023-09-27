@@ -521,7 +521,7 @@ contract CSXTrade {
                 affiliatorNetReward
             );
         }
-        paymentToken.approve(address(sCSXToken), tokenHoldersNetReward);
+        paymentToken.safeApprove(address(sCSXToken), tokenHoldersNetReward);
         if (!sCSXToken.depositDividend(address(paymentToken), tokenHoldersNetReward)) {
             revert DividendDepositFailed();
         }
