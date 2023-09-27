@@ -95,7 +95,7 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
     }
 
     mapping(address => uint256) public roundingErrors;
-    function depositDividend(address _token, uint256 _reward) external {
+    function depositDividend(address _token, uint256 _reward) nonReentrant external {
         if(_reward == 0) {
             revert AmountMustBeGreaterThanZero();
         }
