@@ -94,6 +94,9 @@ contract CSXTradeFactory is TradeFactoryBase {
         ) {
             revert InvalidPriceType();
         }
+        if(params.weiPrice == 0) {
+            revert InvalidPriceType();
+        }
 
         bool nS = tradeFactoryBaseStorage.newTradeContract(
             params.itemMarketName,
