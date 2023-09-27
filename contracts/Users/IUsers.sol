@@ -26,7 +26,7 @@ interface IUsers {
 
     function banUser(address _user) external;
 
-    function isBanned(address user) external view returns (bool);
+    function isBanned(address _user) external view returns (bool);
 
     function repAfterTrade(address _user, bool isPositive) external;
 
