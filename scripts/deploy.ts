@@ -85,7 +85,8 @@ const main = async () => {
   // Deploy UserProfileLevel
   const UserProfileLevel = await deployUserProfileLevel(
     hre,
-    addressMap.get("csxToken")!
+    addressMap.get("csxToken")!,
+    addressMap.get("users")!
   );
   addressMap.set("userProfileLevel", UserProfileLevel.target as string);
 
@@ -157,7 +158,7 @@ const main = async () => {
       await TradeFactory.createListingContract(params);
     }
     const totalListings = await TradeFactory.totalContracts();
-    console.log(`Total Demo Listings: ${totalListings}`);    
+    console.log(`Total Demo Listings: ${totalListings}`);
   }
 };
 
