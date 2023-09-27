@@ -274,9 +274,7 @@ contract CSXTrade {
         );
         usersContract.changeUserInteractionStatus(address(this), buyer, status);
 
-        if (!paymentToken.transfer(buyer, depositedValue)) {
-            revert TransferFailed();
-        }
+        paymentToken.safeTransfer(buyer, depositedValue);
 
         factoryContract.onStatusChange(status, "BU_DEFAULT", seller, buyer);
     }
@@ -322,9 +320,7 @@ contract CSXTrade {
             _changeStatus(TradeStatus.SellerCancelledAfterBuyerCommitted);
             usersContract.changeUserInteractionStatus(address(this), seller, status);
             usersContract.changeUserInteractionStatus(address(this), buyer, status);
-            if (!paymentToken.transfer(buyer, depositedValue)) {
-                revert TransferFailed();
-            }
+            paymentToken.safeTransfer(buyer, depositedValue);
             factoryContract.onStatusChange(status, "SE_DEFAULT", seller, buyer);
         }
     }
@@ -412,9 +408,7 @@ contract CSXTrade {
                     status
                 );
             }
-            if(!paymentToken.transfer(buyer, depositedValue)) {
-                revert TransferFailed();
-            }
+            paymentToken.safeTransfer(buyer, depositedValue);
             factoryContract.onStatusChange(status, "KO_DEFAULT", seller, buyer);
         }
 
@@ -456,9 +450,7 @@ contract CSXTrade {
         if (isFavourOfBuyer) {
             _changeStatus(TradeStatus.Clawbacked);
             if (isWithValue) {
-                if(!paymentToken.transfer(buyer, depositedValue)) {
-                    revert TransferFailed();
-                }
+                paymentToken.safeTransfer(buyer, depositedValue);
             }
         } else {
             _changeStatus(TradeStatus.Resolved);
@@ -519,13 +511,9 @@ contract CSXTrade {
         }
 
         (uint256 buyerNetPrice, uint256 sellerNetProceeds, uint256 affiliatorNetReward, uint256 tokenHoldersNetReward) = getNetValue(referralCode);
-        if (!paymentToken.transfer(seller, sellerNetProceeds)) {
-            revert SellerTransferFailed();
-        }
+        paymentToken.safeTransfer(seller, sellerNetProceeds);
         if (affiliatorNetReward > 0) {
-            if (!paymentToken.transfer(referralRegistryContract.getReferralCodeOwner(referralCode), affiliatorNetReward)) {
-                revert AffiliatorTransferFailed();
-            }
+            paymentToken.safeTransfer(referralRegistryContract.getReferralCodeOwner(referralCode), affiliatorNetReward);
             referralRegistryContract.emitReferralCodeRebateUpdated(
                 address(this),
                 address(paymentToken),
