@@ -1,51 +1,109 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { Signer } from "ethers";
-import { Users } from "../../typechain-types";
+import { PaymentTokensStruct } from "../../typechain-types/contracts/TradeFactory/CSXTradeFactory";
 
 describe("Users", function () {
-    let users: Users;
-    let council: Signer;
-    let keeper: Signer;
-    let factory: Signer;
-    let user1: Signer;
-    let tradeAddress: Signer;
+    let council: Signer,
+    keeperNode: Signer,
+    keeperUser: Signer,
+    user1: Signer,
+    tradeAddress: Signer,
+    deployer: Signer;
+
+    let csx: any,
+    weth: any,
+    usdc: any,
+    usdt: any,
+    scsx: any,
+    referralRegistryInstance: any,
+    keepers: any,
+    users: any,
+    buyAssistoor: any,
+    tradeFactoryBaseStorage: any,
+    tradeFactory: any;
 
     beforeEach(async function () {
-        [council, keeper, factory, user1, tradeAddress] = await ethers.getSigners();
+        [deployer, council, keeperNode, keeperUser, user1, tradeAddress] = await ethers.getSigners();
+
+        const CSXToken = await ethers.getContractFactory("CSXToken");
+        csx = await CSXToken.deploy();
+        await csx.waitForDeployment();
+
+        const WETH9Mock = await ethers.getContractFactory("WETH9Mock");
+        weth = await WETH9Mock.deploy();
+        await weth.waitForDeployment();
+
+        const USDCToken = await ethers.getContractFactory("USDCToken");
+        usdc = await USDCToken.deploy();
+        await usdc.waitForDeployment();
+
+        const USDTToken = await ethers.getContractFactory("USDTToken");
+        usdt = await USDTToken.deploy();
+        await usdt.waitForDeployment();
 
         const Keepers = await ethers.getContractFactory("Keepers");
-        const keepers = await Keepers.deploy(await council.getAddress(), await keeper.getAddress());
+        keepers = await Keepers.deploy(await council.getAddress(), await keeperNode.getAddress());
         await keepers.waitForDeployment();
+        keepers.connect(council).addKeeper(await keeperUser.getAddress());
+
+        const StakedCSX = await ethers.getContractFactory("StakedCSX");
+        scsx = await StakedCSX.deploy(csx.target, weth.target, usdc.target, usdt.target, keepers.target);
+        await scsx.waitForDeployment();
+
+        const ReferralRegistry = await ethers.getContractFactory("ReferralRegistry");
+        referralRegistryInstance = await ReferralRegistry.deploy();
+        await referralRegistryInstance.waitForDeployment();
 
         const Users = await ethers.getContractFactory("Users");
         users = await Users.deploy(keepers.target);
         await users.waitForDeployment();
 
-        await users.setFactoryAddress(factory);
+        const BuyAssistoor = await ethers.getContractFactory("BuyAssistoor");
+        buyAssistoor = await BuyAssistoor.deploy(weth.target);
+        await buyAssistoor.waitForDeployment();
+
+        const TradeFactoryBaseStorage = await ethers.getContractFactory("TradeFactoryBaseStorage");
+        tradeFactoryBaseStorage = await TradeFactoryBaseStorage.deploy(keepers.target, users.target);
+        await tradeFactoryBaseStorage.waitForDeployment();
+
+        const TradeFactory = await ethers.getContractFactory("CSXTradeFactory");
+        tradeFactory = await TradeFactory.deploy(
+        keepers.target,
+        users.target,
+        tradeFactoryBaseStorage.target,
+        '26',
+        {weth: weth.target, usdc: usdc.target, usdt: usdt.target} as PaymentTokensStruct,
+        referralRegistryInstance.target,
+        scsx.target,
+        buyAssistoor.target
+        );
+        await tradeFactory.waitForDeployment();
+        await referralRegistryInstance.initFactory(tradeFactory.target);
+        await users.connect(council).setFactoryAddress(tradeFactory.target);
+        await tradeFactoryBaseStorage.connect(council).init(tradeFactory.target);
     });
 
     describe("Managing Users", function () {
         it("should allow warning a user", async function () {
-            const user = (await ethers.getSigners())[2];
-            await users.connect(keeper).warnUser(await user.getAddress());
-            const userData = await users.getUserData(await user.getAddress());
+            await users.connect(keeperUser).warnUser(await user1.getAddress());
+            const userData = await users.getUserData(await user1.getAddress());
             expect(Number(userData.warnings)).to.equal(1);
         });
 
         it("should allow banning a user", async function () {
             const user = (await ethers.getSigners())[3];
-            await users.connect(keeper).banUser(await user.getAddress());
+            await users.connect(keeperNode).banUser(await user.getAddress());
             const isBanned = await users.isBanned(await user.getAddress());
             expect(isBanned).to.be.true;
         });
 
         it("should allow unbanning a user", async function () {
             const user = (await ethers.getSigners())[3];
-            await users.connect(keeper).banUser(await user.getAddress());
+            await users.connect(keeperNode).banUser(await user.getAddress());
             const isBanned1st = await users.isBanned(await user.getAddress());
             expect(isBanned1st).to.be.true;
-            await users.connect(keeper).unbanUser(await user.getAddress());
+            await users.connect(keeperNode).unbanUser(await user.getAddress());
             const isBanned2nd = await users.isBanned(await user.getAddress());
             expect(isBanned2nd).to.be.false;
         });
@@ -63,7 +121,7 @@ describe("Users", function () {
         const assetId = "uniqueAssetId";
         const assetId2 = "GG1";
 
-        await users.connect(factory).setAssetIdUsed(assetId, await user1.getAddress(), await tradeAddress.getAddress());
+        await users.connect(tradeFactory).setAssetIdUsed(assetId, await user1.getAddress(), await tradeAddress.getAddress());
 
         it("should check that an asset is not already listed", async function () {
             const hasListed = await users.hasAlreadyListedItem(assetId2, await user1.getAddress());
