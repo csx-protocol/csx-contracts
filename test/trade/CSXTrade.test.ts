@@ -350,7 +350,7 @@ describe("CSXTrade", async function() {
       const status2 = await csxTrade.status();
       expect(status2 as number).to.equal(TradeStatus.Completed);
     });
-    it("Should allow the keeperNode to reject the trade if status is BuyerCommitted", async function() {
+    it("should allow the keeperNode to reject the trade if status is BuyerCommitted", async function() {
       const mockTradeUrl = listingParams.tradeUrl;
       const affLink = ethers.encodeBytes32String("someRefCode");
       const buyerAddress = await buyer.getAddress();
