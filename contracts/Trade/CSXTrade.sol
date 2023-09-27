@@ -454,7 +454,7 @@ contract CSXTrade {
             revert StatusNotDisputeReady();
         }
         if (isFavourOfBuyer) {
-            status == TradeStatus.Clawbacked;
+            _changeStatus(TradeStatus.Clawbacked);
             if (isWithValue) {
                 if(!paymentToken.transfer(buyer, depositedValue)) {
                     revert TransferFailed();
