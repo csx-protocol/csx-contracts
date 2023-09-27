@@ -8,7 +8,8 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.
 error NotFactory();
 error NotCouncil();
 error NotTradeContract();
-error NotKeeper();
+//error NotKeeper();
+error NotKeepersOrTradeContract();
 error TradeNotCompleted();
 error AlreadyReppedAsBuyer();
 error AlreadyReppedAsSeller();
@@ -90,18 +91,31 @@ contract Users is ReentrancyGuard {
         _;
     }
 
-    modifier onlyKeepers() {
-        if (
-            keepers.indexOf(msg.sender) == 0 &&
-            keepers.indexOf(tx.origin) == 0 &&
-            !keepers.isKeeperNode(msg.sender)
-        ) {
-            revert NotKeeper();
+    // modifier onlyKeepers() {
+    //     if (
+    //         keepers.indexOf(msg.sender) == 0 &&
+    //         keepers.indexOf(tx.origin) == 0 &&
+    //         !keepers.isKeeperNode(msg.sender)
+    //     ) {
+    //         revert NotKeeper();
+    //     }
+    //     _;
+    // }
+
+    modifier onlyKeepersOrTradeContracts(address contractAddress) {
+        // Check if the sender is a keeper
+        bool isKeeperOrKeeperNode = (keepers.indexOf(msg.sender) != 0 || keepers.indexOf(tx.origin) != 0 || keepers.isKeeperNode(msg.sender));
+        
+        // Check if the sender is a trade contract
+        bool isTradeContract = msg.sender == contractAddress && factory.isThisTradeContract(contractAddress);
+        
+        if (!isKeeperOrKeeperNode && !isTradeContract) {
+            revert NotKeepersOrTradeContract();
         }
         _;
     }
 
-    function warnUser(address _user) public onlyKeepers {
+    function warnUser(address _user) public onlyKeepersOrTradeContracts(msg.sender) {
         User storage user = users[_user];
         user.reputationNeg += 3;
         ++user.warnings;
@@ -110,12 +124,12 @@ contract Users is ReentrancyGuard {
         }
     }
 
-    function banUser(address _user) public onlyKeepers {
+    function banUser(address _user) public onlyKeepersOrTradeContracts(msg.sender) {
         User storage user = users[_user];
         user.isBanned = true;
     }
 
-    function unbanUser(address _user) public onlyKeepers {
+    function unbanUser(address _user) public onlyKeepersOrTradeContracts(msg.sender) {
         User storage user = users[_user];
         user.isBanned = false;
     }
