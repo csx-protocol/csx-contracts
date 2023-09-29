@@ -81,8 +81,6 @@ contract CSXTradeFactory is TradeFactoryBase {
             revert UserBanned();
         }
         if (
-            // assetIdFromUserAddrssToTradeAddrss[params.assetId][msg.sender] !=
-            // address(0)
             usersContract.hasAlreadyListedItem(params.assetId, msg.sender)
         ) {
             revert AssetIDAlreadyExists();
@@ -94,6 +92,11 @@ contract CSXTradeFactory is TradeFactoryBase {
         ) {
             revert InvalidPriceType();
         }
+        if(params.weiPrice == 0) {
+            revert InvalidPriceType();
+        }
+
+        ++tradeCountByStatus[TradeStatus.ForSale];
 
         bool nS = tradeFactoryBaseStorage.newTradeContract(
             params.itemMarketName,
@@ -116,9 +119,7 @@ contract CSXTradeFactory is TradeFactoryBase {
         isTradeContract[newAddress] = true;
 
         contractAddressToIndex[newAddress] = _tContracts - 1;
-        // assetIdFromUserAddrssToTradeAddrss[params.assetId][
-        //     msg.sender
-        // ] = newAddress;
+
         usersContract.setAssetIdUsed(params.assetId, msg.sender, newAddress);
 
         CSXTrade _contract = tradeFactoryBaseStorage.getTradeContractByIndex(
@@ -180,6 +181,18 @@ contract CSXTradeFactory is TradeFactoryBase {
             msg.sender,
             address(0)
         );
+    }
+
+    function changeContractsForTrade(
+        PaymentTokens memory _paymentTokens,
+        address _referralRegistryAddress,
+        address _sCSXTokenAddress,
+        address _buyAssistoor
+    ) external isCouncil {
+        paymentTokens = _paymentTokens;
+        referralRegistryAddress = _referralRegistryAddress;
+        sCSXTokenAddress = _sCSXTokenAddress;
+        buyAssistoor = _buyAssistoor;
     }
 
     function getTradeDetailsByIndex(
@@ -273,19 +286,19 @@ contract CSXTradeFactory is TradeFactoryBase {
         return tradeIndexes;
     }
 
-    function getTradeCountByStatus(
-        TradeStatus status
-    ) external view returns (uint256) {
-        uint256 count;
-        uint256 i = 0;
-        uint256 _tC = totalContracts();
-        while (i < _tC) {
-            TradeInfo memory _trade = getTradeDetailsByIndex(i);
-            if (_trade.status == status) {
-                ++count;
-            }
-            ++i;
-        }
-        return count;
-    }
+    // function getTradeCountByStatus(
+    //     TradeStatus status
+    // ) external view returns (uint256) {
+    //     uint256 count;
+    //     uint256 i = 0;
+    //     uint256 _tC = totalContracts();
+    //     while (i < _tC) {
+    //         TradeInfo memory _trade = getTradeDetailsByIndex(i);
+    //         if (_trade.status == status) {
+    //             ++count;
+    //         }
+    //         ++i;
+    //     }
+    //     return count;
+    // }
 }

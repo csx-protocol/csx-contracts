@@ -85,12 +85,14 @@ const main = async () => {
   // Deploy UserProfileLevel
   const UserProfileLevel = await deployUserProfileLevel(
     hre,
-    addressMap.get("csxToken")!
+    addressMap.get("csxToken")!,
+    addressMap.get("users")!,
+    addressMap.get("keepers")!
   );
   addressMap.set("userProfileLevel", UserProfileLevel.target as string);
 
   // Deploy ReferralRegistry
-  const ReferralRegistry = await deployReferralRegistry(hre);
+  const ReferralRegistry = await deployReferralRegistry(hre, addressMap.get("keepers")!);
   addressMap.set("referralRegistry", ReferralRegistry.target as string); // Deploy the ReferralRegistry contract
 
   // Deploy TradeFactoryBaseStorage
@@ -128,9 +130,9 @@ const main = async () => {
 
     await TradeFactoryBaseStorage.init(TradeFactory.target);
 
-    await ReferralRegistry.initFactory(TradeFactory.target);
+    await ReferralRegistry.changeContracts(TradeFactory.target, Keepers.target);
 
-    await Users.setFactoryAddress(TradeFactory.target);
+    await Users.changeContracts(TradeFactory.target, Keepers.target);
   }
 
   // Logging contract addresses
@@ -157,7 +159,7 @@ const main = async () => {
       await TradeFactory.createListingContract(params);
     }
     const totalListings = await TradeFactory.totalContracts();
-    console.log(`Total Demo Listings: ${totalListings}`);    
+    console.log(`Total Demo Listings: ${totalListings}`);
   }
 };
 

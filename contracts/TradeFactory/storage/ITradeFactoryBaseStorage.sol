@@ -6,8 +6,6 @@ import {TradeUrl, SkinInfo, CSXTrade, IKeepers, IUsers} from  "../../Trade/CSXTr
 import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 interface ITradeFactoryBaseStorage {
-    // TODO: add functions
-
     function totalContracts() external view returns (uint256);
 
     function newTradeContract(
@@ -23,10 +21,6 @@ interface ITradeFactoryBaseStorage {
     function getTradeContractByIndex(
         uint256 index
     ) external view returns (CSXTrade);
-
-    // function getTradeContractByAddress(
-    //     address tradeAddress
-    // ) external view returns (CSXTrade);
 
     function getLastTradeContractAddress() external view returns (address);
 }

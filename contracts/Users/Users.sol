@@ -8,7 +8,7 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.
 error NotFactory();
 error NotCouncil();
 error NotTradeContract();
-error NotKeeper();
+error NotKeepersOrTradeContract();
 error TradeNotCompleted();
 error AlreadyReppedAsBuyer();
 error AlreadyReppedAsSeller();
@@ -66,11 +66,12 @@ contract Users is ReentrancyGuard {
         keepers = IKeepers(_keepers);
     }
 
-    function setFactoryAddress(address _factoryAddress) external {
+    function changeContracts(address _factoryAddress, address _keepers) external {
         if (!keepers.isCouncil(msg.sender)) {
             revert NotCouncil();
         }
         factory = ITradeFactory(_factoryAddress);
+        keepers = IKeepers(_keepers);
     }
 
     modifier onlyFactory() {
@@ -90,32 +91,34 @@ contract Users is ReentrancyGuard {
         _;
     }
 
-    modifier onlyKeepers() {
-        if (
-            keepers.indexOf(msg.sender) == 0 &&
-            keepers.indexOf(tx.origin) == 0 &&
-            !keepers.isKeeperNode(msg.sender)
-        ) {
-            revert NotKeeper();
+    modifier onlyKeepersOrTradeContracts(address contractAddress) {
+        // Check if the sender is a keeper
+        bool isKeeperOrKeeperNode = (keepers.indexOf(msg.sender) != 0 || keepers.indexOf(tx.origin) != 0 || keepers.isKeeperNode(msg.sender));
+        
+        // Check if the sender is a trade contract
+        bool isTradeContract = msg.sender == contractAddress && factory.isThisTradeContract(contractAddress);
+        
+        if (!isKeeperOrKeeperNode && !isTradeContract) {
+            revert NotKeepersOrTradeContract();
         }
         _;
     }
 
-    function warnUser(address _user) public onlyKeepers {
+    function warnUser(address _user) public onlyKeepersOrTradeContracts(msg.sender) {
         User storage user = users[_user];
-        user.reputationNeg += 5;
+        user.reputationNeg += 3;
         ++user.warnings;
         if (user.warnings >= 3) {
             user.isBanned = true;
         }
     }
 
-    function banUser(address _user) public onlyKeepers {
+    function banUser(address _user) public onlyKeepersOrTradeContracts(msg.sender) {
         User storage user = users[_user];
         user.isBanned = true;
     }
 
-    function unbanUser(address _user) public onlyKeepers {
+    function unbanUser(address _user) public onlyKeepersOrTradeContracts(msg.sender) {
         User storage user = users[_user];
         user.isBanned = false;
     }
@@ -207,41 +210,6 @@ contract Users is ReentrancyGuard {
         return userTrades[userAddrss][i];
     }
 
-    function getUserTradeCountByStatus(
-        address userAddress,
-        TradeStatus status
-    ) external view returns (uint256) {
-        uint256 count;
-        for (uint256 i = 0; i < userTrades[userAddress].length; ++i) {
-            if (userTrades[userAddress][i].status == status) {
-                ++count;
-            }
-        }
-        return count;
-    }
-
-    function getUserTradeUIsByStatus(
-        address userAddress,
-        TradeStatus status,
-        uint256 indexFrom,
-        uint256 maxResults
-    ) external view returns (UserInteraction[] memory) {
-        UserInteraction[] memory tradeUIs = new UserInteraction[](maxResults);
-        uint256 resultIndex;
-        uint256 i = indexFrom;
-        while (resultIndex < maxResults && i < userTrades[userAddress].length) {
-            UserInteraction memory ui = userTrades[userAddress][i];
-
-            if (ui.status == status) {
-                tradeUIs[resultIndex] = ui;
-                ++resultIndex;
-            }
-
-            ++i;
-        }
-        return tradeUIs;
-    }
-
     mapping(address => mapping(Role => bool)) tradeAdrsToRoleToHasRep;
 
     function repAfterTrade(
@@ -296,7 +264,6 @@ contract Users is ReentrancyGuard {
         hasSeller = tradeAdrsToRoleToHasRep[tradeAddrs][Role.SELLER];
     }
 
-    //
     mapping(string => mapping(address => address))
         public assetIdFromUserAddrssToTradeAddrss;
 

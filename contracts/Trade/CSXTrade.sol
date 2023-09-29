@@ -35,7 +35,7 @@ contract CSXTrade {
     bytes32 public referralCode;
     PriceType public priceType;
 
-    address public seller;
+    address public immutable seller;
     address public buyer;
 
     string public itemMarketName;
@@ -51,7 +51,7 @@ contract CSXTrade {
     string public weaponType;
 
     uint256 public depositedValue;
-    uint256 public weiPrice;
+    uint256 public immutable weiPrice;
 
     uint256 public sellerAcceptedTimestamp;
     uint256 public buyerCommitTimestamp;
@@ -62,9 +62,9 @@ contract CSXTrade {
 
     TradeStatus[] public statusHistory;
 
-    IKeepers public keepersContract;
-    IUsers public usersContract;
-    ITradeFactory public factoryContract;
+    IKeepers public immutable keepersContract;
+    IUsers public immutable usersContract;
+    ITradeFactory public immutable factoryContract;
 
     IReferralRegistry public referralRegistryContract;
     IStakedCSX public sCSXToken;
@@ -168,19 +168,18 @@ contract CSXTrade {
         if (status != TradeStatus.ForSale) {
             revert NotForSale();
         }
-        _changeStatus(TradeStatus.SellerCancelled);
-        usersContract.changeUserInteractionStatus(
-            address(this),
-            seller,
-            status
-        );
-        string memory data = string(
+        string memory _data = string(
             abi.encodePacked(
                 Strings.toString(weiPrice) /*,
                 "||", */
             )
-        );
-        factoryContract.onStatusChange(status, data, seller, buyer);
+        );   
+        _changeStatus(TradeStatus.SellerCancelled, _data);
+        usersContract.changeUserInteractionStatus(
+            address(this),
+            seller,
+            status
+        );             
         usersContract.removeAssetIdUsed(itemSellerAssetId, seller);
     }
 
@@ -207,38 +206,23 @@ contract CSXTrade {
 
         referralCode = _affLink;
 
-        _changeStatus(TradeStatus.BuyerCommitted);
-
         buyerCommitTimestamp = block.timestamp;
         
         buyer = _buyer;
         buyerTradeUrl = _buyerTradeUrl;
 
-        depositedValue = paymentToken.balanceOf(address(this));
+        (uint256 buyerNetValue, , , ) = getNetValue(_affLink);
+        depositedValue = buyerNetValue;        
 
-        // string memory data = string(
-        //     abi.encodePacked(
-        //         Strings.toString(sellerTradeUrl.partner),
-        //         "+",
-        //         sellerTradeUrl.token,
-        //         "||",
-        //         Strings.toString(_buyerTradeUrl.partner),
-        //         "+",
-        //         _buyerTradeUrl.token,
-        //         "||",
-        //         Strings.toHexString(buyer),
-        //         "||",
-        //         Strings.toString(weiPrice)
-        //     )
-        // );
-
-        string memory data = string(
+        string memory _data = string(
             abi.encodePacked(
                 Strings.toString(weiPrice),
                 "||",
                 Strings.toHexString(buyer)
             )
         );
+
+        _changeStatus(TradeStatus.BuyerCommitted, _data);
 
         usersContract.changeUserInteractionStatus(
             address(this),
@@ -251,10 +235,7 @@ contract CSXTrade {
             buyer,
             status
         );
-        factoryContract.onStatusChange(status, data, seller, buyer);
         usersContract.startDeliveryTimer(address(this), seller);
-
-        (uint256 buyerNetValue, , , ) = getNetValue(_affLink);
         paymentToken.safeTransferFrom(msg.sender, address(this), buyerNetValue);    
     }
 
@@ -266,7 +247,7 @@ contract CSXTrade {
         if (block.timestamp < buyerCommitTimestamp + 24 hours) {
            revert TimeNotElapsed();
         }
-        _changeStatus(TradeStatus.BuyerCancelled);
+        _changeStatus(TradeStatus.BuyerCancelled, "BU_DEFAULT");
         usersContract.changeUserInteractionStatus(
             address(this),
             seller,
@@ -275,33 +256,19 @@ contract CSXTrade {
         usersContract.changeUserInteractionStatus(address(this), buyer, status);
 
         paymentToken.safeTransfer(buyer, depositedValue);
-
-        factoryContract.onStatusChange(status, "BU_DEFAULT", seller, buyer);
     }
 
     //--------------------------------------------------------------------------------
 
     // Seller Confirms or deny they have accepted the trade offer.
     function sellerTradeVeridict(
-        bool sellerCommited
+        bool _sellerCommited
     ) public onlyAddress(seller) {
         if (status != TradeStatus.BuyerCommitted) {
             revert StatusNotBuyerCommitted();
         }
-        if (sellerCommited) {
-            _changeStatus(TradeStatus.SellerCommitted);
-            sellerAcceptedTimestamp = block.timestamp;
-            usersContract.changeUserInteractionStatus(
-                address(this),
-                seller,
-                status
-            );
-            usersContract.changeUserInteractionStatus(
-                address(this),
-                buyer,
-                status
-            );
-            string memory data = string(abi.encodePacked(Strings.toString(sellerTradeUrl.partner),
+        if (_sellerCommited) {
+            string memory _data = string(abi.encodePacked(Strings.toString(sellerTradeUrl.partner),
                     "+",
                     sellerTradeUrl.token,
                     "||",
@@ -314,14 +281,23 @@ contract CSXTrade {
                     Strings.toString(weiPrice)
                 )
             );
-
-            factoryContract.onStatusChange(status, data, seller, buyer);
+            _changeStatus(TradeStatus.SellerCommitted, _data);
+            sellerAcceptedTimestamp = block.timestamp;
+            usersContract.changeUserInteractionStatus(
+                address(this),
+                seller,
+                status
+            );
+            usersContract.changeUserInteractionStatus(
+                address(this),
+                buyer,
+                status
+            );
         } else {
-            _changeStatus(TradeStatus.SellerCancelledAfterBuyerCommitted);
+            _changeStatus(TradeStatus.SellerCancelledAfterBuyerCommitted, "SE_DEFAULT");
             usersContract.changeUserInteractionStatus(address(this), seller, status);
             usersContract.changeUserInteractionStatus(address(this), buyer, status);
             paymentToken.safeTransfer(buyer, depositedValue);
-            factoryContract.onStatusChange(status, "SE_DEFAULT", seller, buyer);
         }
     }
 
@@ -330,7 +306,8 @@ contract CSXTrade {
         if (status != TradeStatus.BuyerCommitted && status != TradeStatus.SellerCommitted) {
             revert StatusNotBuyerCommitted();
         }
-        _changeStatus(TradeStatus.Completed);
+        string memory _data = string( abi.encodePacked(Strings.toString(weiPrice), "||", "MANUAL"));
+        _changeStatus(TradeStatus.Completed, _data);
         usersContract.endDeliveryTimer(address(this), seller);
         bool success = usersContract.removeAssetIdUsed(itemSellerAssetId, seller);
 
@@ -342,8 +319,6 @@ contract CSXTrade {
 
         usersContract.changeUserInteractionStatus(address(this), seller, status);
         usersContract.changeUserInteractionStatus(address(this), buyer, status);
-        string memory data = string( abi.encodePacked(Strings.toString(weiPrice), "||", "MANUAL"));
-        factoryContract.onStatusChange(status, data, seller, buyer);
     }
 
     // Seller confirms the trade has been made after 8 days from acceptance.
@@ -355,17 +330,16 @@ contract CSXTrade {
             revert StatusNotSellerCommitted();
         }
 
-        _changeStatus(TradeStatus.Completed);
+        string memory _data = string(
+            abi.encodePacked(Strings.toString(weiPrice))
+        );
+
+        _changeStatus(TradeStatus.Completed, _data);
         usersContract.endDeliveryTimer(address(this), seller);
         usersContract.changeUserInteractionStatus(address(this), seller, status);
         usersContract.changeUserInteractionStatus(address(this), buyer, status);
 
         _distributeProceeds();
-
-        string memory data = string(
-            abi.encodePacked(Strings.toString(weiPrice))
-        );
-        factoryContract.onStatusChange(status, data, seller, buyer);
     }
 
     // KeeperNode Confirms the trade has been made.
@@ -374,7 +348,10 @@ contract CSXTrade {
             revert StatusNotBuyerCommitted();
         }
         if (isTradeMade) {
-            _changeStatus(TradeStatus.Completed);
+            string memory _data = string(
+                abi.encodePacked(Strings.toString(weiPrice))
+            );
+            _changeStatus(TradeStatus.Completed, _data);
             usersContract.endDeliveryTimer(address(this), seller);
             usersContract.changeUserInteractionStatus(
                 address(this),
@@ -388,14 +365,9 @@ contract CSXTrade {
             );
 
             _distributeProceeds();
-
-            string memory data = string(
-                abi.encodePacked(Strings.toString(weiPrice))
-            );
-            factoryContract.onStatusChange(status, data, seller, buyer);
         } else {
             TradeStatus oldStatus = status;
-            _changeStatus(TradeStatus.Clawbacked);
+            _changeStatus(TradeStatus.Clawbacked, "KO_DEFAULT");
             usersContract.changeUserInteractionStatus(
                 address(this),
                 seller,
@@ -409,7 +381,6 @@ contract CSXTrade {
                 );
             }
             paymentToken.safeTransfer(buyer, depositedValue);
-            factoryContract.onStatusChange(status, "KO_DEFAULT", seller, buyer);
         }
 
         bool raS = usersContract.removeAssetIdUsed(itemSellerAssetId, seller);
@@ -422,19 +393,18 @@ contract CSXTrade {
     function openDispute(
         string memory _complaint
     ) external onlyTheseAddresses(seller, buyer) {
-        if (status == TradeStatus.Disputed || status == TradeStatus.Resolved || status == TradeStatus.Clawbacked) {
+        if (status == TradeStatus.Disputed || status == TradeStatus.Resolved || status == TradeStatus.Clawbacked || status == TradeStatus.ForSale) {
             revert StatusNotDisputeReady();
-        }
-        _changeStatus(TradeStatus.Disputed);
+        }        
         disputeer = msg.sender;
         disputeComplaint = _complaint;
+        _changeStatus(TradeStatus.Disputed, _complaint);
         usersContract.changeUserInteractionStatus(
             address(this),
             seller,
             status
         );
         usersContract.changeUserInteractionStatus(address(this), buyer, status);
-        factoryContract.onStatusChange(status, _complaint, seller, buyer);
     }
 
     // Keepers & KeeperNode resolves the dispute.
@@ -448,12 +418,12 @@ contract CSXTrade {
             revert StatusNotDisputeReady();
         }
         if (isFavourOfBuyer) {
-            _changeStatus(TradeStatus.Clawbacked);
+            _changeStatus(TradeStatus.Clawbacked, "KO_CLAWBACK");
             if (isWithValue) {
                 paymentToken.safeTransfer(buyer, depositedValue);
             }
         } else {
-            _changeStatus(TradeStatus.Resolved);
+            _changeStatus(TradeStatus.Resolved, "KO_RESOLVE");
             if (isWithValue) {
                 _distributeProceeds();
             }
@@ -474,7 +444,6 @@ contract CSXTrade {
             status
         );
         usersContract.changeUserInteractionStatus(address(this), buyer, status);
-        factoryContract.onStatusChange(status, "", seller, buyer);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -534,9 +503,11 @@ contract CSXTrade {
         );
     }
 
-    function _changeStatus(TradeStatus _status) private {
+    function _changeStatus(TradeStatus _status, string memory data) private {
+        TradeStatus prevStatus = status;
         status = _status;
         statusHistory.push(_status);
+        factoryContract.onStatusChange(status, prevStatus, data, seller, buyer);
     }
 
     // Public Functions

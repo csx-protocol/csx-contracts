@@ -65,7 +65,7 @@ interface ITradeFactory {
     // Trade Contract
     function removeAssetIdUsed(string memory _assetId, address sellerAddrss) external returns (bool);
 
-    function onStatusChange(TradeStatus status, string memory data, address sellerAddress, address buyerAddress) external;
+    function onStatusChange(TradeStatus status, TradeStatus prevStatus, string memory data, address sellerAddress, address buyerAddress) external;
 
     //Users
     function isThisTradeContract(address contractAddress)

@@ -15,9 +15,9 @@ error TransferFailed();
 
 contract EscrowedCSX is ERC20Burnable, ReentrancyGuard {
     using SafeERC20 for IERC20;
-    address deployer = msg.sender;
+    address immutable deployer = msg.sender;
     bool public isInitialized = false;
-    IERC20 public csxToken;
+    IERC20 public immutable csxToken;
     IERC20 public vestedCSX;
 
     event Minted(address indexed user, uint256 amount);

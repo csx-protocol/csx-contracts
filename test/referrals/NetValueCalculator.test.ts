@@ -24,7 +24,7 @@ describe("NetValueCalculator", function () {
     it("should correctly calculate net values when the buyer is affiliated", async function () {
       const fullItemPrice = 1000;
       const isBuyerAffiliated = true;
-      const baseFeePercent = 2;
+      const baseFeePercent = 20; // 2% fee
       const discountRatio = 10;
 
       const result = await netValueCalculator.calculateNetValue(
@@ -48,7 +48,7 @@ describe("NetValueCalculator", function () {
     it("should correctly calculate net values when the buyer is not affiliated", async function () {
       const fullItemPrice = 1000;
       const isBuyerAffiliated = false;
-      const baseFeePercent = 2;
+      const baseFeePercent = 20; // 2% fee
       const discountRatio = 10;
 
       const result = await netValueCalculator.calculateNetValue(

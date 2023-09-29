@@ -40,7 +40,7 @@ contract NetValueCalculator {
     function calculateNetValue(
         uint256 fullItemPrice,
         bool isBuyerAffiliated,
-        uint256 baseFeePercent,
+        uint256 baseFeePercentTen, // Now the base fee can have one decimal. e.g., 26 represents 2.6%
         uint256 discountRatio // Ratio between the discount and reward percentages
     )
         external
@@ -57,13 +57,13 @@ contract NetValueCalculator {
         }
 
         // Calculate the base fee
-        uint256 baseFee = (fullItemPrice * baseFeePercent) / 100;
+        uint256 baseFee = (fullItemPrice * baseFeePercentTen) / 1000; // divide by 1000 instead of 100
 
         uint256 discountedFee;
         // Calculate the discounted fee and affiliator reward if the buyer is affiliated
         if (isBuyerAffiliated) {
-            discountedFee = (fullItemPrice * baseFeePercent * discountRatio) / 10000;
-            affiliatorNetReward = (fullItemPrice * baseFeePercent * (50 - discountRatio)) / 10000;
+            discountedFee = (fullItemPrice * baseFeePercentTen * discountRatio) / 100000; // divide by 100000 instead of 10000
+            affiliatorNetReward = (fullItemPrice * baseFeePercentTen * (50 - discountRatio)) / 100000; // divide by 100000 instead of 10000
         } else {
             discountedFee = 0;
             affiliatorNetReward = 0;

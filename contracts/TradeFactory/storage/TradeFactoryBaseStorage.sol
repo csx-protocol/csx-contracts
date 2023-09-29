@@ -20,6 +20,18 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
         usersContract = IUsers(_users);
     }
 
+    modifier isCouncil {
+        if (!keepersContract.isCouncil(msg.sender)) {
+            revert NotCouncil();
+        }
+        _;
+    }
+
+    function changeContracts(address _keepers, address _users) external isCouncil {
+        keepersContract = IKeepers(_keepers);
+        usersContract = IUsers(_users);
+    }
+
     function init(address _factoryAddress) external {
         if (!keepersContract.isCouncil(msg.sender)) {
             revert NotCouncil();
