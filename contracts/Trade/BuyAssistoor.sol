@@ -18,7 +18,7 @@ import { TradeStatus, Role } from '../Users/IUsers.sol';
 import { TradeUrl, PriceType } from '../TradeFactory/ITradeFactory.sol';
 
 contract BuyAssistoor {
-    IWETH public weth;
+    IWETH public immutable weth;
 
     constructor(address _weth) {
         weth = IWETH(_weth);
