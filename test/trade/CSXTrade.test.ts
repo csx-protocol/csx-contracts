@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { Signer } from "ethers";
 import { PaymentTokensStruct } from "../../typechain-types/contracts/TradeFactory/CSXTradeFactory";
+import { listingParams } from "../../scripts/deploy/utils/list-demo";
 
 describe("CSXTrade", async function() {
   let csx: any,
@@ -35,31 +36,6 @@ describe("CSXTrade", async function() {
     Disputed: 7,
     Resolved: 8,
     Clawbacked: 9
-  };
-
-  const listingParams = {
-    itemMarketName: "itemMarketName",
-    tradeUrl: {
-      partner: '225482466',
-      token: 'EP2Wgs2R'
-    },
-    assetId: "assetId",
-    inspectLink: "inspectLink",
-    itemImageUrl: "itemImageUrl",
-    weiPrice: "1000000000000000000",
-    skinInfo: [
-      '[0.8, 0.06, 0.35223010182380676]',
-      '8',
-      '27'
-    ],
-    stickers: [{
-      name: 'Sticker',
-      material: 'sticker/sticker',
-      slot: 0,
-      imageLink: 'imageLink'
-    }],
-    weaponType: "weaponType",
-    priceType: "0"
   };
 
   beforeEach(async function() {
@@ -158,6 +134,8 @@ describe("CSXTrade", async function() {
       await csxTrade.connect(buyer).commitBuy(mockTradeUrl, affLink, await buyer.getAddress());
       await expect(csxTrade.connect(seller).sellerCancel()).to.be.revertedWithCustomError(csxTrade, "NotForSale");
       const status = await csxTrade.status();
+      const statusCount = await csxTrade.getStatusCount();
+      expect(statusCount as number).to.equal(1);
       expect(status as number).to.equal(TradeStatus.BuyerCommitted);
     });
   });
@@ -172,6 +150,8 @@ describe("CSXTrade", async function() {
       await csxTrade.connect(buyer).commitBuy(mockTradeUrl, affLink, buyerAddress);
       expect(await csxTrade.buyer()).to.equal(buyerAddress);
       const status = await csxTrade.status();
+      const statusCount = await csxTrade.getStatusCount();
+      expect(statusCount as number).to.equal(1);
       expect(status as number).to.equal(TradeStatus.BuyerCommitted);
     });
     it("should not allow the seller to commit as a buyer", async function() {
@@ -179,6 +159,8 @@ describe("CSXTrade", async function() {
       const affLink = ethers.encodeBytes32String("someRefCode");
       await expect(csxTrade.connect(seller).commitBuy(mockTradeUrl, affLink, await seller.getAddress())).to.be.revertedWithCustomError(csxTrade, "NotSeller");
       const status = await csxTrade.status();
+      const statusCount = await csxTrade.getStatusCount();
+      expect(statusCount as number).to.equal(0);
       expect(status as number).to.equal(TradeStatus.ForSale);
     });
   });
@@ -194,6 +176,8 @@ describe("CSXTrade", async function() {
       await ethers.provider.send("evm_mine", []);
       await csxTrade.connect(buyer).buyerCancel();
       const status = await csxTrade.status();
+      const statusCount = await csxTrade.getStatusCount();
+      expect(statusCount as number).to.equal(2);
       expect(status as number).to.equal(TradeStatus.BuyerCancelled);
     });
     it("should not allow the buyer to cancel before 24 hours", async function() {
@@ -204,6 +188,8 @@ describe("CSXTrade", async function() {
       await csxTrade.connect(buyer).commitBuy(mockTradeUrl, affLink, await buyer.getAddress());
       await expect(csxTrade.connect(buyer).buyerCancel()).to.be.revertedWithCustomError(csxTrade, "TimeNotElapsed");
       const status = await csxTrade.status();
+      const statusCount = await csxTrade.getStatusCount();
+      expect(statusCount as number).to.equal(1);
       expect(status as number).to.equal(TradeStatus.BuyerCommitted);
     });
     it("should not allow non buyer to cancel", async function() {
@@ -214,6 +200,8 @@ describe("CSXTrade", async function() {
       await csxTrade.connect(buyer).commitBuy(mockTradeUrl, affLink, await buyer.getAddress());
       await ethers.provider.send("evm_increaseTime", [86400]);
       await ethers.provider.send("evm_mine", []);
+      const statusCount = await csxTrade.getStatusCount();
+      expect(statusCount as number).to.equal(1);
       await expect(csxTrade.connect(seller).buyerCancel()).to.be.revertedWithCustomError(csxTrade, "NotParty");
     });
   });
@@ -228,6 +216,8 @@ describe("CSXTrade", async function() {
       await csxTrade.connect(buyer).commitBuy(mockTradeUrl, affLink, buyerAddress);
       await csxTrade.connect(seller).sellerTradeVeridict(true);
       const status = await csxTrade.status();
+      const statusCount = await csxTrade.getStatusCount();
+      expect(statusCount as number).to.equal(2);
       expect(status as number).to.equal(TradeStatus.SellerCommitted);
     });
     it("should allow the seller to deny the trade", async function() {
@@ -239,6 +229,8 @@ describe("CSXTrade", async function() {
       await csxTrade.connect(buyer).commitBuy(mockTradeUrl, affLink, buyerAddress);
       await csxTrade.connect(seller).sellerTradeVeridict(false);
       const status = await csxTrade.status();
+      const statusCount = await csxTrade.getStatusCount();
+      expect(statusCount as number).to.equal(2);
       expect(status as number).to.equal(TradeStatus.SellerCancelledAfterBuyerCommitted);
     });
     it("should not allow the buyer to confirm the trade", async function() {
