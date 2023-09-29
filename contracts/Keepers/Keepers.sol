@@ -36,13 +36,6 @@ contract Keepers {
         _;
     }
 
-    modifier onlyKeepers() {
-        if (indexOf(msg.sender) == 0) {
-            revert NotAKeeper();
-        }
-        _;
-    }
-
     function indexOf(address _keeper) public view returns (uint256) {
         return keepersIndex[_keeper];
     }
@@ -84,7 +77,7 @@ contract Keepers {
 
     function changeKeeperNode(address _newAddres) external onlyCouncil {
         if(_newAddres == address(0)) {
-            revert NotAKeeper();
+            revert NotCouncil();
         }
         keeperNodeAddress = _newAddres;
         emit KeeperNodeChanged(_newAddres);
