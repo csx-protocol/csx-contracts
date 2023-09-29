@@ -66,11 +66,12 @@ contract Users is ReentrancyGuard {
         keepers = IKeepers(_keepers);
     }
 
-    function setFactoryAddress(address _factoryAddress) external {
+    function changeContracts(address _factoryAddress, address _keepers) external {
         if (!keepers.isCouncil(msg.sender)) {
             revert NotCouncil();
         }
         factory = ITradeFactory(_factoryAddress);
+        keepers = IKeepers(_keepers);
     }
 
     modifier onlyFactory() {

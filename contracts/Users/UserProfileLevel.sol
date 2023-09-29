@@ -6,6 +6,7 @@ pragma solidity ^0.8.21;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Burnable} from "../CSX/Interfaces.sol";
 import {IUsers} from "../Users/IUsers.sol";
+import {IKeepers} from "../Keepers/IKeepers.sol";
 
 error ZeroLevels();
 error InsufficientTokens();
@@ -14,6 +15,7 @@ error NoPendingTransfer();
 error TransferToSelf();
 error NewAddressNotEmpty();
 error NoLevelsToTransfer();
+error NotCouncil();
 
 contract UserProfileLevel {
     // Event to be emitted when a user levels up their profile
@@ -26,9 +28,9 @@ contract UserProfileLevel {
     // Set the base cost for leveling up (1 token)
     uint256 private constant BASE_COST = 1 * 10 ** 18; // Assuming the token has 18 decimals
 
-    // Address of the specific ERC20 token
-    IERC20Burnable private csxToken;
+    IERC20Burnable private immutable csxToken;
     IUsers private usersContract;
+    IKeepers private keepersContract;
 
     // User struct to store user profile data
     struct User {
@@ -48,9 +50,10 @@ contract UserProfileLevel {
         _;
     }
 
-    constructor(address _tokenAddress, address _usersContractAddress) {
+    constructor(address _tokenAddress, address _usersContractAddress, address _keepersContractAddress) {
         csxToken = IERC20Burnable(_tokenAddress);
         usersContract = IUsers(_usersContractAddress);
+        keepersContract = IKeepers(_keepersContractAddress);
     }
 
     /**
@@ -82,6 +85,14 @@ contract UserProfileLevel {
 
         // Burn the _tokenAmount
         csxToken.burnFrom(msg.sender, _tokenAmount);
+    }
+
+    function changeContracts(address _usersContractAddress, address _keepersContractAddress) external {
+        if (!keepersContract.isCouncil(msg.sender)) {
+            revert NotCouncil();
+        }
+        usersContract = IUsers(_usersContractAddress);
+        keepersContract = IKeepers(_keepersContractAddress);
     }
 
     /**
