@@ -261,6 +261,20 @@ describe("TradeFactory", function () {
       for (let i = 0; i < prices.length; i++) {
         const listing = await tradeFactory.getTradeDetailsByIndex(i);
 
+        const _tradeDetailsByAddress = await tradeFactory.getTradeDetailsByAddress(listing.contractAddress);
+
+        const _tradeIndexesByStatus = await tradeFactory.getTradeIndexesByStatus(0, 0, totalListings);
+
+        expect(_tradeIndexesByStatus.length).to.equal(
+          prices.length,
+          `The total number of listing contracts should match the length of prices array`
+        );
+
+        expect(_tradeDetailsByAddress.itemMarketName).to.equal(
+          names[i],
+          `The itemMarketName for listing ${i} should match`
+        );       
+
         expect(listing.itemMarketName).to.equal(
           names[i],
           `The itemMarketName for listing ${i} should match`
