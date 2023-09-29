@@ -67,3 +67,28 @@ export const skinInfo = [
 ]
 
 export const assetIds = ['GG1', '28492787574', 'GG2', '28315956209', '28315874929', '28229768155', '27955299910', '279552999102'];
+
+export const listingParams = {
+  itemMarketName: "itemMarketName",
+  tradeUrl: {
+    partner: '225482466',
+    token: 'EP2Wgs2R'
+  },
+  assetId: "assetId",
+  inspectLink: "inspectLink",
+  itemImageUrl: "itemImageUrl",
+  weiPrice: "1000000000000000000",
+  skinInfo: [
+    '[0.8, 0.06, 0.35223010182380676]',
+    '8',
+    '27'
+  ],
+  stickers: [{
+    name: 'Sticker',
+    material: 'sticker/sticker',
+    slot: 0,
+    imageLink: 'imageLink'
+  }],
+  weaponType: "weaponType",
+  priceType: "0"
+};
