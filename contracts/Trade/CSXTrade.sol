@@ -35,7 +35,7 @@ contract CSXTrade {
     bytes32 public referralCode;
     PriceType public priceType;
 
-    address public seller;
+    address public immutable seller;
     address public buyer;
 
     string public itemMarketName;
@@ -51,7 +51,7 @@ contract CSXTrade {
     string public weaponType;
 
     uint256 public depositedValue;
-    uint256 public weiPrice;
+    uint256 public immutable weiPrice;
 
     uint256 public sellerAcceptedTimestamp;
     uint256 public buyerCommitTimestamp;
@@ -62,9 +62,9 @@ contract CSXTrade {
 
     TradeStatus[] public statusHistory;
 
-    IKeepers public keepersContract;
-    IUsers public usersContract;
-    ITradeFactory public factoryContract;
+    IKeepers public immutable keepersContract;
+    IUsers public immutable usersContract;
+    ITradeFactory public immutable factoryContract;
 
     IReferralRegistry public referralRegistryContract;
     IStakedCSX public sCSXToken;
