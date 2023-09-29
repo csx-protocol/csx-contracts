@@ -1,3 +1,5 @@
+import { SkinInfoStruct } from "../../../typechain-types/contracts/Trade/CSXTrade";
+
 export const _tradeUrl = {
     partner: '225482466',
     token: 'EP2Wgs2R'
@@ -92,3 +94,20 @@ export const listingParams = {
   weaponType: "weaponType",
   priceType: "0"
 };
+
+export const listingParamsStorage = {
+  _itemMarketName: "itemMarketName",
+  _tradeUrl: {
+    partner: '225482466',
+    token: 'EP2Wgs2R'
+  },
+  _assetId: "assetId",
+  _inspectLink: "inspectLink",
+  _itemImageUrl: "itemImageUrl",
+  _weiPrice: "1000000000000000000",
+  _skinInfo: {
+    floatValues: '[0.8, 0.06, 0.35223010182380676]',
+    paintSeed: '8',
+    paintIndex: '27'
+  } as SkinInfoStruct
+}
