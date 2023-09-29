@@ -3,6 +3,7 @@ pragma solidity ^0.8.21;
 
 import {NetValueCalculator} from "./NetValueCalculator.sol";
 import {ITradeFactory} from "../TradeFactory/ITradeFactory.sol";
+import {IKeepers} from "../Keepers/IKeepers.sol";
 
 error InvalidReferralCode(string reason);
 error InvalidRatios(string reason);
@@ -16,19 +17,10 @@ error ReferralCodeAlreadySet(string reason);
 
 contract ReferralRegistry is NetValueCalculator {
     ITradeFactory public factory;
- 
-    bool init;
-    address immutable deployer;
+    IKeepers private keepers;
 
-    constructor() {
-        deployer = msg.sender;
-    }
-
-    function initFactory(address _factory) external {
-        if (msg.sender != deployer) revert Unauthorized("Only deployer can initialize");
-        if (init) revert Unauthorized("Already initialized");
-        init = true;
-        factory = ITradeFactory(_factory);
+    constructor(address _keepers) {
+        keepers = IKeepers(_keepers);
     }
 
     mapping(bytes32 => mapping(address => uint256)) rebatePerCodePerPaymentToken;
@@ -73,6 +65,14 @@ contract ReferralRegistry is NetValueCalculator {
         if (containsSpace(referralCode)) revert InvalidReferralCode("Referral code cannot contain spaces");
 
         _setReferralCode(referralCode, msg.sender);
+    }
+
+    function changeContracts(address _factory, address _keepers) external {
+        if(!keepers.isCouncil(msg.sender)){
+            revert Unauthorized("Only council can change contracts");
+        }
+        factory = ITradeFactory(_factory);
+        keepers = IKeepers(_keepers);
     }
 
     function getReferralCode(address user) external view returns (bytes32) {
