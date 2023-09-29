@@ -28,13 +28,13 @@ contract VestedStaking {
     // For testing purposes, 5 minutes
     uint256 public constant VESTING_PERIOD = 5 minutes;
     
-    address public vesterAddress;
-    IStakedCSX public sCsxToken;
-    IERC20Burnable public vCsxToken;
-    IERC20 public csxToken;
-    IERC20 public usdcToken;
-    IERC20 public usdtToken;
-    IERC20 public wethToken;
+    address public immutable vesterAddress;
+    IStakedCSX public immutable sCsxToken;
+    IERC20Burnable public immutable vCsxToken;
+    IERC20 public immutable csxToken;
+    IERC20 public immutable usdcToken;
+    IERC20 public immutable usdtToken;
+    IERC20 public immutable wethToken;
 
     constructor(
         address _vesterAddress,

@@ -18,7 +18,7 @@ contract ReferralRegistry is NetValueCalculator {
     ITradeFactory public factory;
  
     bool init;
-    address deployer;
+    address immutable deployer;
 
     constructor() {
         deployer = msg.sender;

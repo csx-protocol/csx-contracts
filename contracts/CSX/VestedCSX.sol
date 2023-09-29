@@ -14,12 +14,12 @@ error TokenTransfersDisabled();
 
 contract VestedCSX is ReentrancyGuard, ERC20Burnable {
     using SafeERC20 for IERC20;
-    IERC20Burnable public EscrowedCSX;
-    IStakedCSX public StakedCSX;
-    IWETH public WETH;
-    IERC20 public USDC;
-    IERC20 public CSX;
-    IERC20 public USDT;
+    IERC20Burnable public immutable EscrowedCSX;
+    IStakedCSX public immutable StakedCSX;
+    IWETH public immutable WETH;
+    IERC20 public immutable USDC;
+    IERC20 public immutable CSX;
+    IERC20 public immutable USDT;
 
     uint256 public constant MAX_SUPPLY = 100000000 ether;
 
