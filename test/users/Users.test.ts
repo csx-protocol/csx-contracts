@@ -2,12 +2,15 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { Signer } from "ethers";
 import { PaymentTokensStruct } from "../../typechain-types/contracts/TradeFactory/CSXTradeFactory";
+import { listingParams } from "../../scripts/deploy/utils/list-demo";
+import { CSXTrade } from "../../typechain-types";
 
 describe("Users", function () {
     let council: Signer,
     keeperNode: Signer,
     keeperUser: Signer,
     user1: Signer,
+    user2: Signer,
     tradeAddress: Signer,
     deployer: Signer;
 
@@ -24,7 +27,7 @@ describe("Users", function () {
     tradeFactory: any;
 
     beforeEach(async function () {
-        [deployer, council, keeperNode, keeperUser, user1, tradeAddress] = await ethers.getSigners();
+        [deployer, council, keeperNode, keeperUser, user1, user2, tradeAddress] = await ethers.getSigners();
 
         const CSXToken = await ethers.getContractFactory("CSXToken");
         csx = await CSXToken.deploy();
@@ -114,6 +117,38 @@ describe("Users", function () {
             const tradeAddress = `0x${"0".repeat(40)}`;
             const user = (await ethers.getSigners())[4];
             await expect(users.connect(user).repAfterTrade(tradeAddress, true)).to.be.revertedWithCustomError(users, "ZeroTradeAddress");
+        });
+        it("should be able to rep after trade", async function () {
+            await tradeFactory.connect(user1).createListingContract(listingParams);
+            const tradeAddress = await tradeFactoryBaseStorage.getTradeContractByIndex('0');
+            const CSXTrade = await ethers.getContractFactory("CSXTrade");
+            const csxTrade: CSXTrade = CSXTrade.attach(tradeAddress) as CSXTrade;
+
+            const mockTradeUrl = listingParams.tradeUrl;
+            const affLink = ethers.encodeBytes32String("someRefCode");
+            await weth.connect(user2).deposit({value: ethers.parseEther("1")});
+            await weth.connect(user2).approve(csxTrade.target, ethers.parseEther("1"));
+            await csxTrade.connect(user2).commitBuy(mockTradeUrl, affLink, await user2.getAddress());
+            await csxTrade.connect(user2).buyerConfirmReceived();
+
+            await users.connect(user1).repAfterTrade(tradeAddress, true);
+            const user2Data = await users.getUserData(await user2.getAddress());
+            expect(Number(user2Data.reputationPos)).to.equal(1);
+            const user1DataBefore = await users.getUserData(await user1.getAddress());
+            expect(Number(user1DataBefore.reputationPos)).to.equal(0);
+            await users.connect(user2).repAfterTrade(tradeAddress, false);
+            const user1DataAfter = await users.getUserData(await user1.getAddress());
+            expect(Number(user1DataAfter.reputationNeg)).to.equal(1);
+            const _getUserTotalTradeUIs = await users.getUserTotalTradeUIs(await user2.getAddress());
+            expect(Number(_getUserTotalTradeUIs)).to.equal(1);
+            const _getUserTradeUIByIndex = await users.getUserTradeUIByIndex(await user2.getAddress(), 0);
+            expect(_getUserTradeUIByIndex[0]).to.equal(tradeAddress);
+            expect(_getUserTradeUIByIndex[1]).to.equal(0);
+            expect(_getUserTradeUIByIndex[2]).to.equal(6);
+            const _hasMadeRepOnTrade = await users.hasMadeRepOnTrade(tradeAddress);
+            expect(_hasMadeRepOnTrade[0]).to.be.true;
+            expect(_hasMadeRepOnTrade[1]).to.be.true;
+            expect(_hasMadeRepOnTrade[2]).to.be.true;
         });
     });
 
