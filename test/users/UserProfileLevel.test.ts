@@ -57,7 +57,7 @@ describe("UserProfileLevel", function () {
         await users.waitForDeployment();        
 
         const UserProfileLevel = await ethers.getContractFactory("UserProfileLevel");
-        userProfileLevelInstance = await UserProfileLevel.deploy(csx.target, users.target);
+        userProfileLevelInstance = await UserProfileLevel.deploy(csx.target, users.target, keepers.target);
         await userProfileLevelInstance.waitForDeployment();
 
         const BuyAssistoor = await ethers.getContractFactory("BuyAssistoor");
@@ -69,7 +69,7 @@ describe("UserProfileLevel", function () {
         await tradeFactoryBaseStorage.waitForDeployment();
 
         const ReferralRegistry = await ethers.getContractFactory("ReferralRegistry");
-        referralRegistryInstance = await ReferralRegistry.deploy();
+        referralRegistryInstance = await ReferralRegistry.deploy(keepers.target);
         await referralRegistryInstance.waitForDeployment();
 
         const TradeFactory = await ethers.getContractFactory("CSXTradeFactory");
@@ -85,8 +85,8 @@ describe("UserProfileLevel", function () {
         );
         await tradeFactory.waitForDeployment();
 
-        await referralRegistryInstance.initFactory(tradeFactory.target);
-        await users.connect(council).setFactoryAddress(tradeFactory.target);
+        await referralRegistryInstance.connect(council).changeContracts(tradeFactory.target, keepers.target);
+        await users.connect(council).changeContracts(tradeFactory.target, keepers.target);
         await tradeFactoryBaseStorage.connect(council).init(tradeFactory.target);
 
         await csx.transfer(await user1.getAddress(), ethers.parseEther('40000000'));

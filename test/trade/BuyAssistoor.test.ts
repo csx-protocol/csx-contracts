@@ -53,7 +53,7 @@ describe("BuyAssistoor", async function() {
     await scsx.waitForDeployment();
 
     const ReferralRegistry = await ethers.getContractFactory("ReferralRegistry");
-    referralRegistryInstance = await ReferralRegistry.deploy();
+    referralRegistryInstance = await ReferralRegistry.deploy(keepers.target);
     await referralRegistryInstance.waitForDeployment();
 
     const Users = await ethers.getContractFactory("Users");
@@ -81,9 +81,9 @@ describe("BuyAssistoor", async function() {
     );
     await tradeFactory.waitForDeployment();
 
-    await referralRegistryInstance.initFactory(tradeFactory.target);
+    await referralRegistryInstance.connect(council).changeContracts(tradeFactory.target, keepers.target);
     expect(await referralRegistryInstance.factory()).to.equal(tradeFactory.target);
-    await users.connect(council).setFactoryAddress(tradeFactory.target);
+    await users.connect(council).changeContracts(tradeFactory.target, keepers.target);
     await tradeFactoryBaseStorage.connect(council).init(tradeFactory.target);
        
         
