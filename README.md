@@ -9,6 +9,8 @@ npx hardhat node
 npx hardhat run scripts/deploy.ts
 npx hadhat run scripts/deploy/<contract>
 ./mythrun.sh
+npx hardhat node
+npx hardhat run --network localhost scripts/deploy.ts
 ```
 
 ```shell
