@@ -22,6 +22,7 @@ describe("ReferralRegistry", async function () {
       user2: Signer;
 
   const referralCode = ethers.encodeBytes32String("refCode123");
+  const referralCodeWithSpace = ethers.encodeBytes32String("refCode 123");
   const ownerRatio = 60;
   const buyerRatio = 40;
 
@@ -93,6 +94,17 @@ describe("ReferralRegistry", async function () {
     expect(referralInfo.owner).to.equal(await user1.getAddress());
     expect(Number(referralInfo.ownerRatio)).to.equal(ownerRatio);
     expect(Number(referralInfo.buyerRatio)).to.equal(buyerRatio);
+    const _getRebatePerCodePerPaymentToken = await referralRegistryInstance.getRebatePerCodePerPaymentToken(referralCode, weth.target);
+    expect(Number(_getRebatePerCodePerPaymentToken)).to.equal(0);
+    const _getReferralCodesByUser = await referralRegistryInstance.getReferralCodesByUser(await user1.getAddress());
+    expect(_getReferralCodesByUser[0]).to.equal(referralCode);
+    const _getReferralCodeRatios = await referralRegistryInstance.getReferralCodeRatios(referralCode);
+    expect(Number(_getReferralCodeRatios[0])).to.equal(ownerRatio);
+    expect(Number(_getReferralCodeRatios[1])).to.equal(buyerRatio);
+  });
+
+  it("should not register a referral code with a space", async function () {
+    await expect(referralRegistryInstance.connect(user1).registerReferralCode(referralCodeWithSpace, ownerRatio, buyerRatio)).to.be.revertedWithCustomError(referralRegistryInstance,"InvalidReferralCode").withArgs("Referral code cannot contain spaces");
   });
 
   it("should set and get a referral code", async function () {
