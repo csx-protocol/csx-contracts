@@ -45,11 +45,21 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
         _;
     }
 
-    function changeBaseFee(uint256 _baseFee) external {
+    modifier isCouncil() {
         if (!keepersContract.isCouncil(msg.sender)) {
             revert NotCouncil();
         }
+        _;
+    }
+
+    function changeBaseFee(uint256 _baseFee) external isCouncil {
         baseFee = _baseFee;
+    }
+
+    function changeContracts(address _keepers, address _users, address _tradeFactoryBaseStorage) external isCouncil {
+        keepersContract = IKeepers(_keepers);
+        usersContract = IUsers(_users);
+        tradeFactoryBaseStorage = ITradeFactoryBaseStorage(_tradeFactoryBaseStorage);
     }
 
     function isThisTradeContract(address contractAddress)

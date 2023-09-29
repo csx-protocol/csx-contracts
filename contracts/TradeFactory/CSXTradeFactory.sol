@@ -183,6 +183,18 @@ contract CSXTradeFactory is TradeFactoryBase {
         );
     }
 
+    function changeContractsForTrade(
+        PaymentTokens memory _paymentTokens,
+        address _referralRegistryAddress,
+        address _sCSXTokenAddress,
+        address _buyAssistoor
+    ) external isCouncil {
+        paymentTokens = _paymentTokens;
+        referralRegistryAddress = _referralRegistryAddress;
+        sCSXTokenAddress = _sCSXTokenAddress;
+        buyAssistoor = _buyAssistoor;
+    }
+
     function getTradeDetailsByIndex(
         uint256 index
     ) public view returns (TradeInfo memory result) {
