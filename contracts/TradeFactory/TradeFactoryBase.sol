@@ -60,40 +60,17 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
         return isTradeContract[contractAddress];
     }
 
-    function onStatusChange(TradeStatus status, string memory data, address sellerAddress, address buyerAddress)
+    mapping(TradeStatus => uint256) public tradeCountByStatus;
+    function onStatusChange(TradeStatus status, TradeStatus prevStatus, string memory data, address sellerAddress, address buyerAddress)
         external
         onlyTradeContracts
     {
+        --tradeCountByStatus[prevStatus];
+        ++tradeCountByStatus[status];        
         emit TradeContractStatusChange(msg.sender, status, data, sellerAddress, buyerAddress);
     }
 
     function totalContracts() public view returns (uint256) {
         return tradeFactoryBaseStorage.totalContracts();
     }
-
-    // mapping(string => mapping(address => address))
-    //     public assetIdFromUserAddrssToTradeAddrss;
-
-    // function removeAssetIdUsed(string memory _assetId, address sellerAddrss)
-    //     external
-    //     onlyTradeContracts
-    //     returns (bool)
-    // {
-    //     assetIdFromUserAddrssToTradeAddrss[_assetId][sellerAddrss] = address(0);
-    //     return true;
-    // }
-
-    // function hasAlreadyListedItem(string memory _assetId, address sellerAddrss)
-    //     external
-    //     view
-    //     returns (bool)
-    // {
-    //     if (
-    //         assetIdFromUserAddrssToTradeAddrss[_assetId][sellerAddrss] == address(0)
-    //     ) {
-    //         return false;
-    //     } else {
-    //         return true;
-    //     }
-    // }
 }
