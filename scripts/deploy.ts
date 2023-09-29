@@ -86,7 +86,8 @@ const main = async () => {
   const UserProfileLevel = await deployUserProfileLevel(
     hre,
     addressMap.get("csxToken")!,
-    addressMap.get("users")!
+    addressMap.get("users")!,
+    addressMap.get("keepers")!
   );
   addressMap.set("userProfileLevel", UserProfileLevel.target as string);
 
@@ -131,7 +132,7 @@ const main = async () => {
 
     await ReferralRegistry.initFactory(TradeFactory.target);
 
-    await Users.setFactoryAddress(TradeFactory.target);
+    await Users.changeContracts(TradeFactory.target, Keepers.target);
   }
 
   // Logging contract addresses
