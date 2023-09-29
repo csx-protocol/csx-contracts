@@ -8,7 +8,6 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.
 error NotFactory();
 error NotCouncil();
 error NotTradeContract();
-//error NotKeeper();
 error NotKeepersOrTradeContract();
 error TradeNotCompleted();
 error AlreadyReppedAsBuyer();
@@ -90,17 +89,6 @@ contract Users is ReentrancyGuard {
         }
         _;
     }
-
-    // modifier onlyKeepers() {
-    //     if (
-    //         keepers.indexOf(msg.sender) == 0 &&
-    //         keepers.indexOf(tx.origin) == 0 &&
-    //         !keepers.isKeeperNode(msg.sender)
-    //     ) {
-    //         revert NotKeeper();
-    //     }
-    //     _;
-    // }
 
     modifier onlyKeepersOrTradeContracts(address contractAddress) {
         // Check if the sender is a keeper
@@ -221,41 +209,6 @@ contract Users is ReentrancyGuard {
         return userTrades[userAddrss][i];
     }
 
-    function getUserTradeCountByStatus(
-        address userAddress,
-        TradeStatus status
-    ) external view returns (uint256) {
-        uint256 count;
-        for (uint256 i = 0; i < userTrades[userAddress].length; ++i) {
-            if (userTrades[userAddress][i].status == status) {
-                ++count;
-            }
-        }
-        return count;
-    }
-
-    function getUserTradeUIsByStatus(
-        address userAddress,
-        TradeStatus status,
-        uint256 indexFrom,
-        uint256 maxResults
-    ) external view returns (UserInteraction[] memory) {
-        UserInteraction[] memory tradeUIs = new UserInteraction[](maxResults);
-        uint256 resultIndex;
-        uint256 i = indexFrom;
-        while (resultIndex < maxResults && i < userTrades[userAddress].length) {
-            UserInteraction memory ui = userTrades[userAddress][i];
-
-            if (ui.status == status) {
-                tradeUIs[resultIndex] = ui;
-                ++resultIndex;
-            }
-
-            ++i;
-        }
-        return tradeUIs;
-    }
-
     mapping(address => mapping(Role => bool)) tradeAdrsToRoleToHasRep;
 
     function repAfterTrade(
@@ -310,7 +263,6 @@ contract Users is ReentrancyGuard {
         hasSeller = tradeAdrsToRoleToHasRep[tradeAddrs][Role.SELLER];
     }
 
-    //
     mapping(string => mapping(address => address))
         public assetIdFromUserAddrssToTradeAddrss;
 
