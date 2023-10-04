@@ -3,7 +3,7 @@ import { CSXToken } from "../../typechain-types/contracts/CSX";
 import { expect } from "chai";
 import { Signer } from "ethers";
 import { ethers } from "hardhat";
-import { StakedCSX } from "../../typechain-types";
+import { Keepers, StakedCSX } from "../../typechain-types";
 
 describe("Staking", function () {
     let CSXToken: CSXToken;
