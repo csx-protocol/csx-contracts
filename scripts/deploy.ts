@@ -120,7 +120,7 @@ const main = async () => {
     addressMap.get("usdc")!,
     addressMap.get("usdt")!,
     addressMap.get("referralRegistry")!,
-    addressMap.get("tradeFactoryBaseStorage")!,
+    addressMap.get("stakedCSX")!,
     addressMap.get("buyAssistoor")!
   );
   addressMap.set("tradeFactory", TradeFactory.target as string);

@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.18;
 
 import {IKeepers} from "../Keepers/IKeepers.sol";
 import {ITradeFactory, PriceType, UserInteraction, Role, TradeStatus, TradeInfo} from "../TradeFactory/ITradeFactory.sol";

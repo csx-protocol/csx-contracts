@@ -1,5 +1,5 @@
 // //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.18;
 
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 import {IKeepers} from "../Keepers/IKeepers.sol";
@@ -71,6 +71,8 @@ contract CSXTrade {
 
     string public disputeComplaint;
     address public disputeer;
+
+    string public finalityResult;
 
     modifier onlyAddress(address _address) {
         if (msg.sender != _address) {
@@ -343,10 +345,15 @@ contract CSXTrade {
     }
 
     // KeeperNode Confirms the trade has been made.
-    function keeperNodeConfirmsTrade(bool isTradeMade) external onlyKeeperNode {
-        if (status != TradeStatus.BuyerCommitted && status != TradeStatus.SellerCommitted) {
+    function keeperNodeConfirmsTrade(bool isTradeMade, string memory message) external onlyKeeperNode {
+        if (
+            status != TradeStatus.BuyerCommitted &&
+            status != TradeStatus.SellerCommitted &&
+            status != TradeStatus.ForSale
+        ) {
             revert StatusNotBuyerCommitted();
         }
+        finalityResult = message;
         if (isTradeMade) {
             string memory _data = string(
                 abi.encodePacked(Strings.toString(weiPrice))
@@ -367,7 +374,7 @@ contract CSXTrade {
             _distributeProceeds();
         } else {
             TradeStatus oldStatus = status;
-            _changeStatus(TradeStatus.Clawbacked, "KO_DEFAULT");
+            _changeStatus(TradeStatus.Clawbacked, message);
             usersContract.changeUserInteractionStatus(
                 address(this),
                 seller,
@@ -379,8 +386,8 @@ contract CSXTrade {
                     buyer,
                     status
                 );
-            }
-            paymentToken.safeTransfer(buyer, depositedValue);
+                paymentToken.safeTransfer(buyer, depositedValue);
+            }    
         }
 
         bool raS = usersContract.removeAssetIdUsed(itemSellerAssetId, seller);
@@ -531,15 +538,10 @@ contract CSXTrade {
         uint256 buyerRatio;
 
         if (hasReferral) {
-            (
-                ,
-                /*uint256 _ownerRatio*/ uint256 _buyerRatio
-            ) = referralRegistryContract.getReferralCodeRatios(_affLink);
+            (,/*uint256 _ownerRatio*/ uint256 _buyerRatio) = referralRegistryContract.getReferralCodeRatios(_affLink);
             //ownerRatio = _ownerRatio;
             buyerRatio = (_buyerRatio / 2);
-        }
-
-        (
+        }(
             buyerNetPrice,
             sellerNetProceeds,
             affiliatorNetReward,

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# WSL Fix: sed -i -e 's/\r$//' mythrun.sh
+
 # Initialize an empty string to keep track of failed contracts
 failed_contracts=""
 

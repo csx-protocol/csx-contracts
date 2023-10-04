@@ -147,6 +147,26 @@ describe("UserProfileLevel", function () {
             const user1Balance = await csx.balanceOf(await user1.getAddress());
             expect(user1Balance).to.gte(0);
         });
+
+        it("levels up a user from 0 to 100 in 10 steps", async function () {
+            const currentLevel = Number(0);
+            const targetLevel = Number(100);
+            const levelsToIncrease = 100;
+        
+            const totalTokenAmount = await userProfileLevelInstance.getLevelUpCost(currentLevel, levelsToIncrease);
+    
+            await csx.transfer(await user1.getAddress(), totalTokenAmount);
+            await csx.connect(user1).approve(userProfileLevelInstance.target, totalTokenAmount);
+            for (let i = 0; i < 10; i++) {
+                const tknAmount = await userProfileLevelInstance.getLevelUpCost(i*10, 10);
+                await userProfileLevelInstance.connect(user1).levelUp(tknAmount, 10);               
+            }
+
+            const userLevel = await userProfileLevelInstance.getUserLevel(await user1.getAddress());
+            expect(userLevel).to.equal(targetLevel);
+            const user1Balance = await csx.balanceOf(await user1.getAddress());
+            expect(user1Balance).to.gte(0);
+        });
     });
 
     describe("User Data", function () {
