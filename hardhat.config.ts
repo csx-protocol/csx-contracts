@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const privateKeyDev = process.env.HEXKEY!;
-const rpcLink = process.env.RPCURL;
+const rpcLink = process.env.RPCURL!;
 
 const config: HardhatUserConfig = {
   mocha: {
@@ -22,13 +22,11 @@ const config: HardhatUserConfig = {
       // gas: 8721974,
       chainId: 1337,
     },
-    // goerli: {
-    //   url: rpcLink,
-    //   accounts: [privateKeyDev],
-    //   gasPrice: 1000000000,
-    //   chainId: 421613,
-    //   timeout: 200000
-    // }
+    goerli: {
+      url: rpcLink,
+      accounts: [privateKeyDev],
+      chainId: 421613,
+    }
   },
   solidity: {
     version: "0.8.18",

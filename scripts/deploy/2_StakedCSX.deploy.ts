@@ -11,7 +11,11 @@ const deployStakedCSX = async (
   let usdcAddress: string;
   let usdtAddress: string;
 
-  if (network.name === 'ganache' || network.name === 'hardhat' || network.name === 'localhost') {
+  if (
+    network.name === 'ganache' || 
+    network.name === 'hardhat' || 
+    network.name === 'localhost' ||
+    network.name === 'goerli') {
     const WETH9Mock = await hre.ethers.getContractFactory("WETH9Mock");
     const weth9Mock: any = await WETH9Mock.deploy();
     await weth9Mock.waitForDeployment();
