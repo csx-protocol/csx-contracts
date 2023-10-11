@@ -25,6 +25,12 @@ contract UserProfileLevel {
         uint256 numberOfLevelsIncreased
     );
 
+    // Event to be emitted when a user transfers their profile to a new address
+    event ProfileTransfered(
+        address indexed originalOwner,
+        address indexed newOwner
+    );
+
     // Set the base cost for leveling up (1 token)
     uint256 private constant BASE_COST = 1 * 10 ** 18; // Assuming the token has 18 decimals
 
@@ -226,6 +232,9 @@ contract UserProfileLevel {
 
         // Remove the pending transfer
         delete pendingTransfers[_originalOwner];
+
+        // Emit ProfileTransfered event
+        emit ProfileTransfered(_originalOwner, msg.sender);
     }
 
     function cancelTransfer() external {
