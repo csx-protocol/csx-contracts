@@ -20,6 +20,7 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
     IERC20 public immutable USDC;
     IERC20 public immutable CSX;
     IERC20 public immutable USDT;
+    address public immutable keepers;
 
     uint256 public constant MAX_SUPPLY = 100000000 ether;
 
@@ -36,7 +37,8 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
         address _wethAddress,
         address _usdcAddress,
         address _csxAddress,
-        address _usdtAddress
+        address _usdtAddress,
+        address _keepersAddress
     ) ERC20("Vested CSX", "vCSX") {
         EscrowedCSX = IERC20Burnable(_eCsxAddress);
         StakedCSX = IStakedCSX(_sCsxAddress);
@@ -44,6 +46,7 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
         USDC = IERC20(_usdcAddress);
         CSX = IERC20(_csxAddress);
         USDT = IERC20(_usdtAddress);
+        keepers = _keepersAddress;
     }
 
     //=================================== EXTERNAL ==============================================
@@ -67,7 +70,8 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
                 address(CSX),
                 address(USDC),
                 address(USDT),
-                address(WETH)
+                address(WETH),
+                keepers
             );
         }
 

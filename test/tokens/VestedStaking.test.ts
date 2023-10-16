@@ -59,7 +59,8 @@ describe("VestedStaking", function () {
             weth.target,
             usdc.target,
             csx.target,
-            usdt.target
+            usdt.target,
+            keepers.target
         );
         await vestedCSX.waitForDeployment();
 
@@ -77,9 +78,11 @@ describe("VestedStaking", function () {
     });
 
     it("should deposit CSX tokens into the staking contract", async function () {
+        const blockNumBefore = await ethers.provider.getBlockNumber();
+        const blockBefore = await ethers.provider.getBlock(blockNumBefore);
         const vesting = await vestedStaking.vesting();
         expect(vesting.amount.toString()).to.equal(amount.toString());
-        expect(vesting.startTime.toString()).to.equal((await ethers.provider.getBlock('latest'))!.timestamp!.toString());
+        expect(vesting.startTime.toString()).to.equal(blockBefore?.timestamp.toString());
     });
 
     it("should claim rewards from the staking contract", async function () {
@@ -100,6 +103,7 @@ describe("VestedStaking", function () {
     });
 
     it("should not allow withdrawal before vesting period ends", async function () {
+        await vestedCSX.connect(vesterAddress).approve(vestedStaking.target, amount);        
         await expect(vestedStaking.connect(vesterAddress).withdraw(amount)).to.be.revertedWithCustomError(vestedStaking, "TokensAreStillLocked");
     });
 
@@ -110,5 +114,11 @@ describe("VestedStaking", function () {
 
         await vestedCSX.connect(vesterAddress).approve(vestedStaking.target, amount);
         await vestedStaking.connect(vesterAddress).withdraw(amount);
+
+        const vCSXBalance = await vestedCSX.balanceOf(await vesterAddress.getAddress());
+        expect(vCSXBalance.toString()).to.equal("0");
+
+        const csxBalance = await csx.balanceOf(await vesterAddress.getAddress());
+        expect(csxBalance.toString()).to.equal(amount.toString());
     });
 });

@@ -1,9 +1,11 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { Signer } from "ethers";
+import { VestedCSX, VestedStaking } from "../../typechain-types";
 
 describe("VestedCSX", async function() {
-  let vestedCSX: any;
+  let vestedCSX: VestedCSX;
+  let vestedStaking: VestedStaking
   let escrowedCSX: any;
   let csx: any;
   let keepers: any;
@@ -43,7 +45,7 @@ describe("VestedCSX", async function() {
     await escrowedCSX.waitForDeployment();
 
     const Keepers = await ethers.getContractFactory("Keepers");
-    keepers = await Keepers.deploy(council.getAddress(), keeperNodeAddress.getAddress());
+    keepers = await Keepers.deploy(await council.getAddress(), await keeperNodeAddress.getAddress());
     await keepers.waitForDeployment();
    
     const StakedCSX = await ethers.getContractFactory("StakedCSX");
@@ -57,11 +59,10 @@ describe("VestedCSX", async function() {
       weth.target,
       usdc.target,
       csx.target,
-      usdt.target
+      usdt.target,
+      keepers.target
     );
-    await vestedCSX.waitForDeployment();
-     
-        
+    await vestedCSX.waitForDeployment();        
     await escrowedCSX.init(vestedCSX.target);   
   });
 
@@ -122,6 +123,69 @@ describe("VestedCSX", async function() {
 
     await expect(
       vestedCSX.connect(user1).transfer(receiverAddress, amount)
+    ).to.be.revertedWithCustomError(vestedCSX, "TokenTransfersDisabled");
+  });
+
+  it("should allow council to cliff the vesting", async function() {
+    // Used against malicious vesters.
+    const fullAmount = ethers.parseEther("1000");
+    const halfAmount = ethers.parseEther("500");
+    const halfOfHalfAmount = ethers.parseEther("250");
+    const userAddress = await user1.getAddress();
+    const receiverAddress = await user2.getAddress();
+
+    await csx.transfer(userAddress, fullAmount);
+    await csx.connect(user1).approve(escrowedCSX.target, fullAmount);
+    await escrowedCSX.connect(user1).mintEscrow(fullAmount);
+    await escrowedCSX.connect(user1).approve(vestedCSX.target, fullAmount);
+    await vestedCSX.connect(user1).vest(fullAmount);
+
+    const vestedStakingAddress = await vestedCSX.getVestedStakingContractAddress(userAddress);
+    const VestedStaking = await ethers.getContractFactory("VestedStaking");
+    vestedStaking = VestedStaking.attach(vestedStakingAddress) as VestedStaking;
+
+    await expect(vestedStaking.connect(user1).cliff(fullAmount)).to.be.revertedWithCustomError(vestedStaking, "InvalidSender");
+
+    const beforeCliffedAmount = await vestedStaking.cliffedAmount();
+    expect(beforeCliffedAmount.toString()).to.equal("0");
+
+    await vestedStaking.connect(council).cliff(halfAmount);
+
+    const cliffedAmount = await vestedStaking.cliffedAmount();
+
+    expect(cliffedAmount.toString()).to.equal(halfAmount.toString());
+
+    // user test to withdraw after vesting period and cliffed
+    await ethers.provider.send("evm_increaseTime", [86400 * 30 * 24]);
+    await ethers.provider.send("evm_mine");
+
+    await vestedCSX.connect(user1).approve(vestedStaking.target, fullAmount);
+    
+    const vCSXBalance = await vestedCSX.balanceOf(await user1.getAddress());
+    expect(vCSXBalance.toString()).to.equal(fullAmount);   
+    
+    await expect(
+      vestedStaking.connect(user1).withdraw(fullAmount)
+    ).to.be.revertedWithCustomError(vestedStaking, "NotEnoughTokens");
+
+    await vestedStaking.connect(user1).withdraw(halfOfHalfAmount);
+
+    await expect(
+      vestedStaking.connect(council).cliff(halfAmount)
+    ).to.be.revertedWithCustomError(vestedStaking, "NotEnoughTokens");
+
+    await vestedStaking.connect(council).cliff(halfOfHalfAmount);
+
+    await expect(
+      vestedStaking.connect(user1).withdraw(halfOfHalfAmount)
+    ).to.be.revertedWithCustomError(vestedStaking, "NotEnoughTokens");
+
+    const vCSXBalanceAfterWithdraw = await vestedCSX.balanceOf(await user1.getAddress());
+    expect(vCSXBalanceAfterWithdraw.toString()).to.equal(fullAmount-halfOfHalfAmount);
+
+    // transfer vested tokens to another user regardless should not be allowed
+    await expect(
+      vestedCSX.connect(user1).transfer(receiverAddress, halfOfHalfAmount)
     ).to.be.revertedWithCustomError(vestedCSX, "TokenTransfersDisabled");
   });
 });

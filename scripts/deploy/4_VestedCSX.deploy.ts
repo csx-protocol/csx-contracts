@@ -8,7 +8,8 @@ const deployVestedCSX = async (
   wethAddress: string,
   usdcAddress: string,
   csxTokenAddress: string,
-  usdtAddress: string
+  usdtAddress: string,
+  keepersAddress: string
 ): Promise<VestedCSX> => {
   const VestedCSX = await hre.ethers.getContractFactory("VestedCSX");
   const vestedCSX: VestedCSX = await VestedCSX.deploy(
@@ -17,7 +18,8 @@ const deployVestedCSX = async (
     wethAddress,
     usdcAddress,
     csxTokenAddress,
-    usdtAddress
+    usdtAddress,
+    keepersAddress
   );
   await vestedCSX.waitForDeployment();
   return vestedCSX;

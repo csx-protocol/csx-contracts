@@ -62,6 +62,10 @@ const main = async () => {
   const EscrowedCSX = await deployEscrowedCSX(hre, CSXToken.target as string);
   addressMap.set("escrowedCSX", EscrowedCSX.target as string);
 
+  // Deploy Keepers contract
+  const Keepers = await deployKeepers(hre);
+  addressMap.set("keepers", Keepers.target as string);
+
   // Deploy VestedCSX
   const VestedCSX = await deployVestedCSX(
     hre,
@@ -70,13 +74,10 @@ const main = async () => {
     addressMap.get("weth")!,
     addressMap.get("usdc")!,
     addressMap.get("csxToken")!,
-    addressMap.get("usdt")!
+    addressMap.get("usdt")!,
+    addressMap.get("keepers")!
   );
   addressMap.set("vestedCSX", VestedCSX.target as string);
-
-  // Deploy Keepers contract
-  const Keepers = await deployKeepers(hre);
-  addressMap.set("keepers", Keepers.target as string);
 
   // Deploy Users contract
   const Users = await deployUsers(hre, addressMap.get("keepers")!);

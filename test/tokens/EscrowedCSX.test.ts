@@ -1,13 +1,15 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { Signer } from "ethers";
+import { Keepers } from "../../typechain-types";
 
 describe("EscrowedCSX", async function () {
   let deployer: Signer,
       user1: Signer;
   let csxToken: any,
       escrowedCSX: any,
-      vestedCSX: any;
+      vestedCSX: any,
+      keepers: Keepers;
 
   beforeEach(async function () {
     [deployer, user1] = await ethers.getSigners();
@@ -19,6 +21,10 @@ describe("EscrowedCSX", async function () {
     const EscrowedCSX = await ethers.getContractFactory("EscrowedCSX");
     escrowedCSX = await EscrowedCSX.deploy(csxToken.target);
     await escrowedCSX.waitForDeployment();
+
+    const Keepers = await ethers.getContractFactory("Keepers");
+    keepers = await Keepers.deploy(await deployer.getAddress(), await deployer.getAddress());
+    await keepers.waitForDeployment();
   });
 
   describe("Initialization", function () {
@@ -33,7 +39,8 @@ describe("EscrowedCSX", async function () {
         await user1.getAddress(),
         await user1.getAddress(),
         csxToken.target,
-        await user1.getAddress()
+        await user1.getAddress(),
+        keepers.target
       );
       await vestedCSX.waitForDeployment();
 
@@ -49,7 +56,8 @@ describe("EscrowedCSX", async function () {
         await user1.getAddress(),
         await user1.getAddress(),
         csxToken.target,
-        await user1.getAddress()
+        await user1.getAddress(),
+        keepers.target
       );
       await vestedCSX.waitForDeployment();
 
@@ -69,7 +77,8 @@ describe("EscrowedCSX", async function () {
         await user1.getAddress(),
         await user1.getAddress(),
         csxToken.target,
-        await user1.getAddress()
+        await user1.getAddress(),
+        keepers.target
       );
       await vestedCSX.waitForDeployment();
 
@@ -81,7 +90,6 @@ describe("EscrowedCSX", async function () {
 
       await csxToken.transfer(await user1.getAddress(), mintAmount);
       await csxToken.connect(user1).approve(escrowedCSX.target, mintAmount);
-
       await escrowedCSX.connect(user1).mintEscrow(mintAmount);
 
       const balance = await escrowedCSX.balanceOf(await user1.getAddress());
