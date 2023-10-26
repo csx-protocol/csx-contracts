@@ -6,7 +6,7 @@ error KeeperAlreadyExists();
 error NotAKeeper();
 
 contract Keepers {
-    address keeperNodeAddress;
+    address public keeperOracleAddress;
     address[] public keepers;
     address public council;
     mapping(address => uint256) public keepersIndex;
@@ -16,17 +16,17 @@ contract Keepers {
     event KeeperRemoved(address keeper);
     event KeeperNodeChanged(address newKeeperNode);
 
-    constructor(address _council, address _keeperNodeAddress) {
-        if(_council == address(0)) {
+    constructor(address _council, address _keeperOracleAddress) {
+        if (_council == address(0)) {
             revert NotCouncil();
         }
-        if(_keeperNodeAddress == address(0)) {
+        if (_keeperOracleAddress == address(0)) {
             revert NotAKeeper();
         }
         council = _council;
         // Mocks index 0 to require(indexOf(_keeper) == 0)
         keepers.push(address(0));
-        keeperNodeAddress = _keeperNodeAddress;
+        keeperOracleAddress = _keeperOracleAddress;
     }
 
     modifier onlyCouncil() {
@@ -54,13 +54,21 @@ contract Keepers {
         if (index == 0) {
             revert NotAKeeper();
         }
+
+        // Move the last element to the slot to be deleted
+        keepers[index] = keepers[keepers.length - 1];
+        // Update the index mapping for the moved keeper
+        keepersIndex[keepers[index]] = index;
+        // Delete the last element
+        keepers.pop();
+        // Delete the mapping for the removed keeper
         delete keepersIndex[_keeper];
-        delete keepers[index];
+
         emit KeeperRemoved(_keeper);
     }
 
     function isKeeperNode(address _address) external view returns (bool) {
-        if (_address == keeperNodeAddress) {
+        if (_address == keeperOracleAddress) {
             return true;
         } else {
             return false;
@@ -76,15 +84,15 @@ contract Keepers {
     }
 
     function changeKeeperNode(address _newAddres) external onlyCouncil {
-        if(_newAddres == address(0)) {
+        if (_newAddres == address(0)) {
             revert NotCouncil();
         }
-        keeperNodeAddress = _newAddres;
+        keeperOracleAddress = _newAddres;
         emit KeeperNodeChanged(_newAddres);
     }
 
     function changeCouncil(address _newCouncil) public onlyCouncil {
-        if(_newCouncil == address(0)) {
+        if (_newCouncil == address(0)) {
             revert NotCouncil();
         }
         council = _newCouncil;
@@ -97,5 +105,9 @@ contract Keepers {
         } else {
             return false;
         }
+    }
+
+    function getKeepersCount() external view returns (uint256) {
+        return keepers.length;
     }
 }
