@@ -118,6 +118,28 @@ describe("CSXTrade", async function() {
     });
   });
 
+  describe("changePrice()", async function() {
+    it("should allow the seller to change the price of the listing", async function() {
+      await csxTrade.connect(seller).changePrice(ethers.parseEther("0.01"));
+      const weiPrice = await csxTrade.weiPrice();
+      expect(weiPrice).to.equal(ethers.parseEther("0.01"));
+    });
+    it("should not allow the buyer to change the price of the listing", async function() {
+      await expect(csxTrade.connect(buyer).changePrice(ethers.parseEther("0.01"))).to.be.revertedWithCustomError(csxTrade, "NotParty");
+    });
+    it("should not allow the seller to change the price of the listing after buyer committed", async function() {
+      const mockTradeUrl = listingParams.tradeUrl;
+      const affLink = ethers.encodeBytes32String("someRefCode");
+      const sellerAddress = await seller.getAddress();
+      await weth.connect(buyer).deposit({value: ethers.parseEther("1")});
+      await weth.connect(seller).deposit({value: ethers.parseEther("1")});
+      await weth.connect(buyer).approve(csxTrade.target, ethers.parseEther("1"));
+      await weth.connect(seller).approve(csxTrade.target, ethers.parseEther("1"));      
+      await csxTrade.connect(buyer).commitBuy(mockTradeUrl, affLink, sellerAddress);
+      await expect(csxTrade.connect(seller).changePrice(ethers.parseEther("0.01"))).to.be.revertedWithCustomError(csxTrade, "NotForSale");
+    });
+  });
+
   describe("sellerCancel()", async function() {
     it("should allow the seller to cancel a sale", async function() {
       await csxTrade.connect(seller).sellerCancel();

@@ -51,7 +51,7 @@ contract CSXTrade {
     string public weaponType;
 
     uint256 public depositedValue;
-    uint256 public immutable weiPrice;
+    uint256 public weiPrice;
 
     uint256 public sellerAcceptedTimestamp;
     uint256 public buyerCommitTimestamp;
@@ -163,6 +163,14 @@ contract CSXTrade {
             seller,
             TradeStatus.ForSale
         );
+    }
+
+    // Seller change the price of the listing up til any buyer has committed tokens.
+    function changePrice(uint256 _newPrice) external onlyAddress(seller) {
+        if (status != TradeStatus.ForSale) {
+            revert NotForSale();
+        }
+        weiPrice = _newPrice;
     }
 
     // Seller can cancel the listing up til any buyer has committed tokens.
