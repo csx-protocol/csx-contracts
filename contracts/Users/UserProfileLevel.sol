@@ -10,11 +10,6 @@ import {IKeepers} from "../Keepers/IKeepers.sol";
 
 error ZeroLevels();
 error InsufficientTokens();
-error UserBanned();
-error NoPendingTransfer();
-error TransferToSelf();
-error NewAddressNotEmpty();
-error NoLevelsToTransfer();
 error NotCouncil();
 
 contract UserProfileLevel {
@@ -23,12 +18,6 @@ contract UserProfileLevel {
         address indexed userAddress,
         uint256 newLevel,
         uint256 numberOfLevelsIncreased
-    );
-
-    // Event to be emitted when a user transfers their profile to a new address
-    event ProfileTransfered(
-        address indexed originalOwner,
-        address indexed newOwner
     );
 
     // Set the base cost for leveling up (1 token)
@@ -45,16 +34,6 @@ contract UserProfileLevel {
 
     // Mapping to store user profiles by their address
     mapping(address => User) public users;
-
-    // Mapping to store pending transfers of user profiles
-    mapping(address => address) public pendingTransfers;
-
-    modifier isNotBanned(address _userAddress) {
-        if (usersContract.isBanned(_userAddress)) {
-            revert UserBanned();
-        }
-        _;
-    }
 
     constructor(address _tokenAddress, address _usersContractAddress, address _keepersContractAddress) {
         csxToken = IERC20Burnable(_tokenAddress);
@@ -189,60 +168,5 @@ contract UserProfileLevel {
             costForNext5Levels,
             costForNext10Levels
         );
-    }
-
-    function initiateTransfer(
-        address newAddress
-    ) external isNotBanned(msg.sender) isNotBanned(newAddress) {
-        if (users[newAddress].level != 0) {
-            revert NewAddressNotEmpty();
-        }
-        if (newAddress == address(0) || newAddress == msg.sender) {
-            revert TransferToSelf();
-        }
-        if (users[msg.sender].level == 0) {
-            revert NoLevelsToTransfer();
-        }
-
-        // Set the pending transfer
-        pendingTransfers[msg.sender] = newAddress;
-    }
-
-    function acceptTransfer(
-        address _originalOwner
-    ) external isNotBanned(msg.sender) isNotBanned(_originalOwner) {
-        address intendedRecipient = pendingTransfers[_originalOwner];
-        if (intendedRecipient != msg.sender) {
-            revert NoPendingTransfer();
-        }
-        if (users[_originalOwner].level == 0) {
-            revert NoLevelsToTransfer();
-        }
-        if(users[intendedRecipient].level != 0) {
-            revert NewAddressNotEmpty();
-        }
-        
-        // Complete the transfer
-        User storage currentUser = users[_originalOwner];
-        uint256 currentLevel = currentUser.level;
-        currentUser.level = 0;
-
-        User storage newUser = users[msg.sender];
-        newUser.level = currentLevel;
-
-        // Remove the pending transfer
-        delete pendingTransfers[_originalOwner];
-
-        // Emit ProfileTransfered event
-        emit ProfileTransfered(_originalOwner, msg.sender);
-    }
-
-    function cancelTransfer() external {
-        if (pendingTransfers[msg.sender] == address(0)) {
-            revert NoPendingTransfer();
-        }
-
-        // Remove the pending transfer
-        delete pendingTransfers[msg.sender];
     }
 }
