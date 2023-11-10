@@ -75,7 +75,16 @@ describe("VestedCSX", async function() {
     await escrowedCSX.connect(user1).mintEscrow(amount);
     await escrowedCSX.connect(user1).approve(vestedCSX.target, amount);
 
+    const eCSXBalanceBefore = await escrowedCSX.balanceOf(userAddress);
+    expect(eCSXBalanceBefore.toString()).to.equal(amount.toString());
+
+    const vCSXBalanceBefore = await vestedCSX.balanceOf(userAddress);
+    expect(vCSXBalanceBefore.toString()).to.equal("0");
+
     await vestedCSX.connect(user1).vest(amount);
+
+    const eCSXBalanceAfter = await escrowedCSX.balanceOf(userAddress);
+    expect(eCSXBalanceAfter.toString()).to.equal("0");
 
     const vCSXBalance = await vestedCSX.balanceOf(userAddress);
     expect(vCSXBalance.toString()).to.equal(amount.toString());
