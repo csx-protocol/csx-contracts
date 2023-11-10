@@ -127,7 +127,7 @@ const main = async () => {
   addressMap.set("tradeFactory", TradeFactory.target as string);
 
   if (initContracts) {
-    await EscrowedCSX.init(TradeFactory.target);
+    await EscrowedCSX.init(VestedCSX.target);
 
     await TradeFactoryBaseStorage.init(TradeFactory.target);
 
