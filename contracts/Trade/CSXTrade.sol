@@ -138,7 +138,8 @@ contract CSXTrade {
             revert NotFactory();
         }
         hasInit = true;
-        for (uint256 i = 0; i < _stickers.length; i++) {
+        uint totalStickers = _stickers.length;
+        for (uint256 i = 0; i < totalStickers; i++) {
             stickers.push(_stickers[i]);
         }
         weaponType = _weaponType;

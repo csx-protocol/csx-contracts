@@ -262,7 +262,7 @@ contract CSXTradeFactory is TradeFactoryBase {
         uint256 lengthOfStickersArray = _contract.stickerLength();
         Sticker[] memory _stickers = new Sticker[](lengthOfStickersArray);
 
-        for (uint256 y = 0; y < _stickers.length; y++) {
+        for (uint256 y = 0; y < lengthOfStickersArray; y++) {
             (
                 _stickers[y].name,
                 _stickers[y].material,
