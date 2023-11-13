@@ -224,7 +224,7 @@ contract CSXTrade {
         TradeUrl memory _buyerTradeUrl,
         bytes32 _affLink,
         address _buyerAddress
-    ) public {
+    ) external {
         if (status != TradeStatus.ForSale) {
             revert NotForSale();
         }
@@ -308,7 +308,7 @@ contract CSXTrade {
      */
     function sellerTradeVeridict(
         bool _sellerCommited
-    ) public onlyAddress(seller) {
+    ) external onlyAddress(seller) {
         if (status != TradeStatus.BuyerCommitted) {
             revert StatusNotBuyerCommitted();
         }
@@ -640,7 +640,7 @@ contract CSXTrade {
     /**
      * @notice Get the status history length of the listing
      */
-    function getStatusCount() public view returns (uint) {
+    function getStatusCount() external view returns (uint) {
         return statusHistory.length;
     }
 

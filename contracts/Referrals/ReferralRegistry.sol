@@ -153,7 +153,7 @@ contract ReferralRegistry is NetValueCalculator {
         uint256 rebate
     ) external onlyTradeContracts(contractAddress) {        
         rebatePerCodePerPaymentToken[referralCode][_paymentToken] += rebate;
-        address owner = getReferralCodeOwner(referralCode);
+        address owner = referralInfos[referralCode].owner;
         emit ReferralCodeRebateUpdated(contractAddress, referralCode, owner, _paymentToken, rebate);
     }
 
@@ -205,7 +205,7 @@ contract ReferralRegistry is NetValueCalculator {
      */
     function getReferralCodeOwner(
         bytes32 referralCode
-    ) public view returns (address) {
+    ) external view returns (address) {
         return referralInfos[referralCode].owner;
     }
 

@@ -116,7 +116,7 @@ contract Users is ReentrancyGuard {
      * @dev This function can only be called by a keeper or a trade contract
      * @param _user The address of the user to warn
      */
-    function warnUser(address _user) public onlyKeepersOrTradeContracts(msg.sender) {
+    function warnUser(address _user) external onlyKeepersOrTradeContracts(msg.sender) {
         User storage user = users[_user];
         user.reputationNeg += 3;
         ++user.warnings;
@@ -130,7 +130,7 @@ contract Users is ReentrancyGuard {
      * @dev This function can only be called by a keeper or a trade contract
      * @param _user The address of the user to ban
      */
-    function banUser(address _user) public onlyKeepersOrTradeContracts(msg.sender) {
+    function banUser(address _user) external onlyKeepersOrTradeContracts(msg.sender) {
         User storage user = users[_user];
         user.isBanned = true;
     }
@@ -140,7 +140,7 @@ contract Users is ReentrancyGuard {
      * @param _user The address of the user to unban
      * @dev This function can only be called by a keeper or a trade contract
      */
-    function unbanUser(address _user) public onlyKeepersOrTradeContracts(msg.sender) {
+    function unbanUser(address _user) external onlyKeepersOrTradeContracts(msg.sender) {
         User storage user = users[_user];
         user.isBanned = false;
     }

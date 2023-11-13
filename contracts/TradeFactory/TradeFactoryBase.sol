@@ -110,7 +110,7 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
     /**
      * @notice Get the total contracts
      */
-    function totalContracts() public view returns (uint256) {
+    function totalContracts() external view returns (uint256) {
         return tradeFactoryBaseStorage.totalContracts();
     }
 }

@@ -135,7 +135,7 @@ contract Keepers {
      * @dev Reverts if the new address is the zero address.
      * @dev Reverts if the sender is not the council.
      */
-    function changeCouncil(address _newCouncil) public onlyCouncil {
+    function changeCouncil(address _newCouncil) external onlyCouncil {
         if (_newCouncil == address(0)) {
             revert NotCouncil();
         }

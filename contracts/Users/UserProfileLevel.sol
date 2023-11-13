@@ -50,7 +50,7 @@ contract UserProfileLevel {
      * @param _tokenAmount The amount of tokens to be used for leveling up
      * @param _levels The number of levels to level up
      */
-    function levelUp(uint256 _tokenAmount, uint256 _levels) public {
+    function levelUp(uint256 _tokenAmount, uint256 _levels) external {
         if (_levels == 0) {
             revert ZeroLevels();
         }
@@ -136,7 +136,7 @@ contract UserProfileLevel {
      * @param userAddress The address of the user whose level is being requested
      * @return level The user's level
      */
-    function getUserLevel(address userAddress) public view returns (uint256) {
+    function getUserLevel(address userAddress) external view returns (uint256) {
         return users[userAddress].level;
     }
 
@@ -149,7 +149,7 @@ contract UserProfileLevel {
     function getCostForNextLevels(
         address userAddress,
         uint256 levels
-    ) public view returns (uint256) {
+    ) external view returns (uint256) {
         uint256 currentLevel = users[userAddress].level;
         return getLevelUpCost(currentLevel, levels);
     }
@@ -161,7 +161,7 @@ contract UserProfileLevel {
      */
     function getUserData(
         address userAddress
-    ) public view returns (uint256, uint256, uint256, uint256) {
+    ) external view returns (uint256, uint256, uint256, uint256) {
         uint256 currentLevel = users[userAddress].level;
 
         uint256 costForNextLevel = getLevelUpCost(currentLevel, 1);

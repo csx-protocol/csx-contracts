@@ -31,7 +31,7 @@ contract BuyAssistoor {
      * @param _affLink The affiliate link
      * @param _tradeContract The Trade Contract address
      */
-    function BuyWithEthToWeth(TradeUrl memory _buyerTradeUrl, bytes32 _affLink, address _tradeContract) public payable {
+    function BuyWithEthToWeth(TradeUrl memory _buyerTradeUrl, bytes32 _affLink, address _tradeContract) external payable {
          if (_tradeContract == address(0)) {
             revert InvalidTradeContract();
         }

@@ -128,7 +128,7 @@ contract CSXTradeFactory is TradeFactoryBase {
             revert NoTradeCreated();
         }
 
-        uint _tContracts = totalContracts();
+        uint _tContracts = tradeFactoryBaseStorage.totalContracts();
         address newAddress = tradeFactoryBaseStorage
             .getLastTradeContractAddress();
         
@@ -288,7 +288,7 @@ contract CSXTradeFactory is TradeFactoryBase {
      */
     function getTradeDetailsByAddress(
         address tradeAddrs
-    ) public view returns (TradeInfo memory result) {
+    ) external view returns (TradeInfo memory result) {
         uint256 i = contractAddressToIndex[tradeAddrs];
         result = getTradeDetailsByIndex(i);
     }
@@ -307,7 +307,7 @@ contract CSXTradeFactory is TradeFactoryBase {
         TradeIndex[] memory tradeIndexes = new TradeIndex[](maxResults);
         uint256 resultIndex;
         uint256 i = indexFrom;
-        uint256 _tC = totalContracts();
+        uint256 _tC = tradeFactoryBaseStorage.totalContracts();
         while (resultIndex < maxResults && i < _tC) {
             TradeInfo memory _trade = getTradeDetailsByIndex(i);
 
