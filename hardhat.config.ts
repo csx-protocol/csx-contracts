@@ -1,5 +1,6 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
+import "@nomicfoundation/hardhat-verify";
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -27,6 +28,14 @@ const config: HardhatUserConfig = {
       accounts: [privateKeyDev],
       chainId: 421613,
     }
+  },
+  etherscan: {
+    apiKey: {
+      arbitrumGoerli: process.env.ARBSCAN_API_KEY!,
+    }
+  },
+  sourcify: {
+    enabled: true
   },
   solidity: {
     version: "0.8.18",

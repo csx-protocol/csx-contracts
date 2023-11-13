@@ -1,9 +1,9 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import deployCSXToken from "./deploy/1_CSXToken.deploy";
-import deployStakedCSX from "./deploy/2_StakedCSX.deploy";
-import deployEscrowedCSX from "./deploy/3_EscrowedCSX.deploy";
-import deployVestedCSX from "./deploy/4_VestedCSX.deploy";
-import deployKeepers from "./deploy/5_Keepers.deploy";
+import deployKeepers from "./deploy/2_Keepers.deploy";
+import deployStakedCSX from "./deploy/3_StakedCSX.deploy";
+import deployEscrowedCSX from "./deploy/4_EscrowedCSX.deploy";
+import deployVestedCSX from "./deploy/5_VestedCSX.deploy";
 import deployUsers from "./deploy/6_Users.deploy";
 import deployUserProfileLevel from "./deploy/7_UserProfileLevel.deploy";
 import deployReferralRegistry from "./deploy/8_ReferralRegistry.deploy";
@@ -40,8 +40,9 @@ const contractNames = [
   "tradeFactory",
 ];
 
-const initContracts: boolean = true;
-const listTestItems: boolean = true;
+const INIT_CONTRACTS: boolean = true;
+const LIST_TEST_ITEMS: boolean = true;
+const VERIFY_ON_ETHERSCAN: boolean = true;
 
 const main = async () => {
   const hre: HardhatRuntimeEnvironment = await import("hardhat");
@@ -50,9 +51,14 @@ const main = async () => {
   // Deploy CSX Token
   const CSXToken = await deployCSXToken(hre);
   addressMap.set("csxToken", CSXToken.target as string);
+
+  // Deploy Keepers contract
+  const Keepers = await deployKeepers(hre);
+  addressMap.set("keepers", Keepers.target as string);
+
   // Deploy Staked CSX
   const [stakedCSX, wethAddress, usdcAddress, usdtAddress] =
-    await deployStakedCSX(hre, addressMap.get("csxToken")!);
+    await deployStakedCSX(hre, addressMap.get("csxToken")!, addressMap.get("keepers")!);
   addressMap.set("stakedCSX", stakedCSX.target as string);
   addressMap.set("weth", wethAddress);
   addressMap.set("usdc", usdcAddress);
@@ -61,10 +67,6 @@ const main = async () => {
   // Deploy Escrowed CSX
   const EscrowedCSX = await deployEscrowedCSX(hre, CSXToken.target as string);
   addressMap.set("escrowedCSX", EscrowedCSX.target as string);
-
-  // Deploy Keepers contract
-  const Keepers = await deployKeepers(hre);
-  addressMap.set("keepers", Keepers.target as string);
 
   // Deploy VestedCSX
   const VestedCSX = await deployVestedCSX(
@@ -126,7 +128,7 @@ const main = async () => {
   );
   addressMap.set("tradeFactory", TradeFactory.target as string);
 
-  if (initContracts) {
+  if (INIT_CONTRACTS) {
     await EscrowedCSX.init(VestedCSX.target);
 
     await TradeFactoryBaseStorage.init(TradeFactory.target);
@@ -143,7 +145,9 @@ const main = async () => {
 
   console.log(`\n\n${"=".repeat(50)}\n\n`);
 
-  if (listTestItems) {
+  if (LIST_TEST_ITEMS) {
+    console.log(`Creating Demo Listings...`);
+    
     for (let i = 0; i < prices.length; i++) {
       const params = {
         itemMarketName: names[i],
@@ -157,10 +161,98 @@ const main = async () => {
         weaponType: weaponTypes[i],
         priceType: priceTypes[i],
       };
-      await TradeFactory.createListingContract(params);
+      const txResponse = await TradeFactory.createListingContract(params);
+      console.log(`Created listing for ${names[i]}`);
+      await txResponse.wait(1);
+      if(txResponse.hash){
+        console.log(`Transaction ${txResponse.hash} successful!`);
+      }
     }
     const totalListings = await TradeFactory.totalContracts();
     console.log(`Total Demo Listings: ${totalListings}`);
+  }
+
+  if(VERIFY_ON_ETHERSCAN){
+    await hre.run("verify:verify", {
+      address: addressMap.get("csxToken"),
+      constructorArguments: [],
+    });    
+    await hre.run("verify:verify", {
+      address: addressMap.get("stakedCSX")!,
+      constructorArguments: [
+        addressMap.get("csxToken"),
+        addressMap.get("weth"),
+        addressMap.get("usdc"),
+        addressMap.get("usdt"),
+        addressMap.get("keepers"),
+      ],
+    });
+    await hre.run("verify:verify", {
+      address: addressMap.get("escrowedCSX"),
+      constructorArguments: [addressMap.get("csxToken")],
+    });
+    await hre.run("verify:verify", {
+      address: addressMap.get("vestedCSX"),
+      constructorArguments: [
+        addressMap.get("escrowedCSX"),
+        addressMap.get("stakedCSX"),
+        addressMap.get("weth"),
+        addressMap.get("usdc"),
+        addressMap.get("csxToken"),
+        addressMap.get("usdt"),
+        addressMap.get("keepers"),
+      ],
+    });
+    await hre.run("verify:verify", {
+      address: addressMap.get("keepers"),
+      constructorArguments: [
+        process.env.COUNCIL_ADDRESS || "",
+        process.env.ORACLE_NODE_ADDRESS || "",
+      ],
+    });
+    await hre.run("verify:verify", {
+      address: addressMap.get("users"),
+      constructorArguments: [addressMap.get("keepers")],
+    });
+    await hre.run("verify:verify", {
+      address: addressMap.get("userProfileLevel"),
+      constructorArguments: [
+        addressMap.get("csxToken"),
+        addressMap.get("users"),
+        addressMap.get("keepers"),
+      ],
+    });
+    await hre.run("verify:verify", {
+      address: addressMap.get("referralRegistry"),
+      constructorArguments: [addressMap.get("keepers")],
+    });
+    await hre.run("verify:verify", {
+      address: addressMap.get("tradeFactoryBaseStorage"),
+      constructorArguments: [addressMap.get("keepers"), addressMap.get("users")],
+    });
+    await hre.run("verify:verify", {
+      address: addressMap.get("buyAssistoor"),
+      constructorArguments: [addressMap.get("weth")],
+    });
+    await hre.run("verify:verify", {
+      address: addressMap.get("tradeFactory"),
+      constructorArguments: [
+        addressMap.get("keepers"),
+        addressMap.get("users"),
+        addressMap.get("tradeFactoryBaseStorage"),
+        '26',
+        {
+          weth: addressMap.get("weth"),
+          usdc: addressMap.get("usdc"),
+          usdt: addressMap.get("usdt"),
+        },        
+        addressMap.get("referralRegistry"),
+        addressMap.get("stakedCSX"),
+        addressMap.get("buyAssistoor"),
+      ],
+    });
+    console.log(`\n\n${"=".repeat(50)}\n\n`);
+    console.log(`Verify on Etherscan completed!`);
   }
 };
 

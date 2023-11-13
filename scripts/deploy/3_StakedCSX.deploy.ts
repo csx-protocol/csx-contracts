@@ -3,7 +3,8 @@ import { StakedCSX } from '../../typechain-types';
 
 const deployStakedCSX = async (
   hre: HardhatRuntimeEnvironment, 
-  csxTokenAddress: string
+  csxTokenAddress: string,
+  keepersAddress: string
 ): Promise<[StakedCSX, string, string, string]> => {  
   const { network } = hre;
 
@@ -33,17 +34,13 @@ const deployStakedCSX = async (
     usdtAddress = usdtToken.target;
   } else {
     // Production Network Deployment
-    wethAddress = "0x..";  // Replace with actual address
-    usdcAddress = "0x..";  // Replace with actual address
-    usdtAddress = "0x..";  // Replace with actual address
+    wethAddress = "0x..";  // TODO: Replace with actual address
+    usdcAddress = "0x..";  // TODO: Replace with actual address
+    usdtAddress = "0x..";  // TODO: Replace with actual address
   }
 
-  const Keepers = await hre.ethers.getContractFactory("Keepers");
-  const keepers: any = await Keepers.deploy(process.env.COUNCIL_ADDRESS!, process.env.ORACLE_NODE_ADDRESS!);
-  await keepers.waitForDeployment();
-
   const StakedCSX = await hre.ethers.getContractFactory("StakedCSX");
-  const stakedCSX: any = await StakedCSX.deploy(csxTokenAddress, wethAddress, usdcAddress, usdtAddress, keepers.target);
+  const stakedCSX: any = await StakedCSX.deploy(csxTokenAddress, wethAddress, usdcAddress, usdtAddress, keepersAddress);
   await stakedCSX.waitForDeployment();
 
   return [stakedCSX, wethAddress, usdcAddress, usdtAddress];
