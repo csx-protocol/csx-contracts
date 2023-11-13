@@ -14,13 +14,13 @@ error TokenTransfersDisabled();
 
 contract VestedCSX is ReentrancyGuard, ERC20Burnable {
     using SafeERC20 for IERC20;
-    IERC20Burnable public immutable EscrowedCSX;
-    IStakedCSX public immutable StakedCSX;
+    IERC20Burnable public immutable ESCROWED_CSX;
+    IStakedCSX public immutable STAKED_CSX;
     IWETH public immutable WETH;
     IERC20 public immutable USDC;
     IERC20 public immutable CSX;
     IERC20 public immutable USDT;
-    address public immutable keepers;
+    address public immutable KEEPERS;
 
     uint256 public constant MAX_SUPPLY = 100000000 ether;
 
@@ -33,13 +33,13 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
         address _usdtAddress,
         address _keepersAddress
     ) ERC20("Vested CSX", "vCSX") {
-        EscrowedCSX = IERC20Burnable(_eCsxAddress);
-        StakedCSX = IStakedCSX(_sCsxAddress);
+        ESCROWED_CSX = IERC20Burnable(_eCsxAddress);
+        STAKED_CSX = IStakedCSX(_sCsxAddress);
         WETH = IWETH(_wethAddress);
         USDC = IERC20(_usdcAddress);
         CSX = IERC20(_csxAddress);
         USDT = IERC20(_usdtAddress);
-        keepers = _keepersAddress;
+        KEEPERS = _keepersAddress;
     }
 
     //=================================== EXTERNAL ==============================================
@@ -66,18 +66,18 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
         if (address(vestedStakingContractPerUser[msg.sender]) == address(0)) {
             vestedStakingContractPerUser[msg.sender] = new VestedStaking(
                 address(msg.sender),
-                address(StakedCSX),
+                address(STAKED_CSX),
                 address(this),
                 address(CSX),
                 address(USDC),
                 address(USDT),
                 address(WETH),
-                keepers
+                KEEPERS
             );
         }
 
         // Burn the deposited escrow tokens
-        EscrowedCSX.burnFrom(msg.sender, amount);
+        ESCROWED_CSX.burnFrom(msg.sender, amount);
 
         // Approve VestedStaking Contract to transfer CSX tokens
         CSX.safeApprove(address(vestedStakingContractPerUser[msg.sender]), amount);

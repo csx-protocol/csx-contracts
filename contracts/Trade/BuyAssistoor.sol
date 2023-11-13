@@ -18,10 +18,10 @@ import { TradeStatus, Role } from '../Users/IUsers.sol';
 import { TradeUrl, PriceType } from '../TradeFactory/ITradeFactory.sol';
 
 contract BuyAssistoor {
-    IWETH public immutable weth;
+    IWETH public immutable IWETH_CONTRACT;
 
     constructor(address _weth) {
-        weth = IWETH(_weth);
+        IWETH_CONTRACT = IWETH(_weth);
     }
 
     /**
@@ -43,15 +43,15 @@ contract BuyAssistoor {
         }
         
         // Convert the ETH to WETH
-        weth.deposit{value: msg.value}();
+        IWETH_CONTRACT.deposit{value: msg.value}();
 
         // Check the balance
-        if (weth.balanceOf(address(this)) < msg.value) {
+        if (IWETH_CONTRACT.balanceOf(address(this)) < msg.value) {
             revert EthDepositFailed();
         }
 
         // Approve the transfer of WETH
-        bool approved = weth.approve(address(tradeContract), msg.value);
+        bool approved = IWETH_CONTRACT.approve(address(tradeContract), msg.value);
         if (!approved) {
             revert WethApprovalFailed();
         }

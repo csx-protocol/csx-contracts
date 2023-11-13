@@ -13,15 +13,15 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
     /* ========== STATE VARIABLES ========== */
 
     // Staking Token
-    IERC20 public immutable tokenCSX;
+    IERC20 public immutable TOKEN_CSX;
 
     // Reward Tokens
-    IWETH public immutable tokenWETH;
-    IERC20 public immutable tokenUSDC;
-    IERC20 public immutable tokenUSDT;
+    IWETH public immutable TOKEN_WETH;
+    IERC20 public immutable TOKEN_USDC;
+    IERC20 public immutable TOKEN_USDT;
 
     // Keepers
-    IKeepers public immutable keepers;
+    IKeepers public immutable KEEPERS_INTERFACE;
 
     uint256 public constant DIVISION = 10 ** 33; // to prevent float calculation
 
@@ -57,11 +57,11 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         address _usdtToken,
         address _keepers
     ) ERC20("Staked CSX", "sCSX") {
-        tokenCSX = IERC20(_csxToken);
-        tokenWETH = IWETH(_wethToken);
-        tokenUSDC = IERC20(_usdcToken);
-        tokenUSDT = IERC20(_usdtToken);
-        keepers = IKeepers(_keepers);
+        TOKEN_CSX = IERC20(_csxToken);
+        TOKEN_WETH = IWETH(_wethToken);
+        TOKEN_USDC = IERC20(_usdcToken);
+        TOKEN_USDT = IERC20(_usdtToken);
+        KEEPERS_INTERFACE = IKeepers(_keepers);
     }
 
     /**
@@ -74,10 +74,10 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
             revert AmountMustBeGreaterThanZero();
         }
         _mint(msg.sender, _amount);
-        _updateRewardRate(msg.sender, address(tokenWETH));
-        _updateRewardRate(msg.sender, address(tokenUSDC));
-        _updateRewardRate(msg.sender, address(tokenUSDT));
-        tokenCSX.safeTransferFrom(msg.sender, address(this), _amount);
+        _updateRewardRate(msg.sender, address(TOKEN_WETH));
+        _updateRewardRate(msg.sender, address(TOKEN_USDC));
+        _updateRewardRate(msg.sender, address(TOKEN_USDT));
+        TOKEN_CSX.safeTransferFrom(msg.sender, address(this), _amount);
         emit Stake(msg.sender, _amount);
     }
 
@@ -97,7 +97,7 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         _claimToCredit(msg.sender);
         _burn(msg.sender, _amount);
 
-        tokenCSX.safeTransfer(msg.sender, _amount);
+        TOKEN_CSX.safeTransfer(msg.sender, _amount);
 
         emit Unstake(msg.sender, _amount);
     }
@@ -114,9 +114,9 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
             revert AmountMustBeGreaterThanZero();
         }
         if (
-            _token != address(tokenWETH) &&
-            _token != address(tokenUSDC) &&
-            _token != address(tokenUSDT)
+            _token != address(TOKEN_WETH) &&
+            _token != address(TOKEN_USDC) &&
+            _token != address(TOKEN_USDT)
         ) {
             revert InvalidToken();
         }
@@ -138,29 +138,29 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
      * @param dUsdt distribute USDT?
      */
     function distribute(bool dWeth, bool dUsdc, bool dUsdt) external {
-        if(!keepers.isCouncil(msg.sender) && !keepers.isKeeperNode(msg.sender)) {
+        if(!KEEPERS_INTERFACE.isCouncil(msg.sender) && !KEEPERS_INTERFACE.isKeeperNode(msg.sender)) {
             revert InvalidUser();
         }
         if(totalSupply() == 0) {
             revert NoTokensMinted();
         }
-        uint256 rewardWETH = nonDistributedRewardsPerToken[address(tokenWETH)];
-        uint256 rewardUSDC = nonDistributedRewardsPerToken[address(tokenUSDC)];
-        uint256 rewardUSDT = nonDistributedRewardsPerToken[address(tokenUSDT)];
+        uint256 rewardWETH = nonDistributedRewardsPerToken[address(TOKEN_WETH)];
+        uint256 rewardUSDC = nonDistributedRewardsPerToken[address(TOKEN_USDC)];
+        uint256 rewardUSDT = nonDistributedRewardsPerToken[address(TOKEN_USDT)];
         if(rewardWETH == 0 && rewardUSDC == 0 && rewardUSDT == 0) {
             revert NoTokensMinted();
         }
         if(rewardWETH > 0 && dWeth) {
-            nonDistributedRewardsPerToken[address(tokenWETH)] = 0;
-            lastRewardRate[address(tokenWETH)] += ((rewardWETH * DIVISION) / totalSupply());
+            nonDistributedRewardsPerToken[address(TOKEN_WETH)] = 0;
+            lastRewardRate[address(TOKEN_WETH)] += ((rewardWETH * DIVISION) / totalSupply());
         }
         if(rewardUSDC > 0 && dUsdc) {
-            nonDistributedRewardsPerToken[address(tokenUSDC)] = 0;
-            lastRewardRate[address(tokenUSDC)] += ((rewardUSDC * DIVISION) / totalSupply());
+            nonDistributedRewardsPerToken[address(TOKEN_USDC)] = 0;
+            lastRewardRate[address(TOKEN_USDC)] += ((rewardUSDC * DIVISION) / totalSupply());
         }
         if(rewardUSDT > 0 && dUsdt) {
-            nonDistributedRewardsPerToken[address(tokenUSDT)] = 0;
-            lastRewardRate[address(tokenUSDT)] += ((rewardUSDT * DIVISION) / totalSupply());
+            nonDistributedRewardsPerToken[address(TOKEN_USDT)] = 0;
+            lastRewardRate[address(TOKEN_USDT)] += ((rewardUSDT * DIVISION) / totalSupply());
         }
         emit Distribute(rewardWETH, rewardUSDC, rewardUSDT);
     }
@@ -179,13 +179,13 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         bool convertWethToEth
     ) external nonReentrant {
         if (claimWeth) {
-            _claim(msg.sender, address(tokenWETH), convertWethToEth);
+            _claim(msg.sender, address(TOKEN_WETH), convertWethToEth);
         }
         if (claimUsdc) {
-            _claim(msg.sender, address(tokenUSDC), false);
+            _claim(msg.sender, address(TOKEN_USDC), false);
         }
         if (claimUsdt) {
-            _claim(msg.sender, address(tokenUSDT), false);
+            _claim(msg.sender, address(TOKEN_USDT), false);
         }       
     }
 
@@ -200,21 +200,21 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         uint256 deposited = balanceOf(_account);
         
         if(deposited != 0) {
-            wethAmount = (deposited * (lastRewardRate[address(tokenWETH)] - rewardRate[address(tokenWETH)][_account])) / DIVISION; // reward = deposited * (S - S0[address]);
-            usdcAmount = (deposited * (lastRewardRate[address(tokenUSDC)] - rewardRate[address(tokenUSDC)][_account])) / DIVISION; // reward = deposited * (S - S0[address]);
-            usdtAmount = (deposited * (lastRewardRate[address(tokenUSDT)] - rewardRate[address(tokenUSDT)][_account])) / DIVISION; // reward = deposited * (S - S0[address]);
+            wethAmount = (deposited * (lastRewardRate[address(TOKEN_WETH)] - rewardRate[address(TOKEN_WETH)][_account])) / DIVISION; // reward = deposited * (S - S0[address]);
+            usdcAmount = (deposited * (lastRewardRate[address(TOKEN_USDC)] - rewardRate[address(TOKEN_USDC)][_account])) / DIVISION; // reward = deposited * (S - S0[address]);
+            usdtAmount = (deposited * (lastRewardRate[address(TOKEN_USDT)] - rewardRate[address(TOKEN_USDT)][_account])) / DIVISION; // reward = deposited * (S - S0[address]);
         }
         
-        if(credit[address(tokenWETH)][_account] > 0) {
-            wethAmount += credit[address(tokenWETH)][_account];
+        if(credit[address(TOKEN_WETH)][_account] > 0) {
+            wethAmount += credit[address(TOKEN_WETH)][_account];
         }
        
-        if(credit[address(tokenUSDC)][_account] > 0) {
-            usdcAmount += credit[address(tokenUSDC)][_account];
+        if(credit[address(TOKEN_USDC)][_account] > 0) {
+            usdcAmount += credit[address(TOKEN_USDC)][_account];
         }
        
-        if(credit[address(tokenUSDT)][_account] > 0) {
-            usdtAmount += credit[address(tokenUSDT)][_account];
+        if(credit[address(TOKEN_USDT)][_account] > 0) {
+            usdtAmount += credit[address(TOKEN_USDT)][_account];
         }
     }
 
@@ -223,7 +223,7 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
      * @dev Reverts if the sender is not the WETH Contract.
      */
     receive() external payable {
-        if (address(tokenWETH) != msg.sender) {
+        if (address(TOKEN_WETH) != msg.sender) {
             revert InvalidSender();
         }
     }
@@ -257,20 +257,20 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         if(balanceOf(_to) != 0) {
             (,,uint256 rewardWETH) = rewardOf(_to);
             if (rewardWETH > 0) {
-                credit[address(tokenWETH)][_to] += rewardWETH;
+                credit[address(TOKEN_WETH)][_to] += rewardWETH;
             }
             (uint256 rewardUSDC,,) = rewardOf(_to);
             if(rewardUSDC > 0) {
-                credit[address(tokenUSDC)][_to] += rewardUSDC;
+                credit[address(TOKEN_USDC)][_to] += rewardUSDC;
             }
             (,uint256 rewardUSDT,) = rewardOf(_to);
             if(rewardUSDT > 0) {
-                credit[address(tokenUSDT)][_to] += rewardUSDT;
+                credit[address(TOKEN_USDT)][_to] += rewardUSDT;
             }
         }
-        _updateRewardRate(_to, address(tokenWETH));
-        _updateRewardRate(_to, address(tokenUSDC));
-        _updateRewardRate(_to, address(tokenUSDT));
+        _updateRewardRate(_to, address(TOKEN_WETH));
+        _updateRewardRate(_to, address(TOKEN_USDC));
+        _updateRewardRate(_to, address(TOKEN_USDT));
     }
 
     /**
@@ -281,24 +281,24 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
      */
     function _claim(address _to, address _token, bool convertWethToEth) private {
         uint256 reward;
-        if(_token == address(tokenWETH)) {
+        if(_token == address(TOKEN_WETH)) {
             (,,reward) = rewardOf(_to);
         } else
-        if(_token == address(tokenUSDC)) {
+        if(_token == address(TOKEN_USDC)) {
             (reward,,) = rewardOf(_to);
         } else 
-        if(_token == address(tokenUSDT)) {
+        if(_token == address(TOKEN_USDT)) {
             (,reward,) = rewardOf(_to);
         }
         if(reward > 0) {
             credit[_token][_to] = 0;
             _updateRewardRate(_to, _token);
 
-            if (_token == address(tokenWETH) && convertWethToEth) {
-                if (tokenWETH.balanceOf(address(this)) < reward) {
+            if (_token == address(TOKEN_WETH) && convertWethToEth) {
+                if (TOKEN_WETH.balanceOf(address(this)) < reward) {
                     revert InsufficientBalance();
                 }
-                tokenWETH.withdraw(reward);
+                TOKEN_WETH.withdraw(reward);
 
                 (bool success, ) = payable(msg.sender).call{value: reward}("");
                 if (!success) {

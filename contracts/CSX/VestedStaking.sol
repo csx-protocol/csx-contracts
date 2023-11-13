@@ -28,14 +28,14 @@ contract VestedStaking {
 
     uint256 public constant VESTING_PERIOD = 24 * 30 days; // 24 months
     
-    address public immutable vesterAddress;
-    IStakedCSX public immutable sCsxToken;
-    IERC20Burnable public immutable vCsxToken;
-    IERC20 public immutable csxToken;
-    IERC20 public immutable usdcToken;
-    IERC20 public immutable usdtToken;
-    IERC20 public immutable wethToken;
-    IKeepers public immutable keepers;
+    address public immutable VESTER_ADDRESS;
+    IStakedCSX public immutable ISTAKED_CSX;
+    IERC20Burnable public immutable IVESTED_CSX;
+    IERC20 public immutable ICSX_TOKEN;
+    IERC20 public immutable IUSDC_TOKEN;
+    IERC20 public immutable IUSDT_TOKEN;
+    IERC20 public immutable IERC20_WETH_TOKEN;
+    IKeepers public immutable IKEEPERS_CONTRACT;
 
     event Deposit(
         address indexed sender,
@@ -86,18 +86,18 @@ contract VestedStaking {
         address _keepersAddress
     ) {
         if(_vesterAddress == address(0)) revert InvalidSender();
-        vesterAddress = _vesterAddress;
-        sCsxToken = IStakedCSX(_sCsxTokenAddress);
-        vCsxToken = IERC20Burnable(_vCsxTokenAddress);
-        csxToken = IERC20(_csxTokenAddress);
-        usdcToken = IERC20(_usdcTokenAddress);
-        usdtToken = IERC20(_usdtTokenAddress);
-        wethToken = IERC20(_wethTokenAddress);
-        keepers = IKeepers(_keepersAddress);
+        VESTER_ADDRESS = _vesterAddress;
+        ISTAKED_CSX = IStakedCSX(_sCsxTokenAddress);
+        IVESTED_CSX = IERC20Burnable(_vCsxTokenAddress);
+        ICSX_TOKEN = IERC20(_csxTokenAddress);
+        IUSDC_TOKEN = IERC20(_usdcTokenAddress);
+        IUSDT_TOKEN = IERC20(_usdtTokenAddress);
+        IERC20_WETH_TOKEN = IERC20(_wethTokenAddress);
+        IKEEPERS_CONTRACT = IKeepers(_keepersAddress);
     }
 
     modifier onlyVester() {
-        if (msg.sender != vesterAddress) {
+        if (msg.sender != VESTER_ADDRESS) {
             revert OnlyVesterAllowed();
         }
         _;
@@ -109,13 +109,13 @@ contract VestedStaking {
      * @param amount Amount of CSX tokens to deposit.
      */
     function deposit(uint256 amount) external {
-        if (msg.sender != address(vCsxToken)) {
+        if (msg.sender != address(IVESTED_CSX)) {
             revert OnlyVCSXContract();
         }        
         vesting = Vesting(vesting.amount + amount, block.timestamp); // vesting time-lock (re)-starts when deposit is made
-        csxToken.safeTransferFrom(msg.sender, address(this), amount);
-        csxToken.safeApprove(address(sCsxToken), amount);
-        sCsxToken.stake(amount);
+        ICSX_TOKEN.safeTransferFrom(msg.sender, address(this), amount);
+        ICSX_TOKEN.safeApprove(address(ISTAKED_CSX), amount);
+        ISTAKED_CSX.stake(amount);
         emit Deposit(msg.sender, amount, vesting.amount, block.timestamp);
     }
 
@@ -127,7 +127,7 @@ contract VestedStaking {
      * @return vestTimeStart 
      */
     function getClaimableAmountAndVestTimeStart() external view returns (uint256 usdcAmount, uint256 usdtAmount, uint256 wethAmount, uint256 vestTimeStart) {
-        (usdcAmount, usdtAmount, wethAmount) = sCsxToken.rewardOf(address(this));
+        (usdcAmount, usdtAmount, wethAmount) = ISTAKED_CSX.rewardOf(address(this));
 
         vestTimeStart = vesting.startTime;
     }
@@ -146,19 +146,19 @@ contract VestedStaking {
         bool claimWeth,
         bool convertWethToEth
     ) external onlyVester {
-        (uint256 usdcAmount, uint256 usdtAmount, uint256 wethAmount) = sCsxToken
+        (uint256 usdcAmount, uint256 usdtAmount, uint256 wethAmount) = ISTAKED_CSX
             .rewardOf(address(this));
 
-        sCsxToken.claim(claimUsdc, claimUsdt, claimWeth, convertWethToEth);
+        ISTAKED_CSX.claim(claimUsdc, claimUsdt, claimWeth, convertWethToEth);
 
         if (claimUsdc && usdcAmount != 0) {
-            usdcToken.safeTransfer(msg.sender, usdcAmount);
+            IUSDC_TOKEN.safeTransfer(msg.sender, usdcAmount);
         }
         if (claimUsdt && usdtAmount != 0) {
-            usdtToken.safeTransfer(msg.sender, usdtAmount);
+            IUSDT_TOKEN.safeTransfer(msg.sender, usdtAmount);
         }
         if (claimWeth && !convertWethToEth && wethAmount != 0) {
-            wethToken.safeTransfer(msg.sender, wethAmount);
+            IERC20_WETH_TOKEN.safeTransfer(msg.sender, wethAmount);
         }
         if (claimWeth && convertWethToEth && wethAmount != 0) {
             (bool success, ) = msg.sender.call{value: wethAmount}("");
@@ -170,7 +170,7 @@ contract VestedStaking {
     }
 
     receive() external payable {
-        if (address(wethToken) != msg.sender) {
+        if (address(IERC20_WETH_TOKEN) != msg.sender) {
             revert InvalidSender();
         }
     }
@@ -190,9 +190,9 @@ contract VestedStaking {
             revert TokensAreStillLocked();
         }
         vesting.amount -= amount;
-        vCsxToken.burnFrom(msg.sender, amount);
-        sCsxToken.unStake(amount);
-        csxToken.safeTransfer(msg.sender, amount);
+        IVESTED_CSX.burnFrom(msg.sender, amount);
+        ISTAKED_CSX.unStake(amount);
+        ICSX_TOKEN.safeTransfer(msg.sender, amount);
         emit Withdraw(msg.sender, amount, vesting.amount);
     }
 
@@ -202,7 +202,7 @@ contract VestedStaking {
      * @param amount Amount of tokens to withdraw.
      */
     function cliff(uint256 amount) external {
-        if(!keepers.isCouncil(msg.sender)) {
+        if(!IKEEPERS_CONTRACT.isCouncil(msg.sender)) {
             revert InvalidSender();
         }
         if (amount > vesting.amount || amount == 0) {
@@ -210,8 +210,8 @@ contract VestedStaking {
         }    
         vesting.amount -= amount;
         cliffedAmount += amount;
-        sCsxToken.unStake(amount);
-        csxToken.safeTransfer(msg.sender, amount);
+        ISTAKED_CSX.unStake(amount);
+        ICSX_TOKEN.safeTransfer(msg.sender, amount);
         emit Cliff(msg.sender, amount, vesting.amount);
     }
 }

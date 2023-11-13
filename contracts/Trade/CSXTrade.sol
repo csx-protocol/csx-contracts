@@ -35,7 +35,7 @@ contract CSXTrade {
     bytes32 public referralCode;
     PriceType public priceType;
 
-    address public immutable seller;
+    address public immutable SELLER_ADDRESS;
     address public buyer;
 
     string public itemMarketName;
@@ -62,9 +62,9 @@ contract CSXTrade {
 
     TradeStatus[] public statusHistory;
 
-    IKeepers public immutable keepersContract;
-    IUsers public immutable usersContract;
-    ITradeFactory public immutable factoryContract;
+    IKeepers public immutable IKEEPERS_CONTRACT;
+    IUsers public immutable IUSERS_CONTRACT;
+    ITradeFactory public immutable ITRADEFACTORY_CONTRACT;
 
     IReferralRegistry public referralRegistryContract;
     IStakedCSX public sCSXToken;
@@ -100,10 +100,10 @@ contract CSXTrade {
         if(_seller == address(0)) {
             revert NotSeller();
         }
-        factoryContract = ITradeFactory(_factory);
-        keepersContract = IKeepers(_keepers);
-        usersContract = IUsers(_users);
-        seller = _seller;
+        ITRADEFACTORY_CONTRACT = ITradeFactory(_factory);
+        IKEEPERS_CONTRACT = IKeepers(_keepers);
+        IUSERS_CONTRACT = IUsers(_users);
+        SELLER_ADDRESS = _seller;
         weiPrice = _weiPrice;
         status = TradeStatus.ForSale;
         itemMarketName = _itemMarketName;
@@ -134,7 +134,7 @@ contract CSXTrade {
         address _referralRegistryContract,
         address _sCSXToken
     ) external {
-        if (msg.sender != address(factoryContract) || hasInit) {
+        if (msg.sender != address(ITRADEFACTORY_CONTRACT) || hasInit) {
             revert NotFactory();
         }
         hasInit = true;
@@ -146,10 +146,10 @@ contract CSXTrade {
         priceType = _priceType;
         referralRegistryContract = IReferralRegistry(_referralRegistryContract);
         sCSXToken = IStakedCSX(_sCSXToken);
-        usersContract.addUserInteractionStatus(
+        IUSERS_CONTRACT.addUserInteractionStatus(
             address(this),
             Role.SELLER,
-            seller,
+            SELLER_ADDRESS,
             TradeStatus.ForSale
         );
     }
@@ -160,7 +160,7 @@ contract CSXTrade {
      * @dev The listing must be in status ForSale
      * @param _newPrice The new price of the listing
      */
-    function changePrice(uint256 _newPrice) external onlyAddress(seller) {
+    function changePrice(uint256 _newPrice) external onlyAddress(SELLER_ADDRESS) {
         if (status != TradeStatus.ForSale) {
             revert NotForSale();
         }
@@ -172,7 +172,7 @@ contract CSXTrade {
      * @dev Only the seller can cancel the listing
      * @dev The listing must be in status ForSale
      */
-    function sellerCancel() external onlyAddress(seller) {
+    function sellerCancel() external onlyAddress(SELLER_ADDRESS) {
         if (status != TradeStatus.ForSale) {
             revert NotForSale();
         }
@@ -183,12 +183,12 @@ contract CSXTrade {
             )
         );   
         _changeStatus(TradeStatus.SellerCancelled, _data);
-        usersContract.changeUserInteractionStatus(
+        IUSERS_CONTRACT.changeUserInteractionStatus(
             address(this),
-            seller,
+            SELLER_ADDRESS,
             status
         );             
-        usersContract.removeAssetIdUsed(itemSellerAssetId, seller);
+        IUSERS_CONTRACT.removeAssetIdUsed(itemSellerAssetId, SELLER_ADDRESS);
     }
 
     /**
@@ -209,13 +209,13 @@ contract CSXTrade {
         }
 
         address _buyer;
-        if (msg.sender == address(factoryContract.buyAssistoor())) {
+        if (msg.sender == address(ITRADEFACTORY_CONTRACT.buyAssistoor())) {
             _buyer = _buyerAddress;
         } else {
             _buyer = msg.sender;
         }
 
-        if (_buyer == seller) {
+        if (_buyer == SELLER_ADDRESS) {
             revert NotSeller();
         }
 
@@ -239,18 +239,18 @@ contract CSXTrade {
 
         _changeStatus(TradeStatus.BuyerCommitted, _data);
 
-        usersContract.changeUserInteractionStatus(
+        IUSERS_CONTRACT.changeUserInteractionStatus(
             address(this),
-            seller,
+            SELLER_ADDRESS,
             status
         );
-        usersContract.addUserInteractionStatus(
+        IUSERS_CONTRACT.addUserInteractionStatus(
             address(this),
             Role.BUYER,
             buyer,
             status
         );
-        usersContract.startDeliveryTimer(address(this), seller);
+        IUSERS_CONTRACT.startDeliveryTimer(address(this), SELLER_ADDRESS);
         paymentToken.safeTransferFrom(msg.sender, address(this), buyerNetValue);    
     }
 
@@ -269,12 +269,12 @@ contract CSXTrade {
            revert TimeNotElapsed();
         }
         _changeStatus(TradeStatus.BuyerCancelled, "BU_DEFAULT");
-        usersContract.changeUserInteractionStatus(
+        IUSERS_CONTRACT.changeUserInteractionStatus(
             address(this),
-            seller,
+            SELLER_ADDRESS,
             status
         );
-        usersContract.changeUserInteractionStatus(address(this), buyer, status);
+        IUSERS_CONTRACT.changeUserInteractionStatus(address(this), buyer, status);
 
         paymentToken.safeTransfer(buyer, depositedValue);
     }
@@ -287,7 +287,7 @@ contract CSXTrade {
      */
     function sellerTradeVeridict(
         bool _sellerCommited
-    ) external onlyAddress(seller) {
+    ) external onlyAddress(SELLER_ADDRESS) {
         if (status != TradeStatus.BuyerCommitted) {
             revert StatusNotBuyerCommitted();
         }
@@ -307,20 +307,20 @@ contract CSXTrade {
             );
             _changeStatus(TradeStatus.SellerCommitted, _data);
             sellerAcceptedTimestamp = block.timestamp;
-            usersContract.changeUserInteractionStatus(
+            IUSERS_CONTRACT.changeUserInteractionStatus(
                 address(this),
-                seller,
+                SELLER_ADDRESS,
                 status
             );
-            usersContract.changeUserInteractionStatus(
+            IUSERS_CONTRACT.changeUserInteractionStatus(
                 address(this),
                 buyer,
                 status
             );
         } else {
             _changeStatus(TradeStatus.SellerCancelledAfterBuyerCommitted, "SE_DEFAULT");
-            usersContract.changeUserInteractionStatus(address(this), seller, status);
-            usersContract.changeUserInteractionStatus(address(this), buyer, status);
+            IUSERS_CONTRACT.changeUserInteractionStatus(address(this), SELLER_ADDRESS, status);
+            IUSERS_CONTRACT.changeUserInteractionStatus(address(this), buyer, status);
             paymentToken.safeTransfer(buyer, depositedValue);
         }
     }
@@ -336,8 +336,8 @@ contract CSXTrade {
         }
         string memory _data = string( abi.encodePacked(Strings.toString(weiPrice), "||", "MANUAL"));
         _changeStatus(TradeStatus.Completed, _data);
-        usersContract.endDeliveryTimer(address(this), seller);
-        bool success = usersContract.removeAssetIdUsed(itemSellerAssetId, seller);
+        IUSERS_CONTRACT.endDeliveryTimer(address(this), SELLER_ADDRESS);
+        bool success = IUSERS_CONTRACT.removeAssetIdUsed(itemSellerAssetId, SELLER_ADDRESS);
 
         if (!success) {
             revert TradeIDNotRemoved();
@@ -345,8 +345,8 @@ contract CSXTrade {
 
         _distributeProceeds();
 
-        usersContract.changeUserInteractionStatus(address(this), seller, status);
-        usersContract.changeUserInteractionStatus(address(this), buyer, status);
+        IUSERS_CONTRACT.changeUserInteractionStatus(address(this), SELLER_ADDRESS, status);
+        IUSERS_CONTRACT.changeUserInteractionStatus(address(this), buyer, status);
     }
 
     /**
@@ -354,7 +354,7 @@ contract CSXTrade {
      * @dev Only the seller can confirm the trade has been made.
      * @dev 8 days must have passed since the seller veridicted the trade.
      */
-    function sellerConfirmsTrade() external onlyAddress(seller) {
+    function sellerConfirmsTrade() external onlyAddress(SELLER_ADDRESS) {
         if(block.timestamp < sellerAcceptedTimestamp + 8 days) {
             revert TimeNotElapsed();
         }
@@ -367,9 +367,9 @@ contract CSXTrade {
         );
 
         _changeStatus(TradeStatus.Completed, _data);
-        usersContract.endDeliveryTimer(address(this), seller);
-        usersContract.changeUserInteractionStatus(address(this), seller, status);
-        usersContract.changeUserInteractionStatus(address(this), buyer, status);
+        IUSERS_CONTRACT.endDeliveryTimer(address(this), SELLER_ADDRESS);
+        IUSERS_CONTRACT.changeUserInteractionStatus(address(this), SELLER_ADDRESS, status);
+        IUSERS_CONTRACT.changeUserInteractionStatus(address(this), buyer, status);
 
         _distributeProceeds();
     }
@@ -382,7 +382,7 @@ contract CSXTrade {
      * @param message The message to be emitted
      */
     function keeperNodeConfirmsTrade(bool isTradeMade, string memory message) external {
-        if (!keepersContract.isKeeperNode(msg.sender)) {
+        if (!IKEEPERS_CONTRACT.isKeeperNode(msg.sender)) {
             revert NotKeeperNode();
         }
         if (
@@ -398,13 +398,13 @@ contract CSXTrade {
                 abi.encodePacked(Strings.toString(weiPrice))
             );
             _changeStatus(TradeStatus.Completed, _data);
-            usersContract.endDeliveryTimer(address(this), seller);
-            usersContract.changeUserInteractionStatus(
+            IUSERS_CONTRACT.endDeliveryTimer(address(this), SELLER_ADDRESS);
+            IUSERS_CONTRACT.changeUserInteractionStatus(
                 address(this),
-                seller,
+                SELLER_ADDRESS,
                 status
             );
-            usersContract.changeUserInteractionStatus(
+            IUSERS_CONTRACT.changeUserInteractionStatus(
                 address(this),
                 buyer,
                 status
@@ -414,13 +414,13 @@ contract CSXTrade {
         } else {
             TradeStatus oldStatus = status;
             _changeStatus(TradeStatus.Clawbacked, message);
-            usersContract.changeUserInteractionStatus(
+            IUSERS_CONTRACT.changeUserInteractionStatus(
                 address(this),
-                seller,
+                SELLER_ADDRESS,
                 status
             );
             if (oldStatus >= TradeStatus.BuyerCommitted) {
-                usersContract.changeUserInteractionStatus(
+                IUSERS_CONTRACT.changeUserInteractionStatus(
                     address(this),
                     buyer,
                     status
@@ -429,7 +429,7 @@ contract CSXTrade {
             }    
         }
 
-        bool raS = usersContract.removeAssetIdUsed(itemSellerAssetId, seller);
+        bool raS = IUSERS_CONTRACT.removeAssetIdUsed(itemSellerAssetId, SELLER_ADDRESS);
         if (!raS) {
             revert TradeIDNotRemoved();
         }
@@ -444,7 +444,7 @@ contract CSXTrade {
     function openDispute(
         string memory _complaint
     ) external {
-        if (msg.sender != seller && msg.sender != buyer) {
+        if (msg.sender != SELLER_ADDRESS && msg.sender != buyer) {
             revert NotGroup();
         }
         if (status == TradeStatus.Disputed || status == TradeStatus.Resolved || status == TradeStatus.Clawbacked || status == TradeStatus.ForSale) {
@@ -453,12 +453,12 @@ contract CSXTrade {
         disputeer = msg.sender;
         disputeComplaint = _complaint;
         _changeStatus(TradeStatus.Disputed, _complaint);
-        usersContract.changeUserInteractionStatus(
+        IUSERS_CONTRACT.changeUserInteractionStatus(
             address(this),
-            seller,
+            SELLER_ADDRESS,
             status
         );
-        usersContract.changeUserInteractionStatus(address(this), buyer, status);
+        IUSERS_CONTRACT.changeUserInteractionStatus(address(this), buyer, status);
     }
 
     /**
@@ -476,7 +476,7 @@ contract CSXTrade {
         bool giveWarningToBuyer,
         bool isWithValue
     ) external {
-        if (!keepersContract.isKeeperNode(msg.sender) && keepersContract.indexOf(msg.sender) == 0) {
+        if (!IKEEPERS_CONTRACT.isKeeperNode(msg.sender) && IKEEPERS_CONTRACT.indexOf(msg.sender) == 0) {
             revert NotKeeperOrNode();
         }
         if (status != TradeStatus.Disputed) {
@@ -493,22 +493,22 @@ contract CSXTrade {
                 _distributeProceeds();
             }
         }
-        bool success = usersContract.removeAssetIdUsed(itemSellerAssetId, seller);
+        bool success = IUSERS_CONTRACT.removeAssetIdUsed(itemSellerAssetId, SELLER_ADDRESS);
         if (!success) {
             revert TradeIDNotRemoved();
         }
         if (giveWarningToSeller) {
-            usersContract.warnUser(seller);
+            IUSERS_CONTRACT.warnUser(SELLER_ADDRESS);
         }
         if (giveWarningToBuyer) {
-            usersContract.warnUser(buyer);
+            IUSERS_CONTRACT.warnUser(buyer);
         }
-        usersContract.changeUserInteractionStatus(
+        IUSERS_CONTRACT.changeUserInteractionStatus(
             address(this),
-            seller,
+            SELLER_ADDRESS,
             status
         );
-        usersContract.changeUserInteractionStatus(address(this), buyer, status);
+        IUSERS_CONTRACT.changeUserInteractionStatus(address(this), buyer, status);
     }
 
     /**
@@ -546,7 +546,7 @@ contract CSXTrade {
         }
 
         (uint256 buyerNetPrice, uint256 sellerNetProceeds, uint256 affiliatorNetReward, uint256 tokenHoldersNetReward) = getNetValue(referralCode);
-        paymentToken.safeTransfer(seller, sellerNetProceeds);
+        paymentToken.safeTransfer(SELLER_ADDRESS, sellerNetProceeds);
         if (affiliatorNetReward > 0) {
             paymentToken.safeTransfer(referralRegistryContract.getReferralCodeOwner(referralCode), affiliatorNetReward);
             referralRegistryContract.emitReferralCodeRebateUpdated(
@@ -560,8 +560,8 @@ contract CSXTrade {
         if (!sCSXToken.depositDividend(address(paymentToken), tokenHoldersNetReward)) {
             revert DividendDepositFailed();
         }
-        usersContract.emitNewTrade(
-            seller,
+        IUSERS_CONTRACT.emitNewTrade(
+            SELLER_ADDRESS,
             buyer,
             referralCode,
             priceType,
@@ -578,7 +578,7 @@ contract CSXTrade {
         TradeStatus prevStatus = status;
         status = _status;
         statusHistory.push(_status);
-        factoryContract.onStatusChange(status, prevStatus, data, seller, buyer);
+        ITRADEFACTORY_CONTRACT.onStatusChange(status, prevStatus, data, SELLER_ADDRESS, buyer);
     }
 
     /**
@@ -618,7 +618,7 @@ contract CSXTrade {
         ) = referralRegistryContract.calculateNetValue(
             weiPrice,
             hasReferral,
-            factoryContract.baseFee(),
+            ITRADEFACTORY_CONTRACT.baseFee(),
             buyerRatio
         );
     }

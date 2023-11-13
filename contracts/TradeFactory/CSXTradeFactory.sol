@@ -232,7 +232,7 @@ contract CSXTradeFactory is TradeFactoryBase {
         CSXTrade _contract = tradeFactoryBaseStorage.getTradeContractByIndex(i);
 
         result.contractAddress = address(_contract);
-        result.seller = _contract.seller();
+        result.seller = _contract.SELLER_ADDRESS();
         result.buyer = _contract.buyer();
         result.itemMarketName = _contract.itemMarketName();
         result.inspectLink = _contract.inspectLink();

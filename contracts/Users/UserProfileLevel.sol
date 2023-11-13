@@ -23,7 +23,7 @@ contract UserProfileLevel {
     // Set the base cost for leveling up (1 token)
     uint256 private constant BASE_COST = 1 * 10 ** 18; // Assuming the token has 18 decimals
 
-    IERC20Burnable private immutable csxToken;
+    IERC20Burnable private immutable CSX_TOKEN;
     IUsers private usersContract;
     IKeepers private keepersContract;
 
@@ -36,7 +36,7 @@ contract UserProfileLevel {
     mapping(address => User) public users;
 
     constructor(address _tokenAddress, address _usersContractAddress, address _keepersContractAddress) {
-        csxToken = IERC20Burnable(_tokenAddress);
+        CSX_TOKEN = IERC20Burnable(_tokenAddress);
         usersContract = IUsers(_usersContractAddress);
         keepersContract = IKeepers(_keepersContractAddress);
     }
@@ -69,7 +69,7 @@ contract UserProfileLevel {
         emit ProfileLeveledUp(msg.sender, user.level, _levels);
 
         // Burn the _tokenAmount
-        csxToken.burnFrom(msg.sender, _tokenAmount);
+        CSX_TOKEN.burnFrom(msg.sender, _tokenAmount);
     }
 
     /**

@@ -7,10 +7,10 @@ import {ERC20} from "../Interfaces.sol";
 
 contract USDTToken is ERC20 {
     // ONE HUNDERED MILLION MOCK TOKENS WITH 6 DECIMALS
-    uint256 public constant maxSupply = 100000000 * 10 ** 6;
+    uint256 public constant MAX_SUPPLY = 100000000 * 10 ** 6;
 
     constructor() ERC20("USDC", "USDC") {
-        _mint(msg.sender, maxSupply);
+        _mint(msg.sender, MAX_SUPPLY);
     }
 
     function decimals() public pure override returns (uint8) {
