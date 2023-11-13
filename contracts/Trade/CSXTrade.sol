@@ -633,7 +633,7 @@ contract CSXTrade {
     /**
      * @notice Get the status history length of the listing
      */
-    function getStatusCount() external view returns (uint) {
+    function getStatusCount() external view returns (uint256) {
         return statusHistory.length;
     }
 
