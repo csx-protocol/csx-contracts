@@ -81,27 +81,6 @@ contract CSXTrade {
         _;
     }
 
-    modifier onlyTheseAddresses(address _add1, address _add2) {
-        if (msg.sender != _add1 && msg.sender != _add2) {
-            revert NotGroup();
-        }
-        _;
-    }
-
-    modifier onlyKeeperNode() {
-        if (!keepersContract.isKeeperNode(msg.sender)) {
-            revert NotKeeperNode();
-        }
-        _;
-    }
-
-    modifier onlyKeepersOrNode() {
-        if (!keepersContract.isKeeperNode(msg.sender) && keepersContract.indexOf(msg.sender) == 0) {
-            revert NotKeeperOrNode();
-        }
-        _;
-    }
-
     constructor(
         address _factory,
         address _keepers,
@@ -402,7 +381,10 @@ contract CSXTrade {
      * @param isTradeMade Whether the trade has been made or not
      * @param message The message to be emitted
      */
-    function keeperNodeConfirmsTrade(bool isTradeMade, string memory message) external onlyKeeperNode {
+    function keeperNodeConfirmsTrade(bool isTradeMade, string memory message) external {
+        if (!keepersContract.isKeeperNode(msg.sender)) {
+            revert NotKeeperNode();
+        }
         if (
             status != TradeStatus.BuyerCommitted &&
             status != TradeStatus.SellerCommitted &&
@@ -461,7 +443,10 @@ contract CSXTrade {
      */
     function openDispute(
         string memory _complaint
-    ) external onlyTheseAddresses(seller, buyer) {
+    ) external {
+        if (msg.sender != seller && msg.sender != buyer) {
+            revert NotGroup();
+        }
         if (status == TradeStatus.Disputed || status == TradeStatus.Resolved || status == TradeStatus.Clawbacked || status == TradeStatus.ForSale) {
             revert StatusNotDisputeReady();
         }        
@@ -490,7 +475,10 @@ contract CSXTrade {
         bool giveWarningToSeller,
         bool giveWarningToBuyer,
         bool isWithValue
-    ) external onlyKeepersOrNode {
+    ) external {
+        if (!keepersContract.isKeeperNode(msg.sender) && keepersContract.indexOf(msg.sender) == 0) {
+            revert NotKeeperOrNode();
+        }
         if (status != TradeStatus.Disputed) {
             revert StatusNotDisputeReady();
         }

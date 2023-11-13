@@ -38,13 +38,6 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
         address buyerAddress
     );
 
-    modifier onlyTradeContracts() {
-        if (!isTradeContract[msg.sender]) {
-            revert NotTradeContract();
-        }
-        _;
-    }
-
     modifier isCouncil() {
         if (!keepersContract.isCouncil(msg.sender)) {
             revert NotCouncil();
@@ -98,13 +91,25 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
      * @param sellerAddress the seller address
      * @param buyerAddress the buyer address
      */
-    function onStatusChange(TradeStatus status, TradeStatus prevStatus, string memory data, address sellerAddress, address buyerAddress)
-        external
-        onlyTradeContracts
-    {
+    function onStatusChange(
+        TradeStatus status,
+        TradeStatus prevStatus,
+        string memory data,
+        address sellerAddress,
+        address buyerAddress
+    ) external {
+        if (!isTradeContract[msg.sender]) {
+            revert NotTradeContract();
+        }
         --tradeCountByStatus[prevStatus];
-        ++tradeCountByStatus[status];        
-        emit TradeContractStatusChange(msg.sender, status, data, sellerAddress, buyerAddress);
+        ++tradeCountByStatus[status];
+        emit TradeContractStatusChange(
+            msg.sender,
+            status,
+            data,
+            sellerAddress,
+            buyerAddress
+        );
     }
 
     /**

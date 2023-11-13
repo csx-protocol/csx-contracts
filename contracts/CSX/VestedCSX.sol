@@ -24,13 +24,6 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
 
     uint256 public constant MAX_SUPPLY = 100000000 ether;
 
-    modifier mintable(uint256 amount) {
-        if (amount + totalSupply() > MAX_SUPPLY) {
-            revert AmountSurpassesMaxSupply();
-        }
-        _;
-    }
-
     constructor(
         address _eCsxAddress,
         address _sCsxAddress,
@@ -58,7 +51,10 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
      * @dev Burns eCSX, Mints Vested CSX & Sends the user's CSX to the VestedStaking contract
      * @param amount The amount of tokens to be vested
      */
-    function vest(uint256 amount) external mintable(amount) nonReentrant {
+    function vest(uint256 amount) external nonReentrant {
+        if (amount + totalSupply() > MAX_SUPPLY) {
+            revert AmountSurpassesMaxSupply();
+        }
         if (amount == 0) {
             revert AmountMustBeGreaterThanZero();
         }

@@ -81,13 +81,6 @@ contract Users is ReentrancyGuard {
         keepers = IKeepers(_keepers);
     }
 
-    modifier onlyFactory() {
-        if (msg.sender != address(factory)) {
-            revert NotFactory();
-        }
-        _;
-    }
-
     modifier onlyTradeContracts(address contractAddress) {
         if (
             msg.sender != contractAddress ||
@@ -405,7 +398,10 @@ contract Users is ReentrancyGuard {
         string memory _assetId,
         address sellerAddrss,
         address tradeAddrss
-    ) external onlyFactory returns (bool) {
+    ) external returns (bool) {
+        if (msg.sender != address(factory)) {
+            revert NotFactory();
+        }
         assetIdFromUserAddrssToTradeAddrss[_assetId][
             sellerAddrss
         ] = tradeAddrss;

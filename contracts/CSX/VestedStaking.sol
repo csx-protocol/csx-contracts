@@ -103,13 +103,6 @@ contract VestedStaking {
         _;
     }
 
-    modifier onlyCouncil {
-        if(!keepers.isCouncil(msg.sender)) {
-            revert InvalidSender();
-        }
-        _;
-    }
-
     /**
      * @notice Deposit CSX tokens into the staking contract.
      * @dev This function is called by the vester contract.
@@ -208,7 +201,10 @@ contract VestedStaking {
      * @dev Can only be called by the council to mitigate against malicious vesters.
      * @param amount Amount of tokens to withdraw.
      */
-    function cliff(uint256 amount) external onlyCouncil {
+    function cliff(uint256 amount) external {
+        if(!keepers.isCouncil(msg.sender)) {
+            revert InvalidSender();
+        }
         if (amount > vesting.amount || amount == 0) {
             revert NotEnoughTokens();
         }    
