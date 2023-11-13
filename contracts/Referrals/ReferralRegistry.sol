@@ -218,10 +218,8 @@ contract ReferralRegistry is NetValueCalculator {
     function getReferralCodeRatios(
         bytes32 referralCode
     ) external view returns (uint256 ownerRatio, uint256 buyerRatio) {
-        return (
-            referralInfos[referralCode].ownerRatio,
-            referralInfos[referralCode].buyerRatio
-        );
+        ownerRatio = referralInfos[referralCode].ownerRatio;
+        buyerRatio = referralInfos[referralCode].buyerRatio;
     }
 
     /**
