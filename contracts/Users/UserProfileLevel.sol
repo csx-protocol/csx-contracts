@@ -72,6 +72,13 @@ contract UserProfileLevel {
         csxToken.burnFrom(msg.sender, _tokenAmount);
     }
 
+    /**
+     * @notice Function to change the keepers and users contracts
+     * @dev This is used when the keepers or users contracts are upgraded
+     * @dev This function can only be called by a council member
+     * @param _usersContractAddress The address of the new users contract
+     * @param _keepersContractAddress The address of the new keepers contract
+     */
     function changeContracts(address _usersContractAddress, address _keepersContractAddress) external {
         if (!keepersContract.isCouncil(msg.sender)) {
             revert NotCouncil();
@@ -83,7 +90,6 @@ contract UserProfileLevel {
     /**
     * @dev Get the token cost to level up from the current level to the next level.
     * The cost increases linearly with the user's level.
-    
     * @param currentLevel The current user level
     * @param levels The number of levels to level up
     * @return totalCost The total token cost to level up the specified number of levels

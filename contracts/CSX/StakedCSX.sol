@@ -66,6 +66,11 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         keepers = IKeepers(_keepers);
     }
 
+    /**
+     * @notice Stakes the user's CSX tokens
+     * @dev Mints sCSX & Sends the user's CSX to this contract.
+     * @param _amount The amount of tokens to be staked
+     */
     function stake(uint256 _amount) external nonReentrant {
         if (_amount == 0) {
             revert AmountMustBeGreaterThanZero();
@@ -78,6 +83,11 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         emit Stake(msg.sender, _amount);
     }
 
+    /**
+     * @notice Unstakes the user's sCSX tokens
+     * @dev Burns the user's sCSX tokens & Sends the user's CSX to this contract.
+     * @param _amount The amount of tokens to be unstaked
+     */
     function unStake(uint256 _amount) external nonReentrant {
         if (_amount == 0) {
             revert AmountMustBeGreaterThanZero();
@@ -95,6 +105,12 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
     }
 
     mapping(address => uint256) public roundingErrors;
+    /**
+     * @notice Deposits funds to stakers
+     * @dev Deposits funds to stakers as non distributed rewards
+     * @param _token The token to be deposited
+     * @param _reward The amount of tokens to be deposited
+     */
     function depositDividend(address _token, uint256 _reward) nonReentrant external returns (bool) {
         if(_reward == 0) {
             revert AmountMustBeGreaterThanZero();
@@ -116,6 +132,13 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
     }
 
     mapping (address => uint) public nonDistributedRewardsPerToken;
+    /**
+     * @notice Distributes funds to stakers
+     * @dev Distributes funds to stakers as distributed rewards
+     * @param dWeth distribute WETH?
+     * @param dUsdc distribute USDC?
+     * @param dUsdt distribute USDT?
+     */
     function distribute(bool dWeth, bool dUsdc, bool dUsdt) external {
         if(!keepers.isCouncil(msg.sender) && !keepers.isKeeperNode(msg.sender)) {
             revert InvalidUser();
@@ -144,6 +167,13 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         emit Distribute(rewardWETH, rewardUSDC, rewardUSDT);
     }
 
+    /**
+     * @notice Claims the user's rewards
+     * @param claimUsdc claim USDC?
+     * @param claimUsdt claim USDT?
+     * @param claimWeth claim WETH?
+     * @param convertWethToEth convert WETH to ETH?
+     */
     function claim(
         bool claimUsdc,
         bool claimUsdt,
@@ -161,6 +191,13 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         }       
     }
 
+    /**
+     * @notice Check the user's rewards
+     * @param _account The user's address
+     * @return usdcAmount
+     * @return usdtAmount 
+     * @return wethAmount 
+     */
     function rewardOf(address _account) public view returns (uint256 usdcAmount, uint256 usdtAmount, uint256 wethAmount) {
         uint256 deposited = balanceOf(_account);
         
@@ -183,6 +220,10 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         }
     }
 
+    /**
+     * @notice For converting WETH to ETH
+     * @dev Reverts if the sender is not the WETH Contract.
+     */
     receive() external payable {
         if (address(tokenWETH) != msg.sender) {
             revert InvalidSender();
@@ -191,6 +232,12 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
 
     //=================================== INTERNAL ==============================================
 
+    /**
+     * @notice Updates the user's reward rate
+     * @param from From address
+     * @param to To address
+     * @param amount Amount of tokens
+     */
     function _beforeTokenTransfer(
         address from,
         address to,
@@ -204,6 +251,10 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
 
     //=================================== PRIVATE ==============================================
 
+    /**
+     * @notice Claims the user's rewards to credit
+     * @param _to The user's address
+     */
     function _claimToCredit(address _to) private {
         if(balanceOf(_to) != 0) {
             (,,uint256 rewardWETH) = rewardOf(_to);
@@ -224,6 +275,12 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         _updateRewardRate(_to, address(tokenUSDT));
     }
 
+    /**
+     * @notice Claims the user's rewards
+     * @param _to To address
+     * @param _token The token to be claimed
+     * @param convertWethToEth convert WETH to ETH?
+     */
     function _claim(address _to, address _token, bool convertWethToEth) private {
         uint256 reward;
         if(_token == address(tokenWETH)) {
@@ -256,6 +313,11 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         emit ClaimReward(msg.sender, reward);
     }
 
+    /**
+     * @notice Updates the user's reward rate
+     * @param _to To address
+     * @param _token The token to be updated
+     */
     function _updateRewardRate(address _to, address _token) private {
         rewardRate[_token][_to] = lastRewardRate[_token];
     }

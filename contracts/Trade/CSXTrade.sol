@@ -137,6 +137,16 @@ contract CSXTrade {
 
     bool public hasInit;
 
+    /**
+     * @notice Initialize the extra info for the trade
+     * @dev Only the factory contract can call this function
+     * @param _stickers Stickers for the item (if any)
+     * @param _weaponType The Item weapon type
+     * @param _paymentToken The payment token address
+     * @param _priceType The price type of the listing
+     * @param _referralRegistryContract The referral registry contract address
+     * @param _sCSXToken The staked CSX token address
+     */
     function initExtraInfo(
         Sticker[] memory _stickers,
         string memory _weaponType,
@@ -165,15 +175,24 @@ contract CSXTrade {
         );
     }
 
-    // Seller change the price of the listing up til any buyer has committed tokens.
+    /**
+     * @notice Change the price of the listing
+     * @dev Only the seller can change the price of the listing
+     * @dev The listing must be in status ForSale
+     * @param _newPrice The new price of the listing
+     */
     function changePrice(uint256 _newPrice) external onlyAddress(seller) {
         if (status != TradeStatus.ForSale) {
             revert NotForSale();
         }
         weiPrice = _newPrice;
     }
-
-    // Seller can cancel the listing up til any buyer has committed tokens.
+   
+    /**
+     * @notice Cancel the listing
+     * @dev Only the seller can cancel the listing
+     * @dev The listing must be in status ForSale
+     */
     function sellerCancel() external onlyAddress(seller) {
         if (status != TradeStatus.ForSale) {
             revert NotForSale();
@@ -193,7 +212,14 @@ contract CSXTrade {
         usersContract.removeAssetIdUsed(itemSellerAssetId, seller);
     }
 
-    // Buyer commits tokens to buy if status-state allows & Sends trade-offer to sellers trade-link off-chain.
+    /**
+     * @notice Commit to buy the listing
+     * @dev Only a buyer can commit to buy the listing
+     * @dev The listing must be in status ForSale
+     * @param _buyerTradeUrl The buyer's trade url
+     * @param _affLink The referral code (0x000.. in full length if none)
+     * @param _buyerAddress The buyer's address (if the buyer is a proxy from BuyAssistoor contract)
+     */
     function commitBuy(
         TradeUrl memory _buyerTradeUrl,
         bytes32 _affLink,
@@ -249,7 +275,13 @@ contract CSXTrade {
         paymentToken.safeTransferFrom(msg.sender, address(this), buyerNetValue);    
     }
 
-    // Buyer can cancel the trade up til the seller has accepted the trade offer.
+    /**
+     * @notice Cancel the trade
+     * @dev Only the buyer can cancel the trade
+     * @dev The listing must be in status BuyerCommitted
+     * @dev The buyer can only cancel the trade if the seller has not veridicted the trade.
+     * @dev The buyer can only cancel the trade if 24 hours have passed since the buyer committed to buy.
+     */
     function buyerCancel() external onlyAddress(buyer) {
         if (status != TradeStatus.BuyerCommitted) {
             revert NotCommitted();
@@ -268,9 +300,12 @@ contract CSXTrade {
         paymentToken.safeTransfer(buyer, depositedValue);
     }
 
-    //--------------------------------------------------------------------------------
-
-    // Seller Confirms or deny they have accepted the trade offer.
+    /**
+     * @notice Seller confirms or deny they have accepted the trade offer.
+     * @dev Only the seller can confirm or deny they have accepted the trade offer.
+     * @dev The listing must be in status BuyerCommitted
+     * @param _sellerCommited Whether the seller has accepted the trade offer or not
+     */
     function sellerTradeVeridict(
         bool _sellerCommited
     ) public onlyAddress(seller) {
@@ -311,7 +346,11 @@ contract CSXTrade {
         }
     }
 
-    // Buyer Confirms they have received the item.
+    /**
+     * @notice Buyer confirms they have received the item.
+     * @dev Only the buyer can confirm they have received the item.
+     * @dev The listing must be in status BuyerCommitted or SellerCommitted
+     */
     function buyerConfirmReceived() external onlyAddress(buyer) {
         if (status != TradeStatus.BuyerCommitted && status != TradeStatus.SellerCommitted) {
             revert StatusNotBuyerCommitted();
@@ -331,7 +370,11 @@ contract CSXTrade {
         usersContract.changeUserInteractionStatus(address(this), buyer, status);
     }
 
-    // Seller confirms the trade has been made after 8 days from acceptance.
+    /**
+     * @notice Seller confirms the trade has been made after 8 days from seller veridict.
+     * @dev Only the seller can confirm the trade has been made.
+     * @dev 8 days must have passed since the seller veridicted the trade.
+     */
     function sellerConfirmsTrade() external onlyAddress(seller) {
         if(block.timestamp < sellerAcceptedTimestamp + 8 days) {
             revert TimeNotElapsed();
@@ -352,7 +395,13 @@ contract CSXTrade {
         _distributeProceeds();
     }
 
-    // KeeperNode Confirms the trade has been made.
+    /**
+     * @notice KeeperNode confirms the trade has been made.
+     * @dev Only a KeeperNode can confirm the trade has been made.
+     * @dev The listing must be in status BuyerCommitted, SellerCommitted or ForSale
+     * @param isTradeMade Whether the trade has been made or not
+     * @param message The message to be emitted
+     */
     function keeperNodeConfirmsTrade(bool isTradeMade, string memory message) external onlyKeeperNode {
         if (
             status != TradeStatus.BuyerCommitted &&
@@ -404,7 +453,12 @@ contract CSXTrade {
         }
     }
 
-    // Or Buyer/Seller opens dispute in any state.
+    /**
+     * @notice Open a dispute
+     * @dev Only the seller or the buyer can open a dispute
+     * @dev The listing can not already be disputed, resolved or clawbacked.
+     * @param _complaint The complaint of the dispute
+     */
     function openDispute(
         string memory _complaint
     ) external onlyTheseAddresses(seller, buyer) {
@@ -422,7 +476,15 @@ contract CSXTrade {
         usersContract.changeUserInteractionStatus(address(this), buyer, status);
     }
 
-    // Keepers & KeeperNode resolves the dispute.
+    /**
+     * @notice Resolve the dispute
+     * @dev Only a Keeper or a KeeperNode can resolve the dispute
+     * @dev The listing must be in status Disputed
+     * @param isFavourOfBuyer Whether the dispute is in favour of the buyer or not
+     * @param giveWarningToSeller Whether to give a warning to the seller or not
+     * @param giveWarningToBuyer Whether to give a warning to the buyer or not
+     * @param isWithValue Whether to transfer the value of the listing to the favoured party or not
+     */
     function resolveDispute(
         bool isFavourOfBuyer,
         bool giveWarningToSeller,
@@ -461,9 +523,10 @@ contract CSXTrade {
         usersContract.changeUserInteractionStatus(address(this), buyer, status);
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-
-    // Private Functions
+    /**
+     * @notice Distribute the proceeds of the listing
+     * @dev This function is used to distribute the proceeds of the listing
+     */
     function _distributeProceeds() private {
         // Fetch the referral code from the registry for the buyer
         bytes32 storageRefCode = referralRegistryContract.getReferralCode(buyer);
@@ -518,6 +581,11 @@ contract CSXTrade {
         );
     }
 
+    /**
+     * @notice Change the status of the listing
+     * @param _status The new status of the listing
+     * @param data The data to be emitted
+     */
     function _changeStatus(TradeStatus _status, string memory data) private {
         TradeStatus prevStatus = status;
         status = _status;
@@ -525,7 +593,14 @@ contract CSXTrade {
         factoryContract.onStatusChange(status, prevStatus, data, seller, buyer);
     }
 
-    // Public Functions
+    /**
+     * @notice Get the net value of the listing
+     * @param _affLink The referral code
+     * @return buyerNetPrice 
+     * @return sellerNetProceeds 
+     * @return affiliatorNetReward 
+     * @return tokenHoldersNetReward 
+     */
     function getNetValue(
         bytes32 _affLink
     )
@@ -562,10 +637,16 @@ contract CSXTrade {
         );
     }
 
+    /**
+     * @notice Get the status history length of the listing
+     */
     function getStatusCount() public view returns (uint) {
         return statusHistory.length;
     }
 
+    /**
+     * @notice Get the amount of stickers the item has
+     */
     function stickerLength() external view returns (uint256) {
         return stickers.length;
     }

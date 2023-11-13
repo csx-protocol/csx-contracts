@@ -36,7 +36,17 @@ contract NetValueCalculator {
     //    - sellerNetProceeds = 1,000 - 20 = 980 tokens
     //    - tokenHoldersNetReward = baseFee - discountedFee - affiliatorReward
     //    - tokenHoldersNetReward = 20 - 2 - 8 = 10 tokens
-    //
+    /**
+     * @notice Calculates the net value for each party involved in a transaction
+     * @param fullItemPrice The full item price in tokens
+     * @param isBuyerAffiliated Whether the buyer is affiliated or not
+     * @param baseFeePercentTen The base fee percentage multiplied by 10. e.g., 26 represents 2.6%
+     * @param discountRatio The ratio between the discount and reward percentages
+     * @return buyerNetPrice 
+     * @return sellerNetProceeds 
+     * @return affiliatorNetReward 
+     * @return tokenHoldersNetReward 
+     */
     function calculateNetValue(
         uint256 fullItemPrice,
         bool isBuyerAffiliated,

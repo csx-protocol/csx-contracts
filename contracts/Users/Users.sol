@@ -66,6 +66,13 @@ contract Users is ReentrancyGuard {
         keepers = IKeepers(_keepers);
     }
 
+    /**
+     * @notice Function to change the keepers and factory contracts
+     * @dev This is used when the keepers or factory contracts are upgraded
+     * @dev This function can only be called by a council member
+     * @param _factoryAddress The address of the new factory contract
+     * @param _keepers The address of the new keepers contract
+     */
     function changeContracts(address _factoryAddress, address _keepers) external {
         if (!keepers.isCouncil(msg.sender)) {
             revert NotCouncil();
@@ -104,6 +111,11 @@ contract Users is ReentrancyGuard {
         _;
     }
 
+    /**
+     * @notice Give user a warning
+     * @dev This function can only be called by a keeper or a trade contract
+     * @param _user The address of the user to warn
+     */
     function warnUser(address _user) public onlyKeepersOrTradeContracts(msg.sender) {
         User storage user = users[_user];
         user.reputationNeg += 3;
@@ -113,24 +125,49 @@ contract Users is ReentrancyGuard {
         }
     }
 
+    /**
+     * @notice Ban a user
+     * @dev This function can only be called by a keeper or a trade contract
+     * @param _user The address of the user to ban
+     */
     function banUser(address _user) public onlyKeepersOrTradeContracts(msg.sender) {
         User storage user = users[_user];
         user.isBanned = true;
     }
 
+    /**
+     * @notice Unban a user
+     * @param _user The address of the user to unban
+     * @dev This function can only be called by a keeper or a trade contract
+     */
     function unbanUser(address _user) public onlyKeepersOrTradeContracts(msg.sender) {
         User storage user = users[_user];
         user.isBanned = false;
     }
 
+    /**
+     * @notice Get user data
+     * @param user The address of the user
+     * @return User struct
+     */
     function getUserData(address user) external view returns (User memory) {
         return users[user];
     }
 
+    /**
+     * @notice Get if user is banned
+     * @param _user The address of the user
+     * @return true if user is banned, false otherwise
+     */
     function isBanned(address _user) external view returns (bool) {
         return users[_user].isBanned;
     }
 
+    /**
+     * @notice Give reputation to a user
+     * @param _user The address of the user to give reputation to
+     * @param isPositive Whether the reputation is positive or negative
+     */
     function _repAfterTrade(address _user, bool isPositive) private {
         User storage user = users[_user];
         if (isPositive) {
@@ -140,6 +177,12 @@ contract Users is ReentrancyGuard {
         }
     }
 
+    /**
+     * @notice Start delivery timer for a seller
+     * @dev This function can only be called by a trade contract
+     * @param contractAddress The address of the trade contract
+     * @param user The address of the seller
+     */
     function startDeliveryTimer(
         address contractAddress,
         address user
@@ -149,6 +192,12 @@ contract Users is ReentrancyGuard {
         ++users[user].deliveryInfo.totalStarts;
     }
 
+    /**
+     * @notice End delivery timer for a seller
+     * @dev This function can only be called by a trade contract
+     * @param contractAddress The address of the trade contract
+     * @param user The address of the seller
+     */
     function endDeliveryTimer(
         address contractAddress,
         address user
@@ -162,6 +211,11 @@ contract Users is ReentrancyGuard {
             users[user].deliveryInfo.numberOfDeliveries;
     }
 
+    /**
+     * @notice Get the average delivery time for a seller
+     * @param user The address of the seller
+     * @return Average delivery time
+     */
     function getAverageDeliveryTime(
         address user
     ) external view returns (uint256) {
@@ -172,6 +226,14 @@ contract Users is ReentrancyGuard {
     mapping(address => UserInteraction[]) userTrades;
     mapping(address => mapping(address => uint256)) tradeAddrsToUserAddrsInteractionIndex;
 
+    /**
+     * @notice Add a trade to a user's interaction list
+     * @dev This function can only be called by a trade contract
+     * @param tradeAddress The address of the trade contract
+     * @param role The role of the user in the trade
+     * @param userAddress The address of the user
+     * @param status The status of the trade
+     */
     function addUserInteractionStatus(
         address tradeAddress,
         Role role,
@@ -186,6 +248,13 @@ contract Users is ReentrancyGuard {
             1;
     }
 
+    /**
+     * @notice Change the status of a trade in a user's interaction list
+     * @dev This function can only be called by a trade contract
+     * @param tradeAddress The address of the trade contract
+     * @param userAddress The address of the user
+     * @param status The status of the trade
+     */
     function changeUserInteractionStatus(
         address tradeAddress,
         address userAddress,
@@ -197,12 +266,23 @@ contract Users is ReentrancyGuard {
         userTrades[userAddress][iIndex].status = status;
     }
 
+    /**
+     * @notice Get the total number of trades in a user's interaction list
+     * @param userAddrss The address of the user
+     * @return The total number of trades in a user's interaction list
+     */
     function getUserTotalTradeUIs(
         address userAddrss
     ) external view returns (uint256) {
         return userTrades[userAddrss].length;
     }
 
+    /**
+     * @notice Get a trade in a user's interaction list by index
+     * @param userAddrss The address of the user
+     * @param i The index of the trade
+     * @return UserInteraction struct
+     */
     function getUserTradeUIByIndex(
         address userAddrss,
         uint256 i
@@ -212,6 +292,12 @@ contract Users is ReentrancyGuard {
 
     mapping(address => mapping(Role => bool)) tradeAdrsToRoleToHasRep;
 
+    /**
+     * @notice Give reputation to a user after a trade
+     * @dev This function can only be called by buyer or seller of a trade contract
+     * @param tradeAddrs The address of the trade contract
+     * @param isPositive Whether the reputation is positive or negative
+     */
     function repAfterTrade(
         address tradeAddrs,
         bool isPositive
@@ -250,6 +336,13 @@ contract Users is ReentrancyGuard {
         }
     }
 
+    /**
+     * @notice Check if a user has given reputation to a trade
+     * @param tradeAddrs The address of the trade contract
+     * @return hasBuyer
+     * @return hasSeller 
+     * @return isTime 
+     */
     function hasMadeRepOnTrade(
         address tradeAddrs
     ) external view returns (bool hasBuyer, bool hasSeller, bool isTime) {
@@ -267,6 +360,12 @@ contract Users is ReentrancyGuard {
     mapping(string => mapping(address => address))
         public assetIdFromUserAddrssToTradeAddrss;
 
+    /**
+     * @notice Remove an asset ID from a user's address mapping
+     * @dev This function can only be called by a trade contract
+     * @param _assetId The asset ID
+     * @param sellerAddrss The address of the seller
+     */
     function removeAssetIdUsed(
         string memory _assetId,
         address sellerAddrss
@@ -275,6 +374,12 @@ contract Users is ReentrancyGuard {
         return true;
     }
 
+    /**
+     * @notice Check if a user has already listed an item
+     * @param _assetId The asset ID
+     * @param sellerAddrss The address of the seller
+     * @return true if the user has already listed an item, false otherwise
+     */
     function hasAlreadyListedItem(
         string memory _assetId,
         address sellerAddrss
@@ -289,6 +394,13 @@ contract Users is ReentrancyGuard {
         }
     }
 
+    /**
+     * @notice Set the Asset Id used
+     * @dev This function can only be called by the factory contract
+     * @param _assetId The asset ID
+     * @param sellerAddrss The address of the seller
+     * @param tradeAddrss The address of the trade contract
+     */
     function setAssetIdUsed(
         string memory _assetId,
         address sellerAddrss,

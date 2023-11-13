@@ -24,6 +24,13 @@ contract BuyAssistoor {
         weth = IWETH(_weth);
     }
 
+    /**
+     * @notice Buy with ETH to WETH in Trade Contract
+     * @dev This function is used to buy with ETH to WETH in a Trade Contract
+     * @param _buyerTradeUrl The Trade Url of the buyer
+     * @param _affLink The affiliate link
+     * @param _tradeContract The Trade Contract address
+     */
     function BuyWithEthToWeth(TradeUrl memory _buyerTradeUrl, bytes32 _affLink, address _tradeContract) public payable {
          if (_tradeContract == address(0)) {
             revert InvalidTradeContract();

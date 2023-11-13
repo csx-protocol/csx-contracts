@@ -53,6 +53,11 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
 
     mapping(address => VestedStaking) public vestedStakingContractPerUser;
 
+    /**
+     * @notice Vest the user's escrowed CSX tokens
+     * @dev Burns eCSX, Mints Vested CSX & Sends the user's CSX to the VestedStaking contract
+     * @param amount The amount of tokens to be vested
+     */
     function vest(uint256 amount) external mintable(amount) nonReentrant {
         if (amount == 0) {
             revert AmountMustBeGreaterThanZero();
@@ -85,6 +90,10 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
         vestedStakingContractPerUser[msg.sender].deposit(amount);
     }
 
+    /**
+     * @notice Get the user's VestedStaking Contract address
+     * @param user The user's address
+     */
     function getVestedStakingContractAddress(
         address user
     ) public view returns (address) {
@@ -92,6 +101,12 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
     }
 
     //=================================== INTERNAL ==============================================
+    /**
+     * @notice Hook that ensures vCSX token transfers are disabled
+     * @param from From Address
+     * @param to To Address
+     * @param amount Amount of tokens
+     */
     function _beforeTokenTransfer(
         address from,
         address to,

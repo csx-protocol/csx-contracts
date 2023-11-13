@@ -27,6 +27,11 @@ contract EscrowedCSX is ERC20Burnable, ReentrancyGuard {
         csxToken = IERC20(_csxToken);
     }
 
+    /**
+     * @notice Initializes the contract
+     * @dev Sets the VestedCSX contract address
+     * @param _vCSXToken address of the VestedCSX contract
+     */
     function init(address _vCSXToken) external {
         if(isInitialized) revert AlreadyInitialized();
         if(msg.sender != deployer) revert OnlyDeployerCanInitialize();
@@ -35,6 +40,11 @@ contract EscrowedCSX is ERC20Burnable, ReentrancyGuard {
         vestedCSX = IERC20(_vCSXToken);
     }
 
+    /**
+     * @notice Mints the user's escrowed CSX tokens
+     * @dev Mints Escrowed CSX & Sends the user's CSX to the VestedCSX contract
+     * @param _amount The amount of tokens to be minted
+     */
     function mintEscrow(uint256 _amount) external nonReentrant {
         if(_amount == 0) revert AmountMustBeGreaterThanZero();
         _mint(msg.sender, _amount);

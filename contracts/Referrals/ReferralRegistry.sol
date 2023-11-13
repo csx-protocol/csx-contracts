@@ -25,6 +25,12 @@ contract ReferralRegistry is NetValueCalculator {
 
     mapping(bytes32 => mapping(address => uint256)) rebatePerCodePerPaymentToken;
 
+    /**
+     * @notice Get the rebate for a referral code and payment token
+     * @param referralCode The referral code
+     * @param paymentToken The payment token address
+     * @return The rebate for the referral code and payment token
+     */
     function getRebatePerCodePerPaymentToken(bytes32 referralCode, address paymentToken) external view returns (uint256) {
         return rebatePerCodePerPaymentToken[referralCode][paymentToken];
     }
@@ -49,14 +55,29 @@ contract ReferralRegistry is NetValueCalculator {
 
     mapping(address => bytes32[]) private userCreatedCodes;
 
+    /**
+     * @notice Get the referral codes created by a user
+     * @param user The user address
+     * @return The referral codes created by the user
+     */
     function getReferralCodesByUser(address user) external view returns (bytes32[] memory) {
         return userCreatedCodes[user];
     }
 
+    /**
+     * @notice Set a referral code for a user
+     * @dev This function can only be called by a trade contract
+     * @param referralCode The referral code
+     * @param user The user address
+     */
     function setReferralCodeAsTC(bytes32 referralCode, address user) external onlyTradeContracts(msg.sender) {
         _setReferralCode(referralCode, user);
     }
 
+    /**
+     * @notice Set a referral code as a user
+     * @param referralCode The referral code
+     */
     function setReferralCodeAsUser(bytes32 referralCode) external {
         if (referralCode == 0) revert InvalidReferralCode("Referral code cannot be empty");
         if (referralInfos[referralCode].owner == address(0)) revert ReferralCodeNotRegistered("Referral code not registered");
@@ -67,6 +88,12 @@ contract ReferralRegistry is NetValueCalculator {
         _setReferralCode(referralCode, msg.sender);
     }
 
+    /**
+     * @notice Change the relying contracts
+     * @dev This function can only be called by council
+     * @param _factory CSXTradeFactory Address
+     * @param _keepers Keepers Contract Address
+     */
     function changeContracts(address _factory, address _keepers) external {
         if(!keepers.isCouncil(msg.sender)){
             revert Unauthorized("Only council can change contracts");
@@ -75,10 +102,21 @@ contract ReferralRegistry is NetValueCalculator {
         keepers = IKeepers(_keepers);
     }
 
+    /**
+     * @notice Get the referral code of a user
+     * @param user The user address
+     * @return The referral code of the user
+     */
     function getReferralCode(address user) external view returns (bytes32) {
         return userReferralCode[user];
     }
 
+    /**
+     * @notice Set the referral code of a user
+     * @dev Private function to set the referral code of a user
+     * @param referralCode The referral code
+     * @param user The user address
+     */
     function _setReferralCode(bytes32 referralCode, address user) private {
         userReferralCode[user] = referralCode;
     }
@@ -100,7 +138,14 @@ contract ReferralRegistry is NetValueCalculator {
         uint256 rebate
     );
 
-    // Function only for isTradeContract to emit if refferal transaction is made
+    /**
+     * @notice Emit event when a referral code is registered
+     * @dev This function can only be called by a trade contract
+     * @param contractAddress The trade contract address
+     * @param _paymentToken The payment token address
+     * @param referralCode The referral code
+     * @param rebate The rebate amount
+     */
     function emitReferralCodeRebateUpdated(
         address contractAddress,
         address _paymentToken,
@@ -112,7 +157,12 @@ contract ReferralRegistry is NetValueCalculator {
         emit ReferralCodeRebateUpdated(contractAddress, referralCode, owner, _paymentToken, rebate);
     }
 
-    // Function to register a referral code with distribution ratios
+    /**
+     * @notice Register a referral code with distribution ratios
+     * @param referralCode The referral code
+     * @param ownerRatio affiliator rebate ratio
+     * @param buyerRatio buyer discount ratio
+     */
     function registerReferralCode(
         bytes32 referralCode,
         uint256 ownerRatio,
@@ -139,21 +189,32 @@ contract ReferralRegistry is NetValueCalculator {
         );
     }
 
-    // Function to get the the RefferalInfo struct of a referral code
+    /**
+     * @notice Get the referral info of a referral code
+     * @param referralCode The referral code
+     */
     function getReferralInfo(
         bytes32 referralCode
     ) external view returns (ReferralInfo memory) {
         return referralInfos[referralCode];
     }
 
-    // Function to check the owner of a referral code
+    /**
+     * @notice Get the owner of a referral code
+     * @param referralCode The referral code
+     */
     function getReferralCodeOwner(
         bytes32 referralCode
     ) public view returns (address) {
         return referralInfos[referralCode].owner;
     }
 
-    // Function to get the distribution ratios of a referral code
+    /**
+     * @notice Get the distribution ratios of a referral code
+     * @param referralCode The referral code
+     * @return ownerRatio 
+     * @return buyerRatio 
+     */
     function getReferralCodeRatios(
         bytes32 referralCode
     ) external view returns (uint256 ownerRatio, uint256 buyerRatio) {
@@ -163,14 +224,22 @@ contract ReferralRegistry is NetValueCalculator {
         );
     }
 
-    // Function to check if a referral code is registered
+    /**
+     * @notice Check if a referral code is registered
+     * @param referralCode The referral code
+     * @return true if the referral code is registered
+     */
     function isReferralCodeRegistered(
         bytes32 referralCode
     ) external view returns (bool) {
         return referralInfos[referralCode].owner != address(0);
     }
 
-    // Helper function to check if a referral code contains spaces
+    /**
+     * @notice Check if a referral code contains a space
+     * @dev Helper function to check if a referral code contains a space
+     * @param code The referral code
+     */
     function containsSpace(bytes32 code) private pure returns (bool) {
         for (uint256 i = 0; i < 32; i++) {
             if (code[i] == 0x20) {

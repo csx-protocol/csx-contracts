@@ -52,16 +52,34 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
         _;
     }
 
+    /**
+     * @notice Change the base fee
+     * @dev This function can only be called by a council member
+     * @param _baseFee new base fee
+     */
     function changeBaseFee(uint256 _baseFee) external isCouncil {
         baseFee = _baseFee;
     }
 
+    /**
+     * @notice Change the keepers, users and tradeFactoryBaseStorage contracts
+     * @dev This is used when the keepers, users or tradeFactoryBaseStorage contracts are upgraded
+     * @dev This function can only be called by a council member
+     * @param _keepers new keepers contract address
+     * @param _users new users contract address
+     * @param _tradeFactoryBaseStorage new tradeFactoryBaseStorage contract address
+     */
     function changeContracts(address _keepers, address _users, address _tradeFactoryBaseStorage) external isCouncil {
         keepersContract = IKeepers(_keepers);
         usersContract = IUsers(_users);
         tradeFactoryBaseStorage = ITradeFactoryBaseStorage(_tradeFactoryBaseStorage);
     }
 
+    /**
+     * @notice Check if the contract address is a trade contract
+     * @param contractAddress address of the contract
+     * @return true if the contract address is a trade contract else false
+     */
     function isThisTradeContract(address contractAddress)
         external
         view
@@ -71,6 +89,15 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
     }
 
     mapping(TradeStatus => uint256) public tradeCountByStatus;
+    /**
+     * @notice Called when the status of a trade contract changes
+     * @dev This function can only be called by a trade contract
+     * @param status new status
+     * @param prevStatus previous status
+     * @param data data to emit
+     * @param sellerAddress the seller address
+     * @param buyerAddress the buyer address
+     */
     function onStatusChange(TradeStatus status, TradeStatus prevStatus, string memory data, address sellerAddress, address buyerAddress)
         external
         onlyTradeContracts
@@ -80,6 +107,9 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
         emit TradeContractStatusChange(msg.sender, status, data, sellerAddress, buyerAddress);
     }
 
+    /**
+     * @notice Get the total contracts
+     */
     function totalContracts() public view returns (uint256) {
         return tradeFactoryBaseStorage.totalContracts();
     }

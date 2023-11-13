@@ -64,6 +64,17 @@ contract VestedStaking {
         uint256 newVestingAmount
     );
 
+    /**
+     * @notice Constructor
+     * @param _vesterAddress Vester address
+     * @param _sCsxTokenAddress Staked CSX token address
+     * @param _vCsxTokenAddress Vested CSX token address
+     * @param _csxTokenAddress CSX token address
+     * @param _usdcTokenAddress USDC token address
+     * @param _usdtTokenAddress USDT token address
+     * @param _wethTokenAddress WETH token address
+     * @param _keepersAddress Keepers contract address
+     */
     constructor(
         address _vesterAddress,
         address _sCsxTokenAddress,
@@ -99,10 +110,11 @@ contract VestedStaking {
         _;
     }
 
-    /// @notice Deposit CSX tokens into the staking contract.
-    /// @param amount Amount of CSX tokens to deposit.
-    /// @dev This function is called by the vester contract.
-    /// @dev Only callable by the vester contract.
+    /**
+     * @notice Deposit CSX tokens into the staking contract.
+     * @dev This function is called by the vester contract.
+     * @param amount Amount of CSX tokens to deposit.
+     */
     function deposit(uint256 amount) external {
         if (msg.sender != address(vCsxToken)) {
             revert OnlyVCSXContract();
@@ -114,23 +126,27 @@ contract VestedStaking {
         emit Deposit(msg.sender, amount, vesting.amount, block.timestamp);
     }
 
-    // @notice get Claimable Amount and Vesting Start Time
-    /// @return usdcAmount
-    /// @return usdtAmount
-    /// @return wethAmount
-    /// @return vestTimeStart
+    /**
+     * @notice Get the claimable amount and vesting start time.
+     * @return usdcAmount 
+     * @return usdtAmount 
+     * @return wethAmount 
+     * @return vestTimeStart 
+     */
     function getClaimableAmountAndVestTimeStart() external view returns (uint256 usdcAmount, uint256 usdtAmount, uint256 wethAmount, uint256 vestTimeStart) {
         (usdcAmount, usdtAmount, wethAmount) = sCsxToken.rewardOf(address(this));
 
         vestTimeStart = vesting.startTime;
     }
 
-    /// @notice Claim rewards from the staking contract.
-    /// @param claimUsdc Whether to claim USDC rewards.
-    /// @param claimUsdt Whether to claim USDT rewards.
-    /// @param claimWeth Whether to claim WETH rewards.
-    /// @param convertWethToEth Whether to convert WETH rewards to ETH.
-    /// @dev Only callable by the vester.
+    /**
+     * @notice Claim rewards from the staking contract.
+     * @dev Only callable by the vester.
+     * @param claimUsdc Whether to claim USDC rewards.
+     * @param claimUsdt Whether to claim USDT rewards.
+     * @param claimWeth Whether to claim WETH rewards.
+     * @param convertWethToEth Whether to convert WETH rewards to ETH.
+     */
     function claimRewards(
         bool claimUsdc,
         bool claimUsdt,
@@ -166,11 +182,13 @@ contract VestedStaking {
         }
     }
 
-    /// @notice Withdraws tokens from the contract.
-    /// @param amount Amount of tokens to withdraw.
-    /// @dev Only callable by the vester.
-    /// @dev Tokens are locked for 24 months.
-    /// @dev Vested Tokens are burned.
+    /**
+     * @notice Withdraws tokens from the contract.
+     * @dev Only callable by the vester.
+     * @dev Tokens are locked for 24 months.
+     * @dev Vested Tokens are burned.
+     * @param amount Amount of tokens to withdraw.
+     */
     function withdraw(uint256 amount) external onlyVester {
         if (amount > vesting.amount || amount == 0) {
             revert NotEnoughTokens();
@@ -185,9 +203,11 @@ contract VestedStaking {
         emit Withdraw(msg.sender, amount, vesting.amount);
     }
 
-    /// @notice Executes a forced withdrawal of tokens from the contract.
-    /// @dev Can only be called by the council to mitigate against malicious vesters.
-    /// @param amount Specifies the amount of tokens to be withdrawn.
+    /**
+     * @notice Withdraws tokens from the contract.
+     * @dev Can only be called by the council to mitigate against malicious vesters.
+     * @param amount Amount of tokens to withdraw.
+     */
     function cliff(uint256 amount) external onlyCouncil {
         if (amount > vesting.amount || amount == 0) {
             revert NotEnoughTokens();

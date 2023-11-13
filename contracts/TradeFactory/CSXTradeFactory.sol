@@ -49,6 +49,17 @@ contract CSXTradeFactory is TradeFactoryBase {
     address public sCSXTokenAddress;
     address public buyAssistoor;
 
+    /**
+     * @notice Constructor
+     * @param _keepers Keepers contract address
+     * @param _users Users contract address
+     * @param _tradeFactoryBaseStorage TradeFactoryBaseStorage contract address
+     * @param _baseFee Base fee for creating a trade contract (once decimal of precision e.g 1 = 0.1%)
+     * @param _paymentTokens Payment tokens addresses
+     * @param _referralRegistryAddress Referral registry address
+     * @param _sCSXTokenAddress Staked CSX token address
+     * @param _buyAssistoor BuyAssistoor contract address
+     */
     constructor(
         address _keepers,
         address _users,
@@ -74,6 +85,11 @@ contract CSXTradeFactory is TradeFactoryBase {
         buyAssistoor = _buyAssistoor;
     }
 
+    /**
+     * @notice List an item for sale
+     * @dev Creates a new trade contract
+     * @param params Listing params
+     */
     function createListingContract(
         ListingParams memory params
     ) external nonReentrant {
@@ -183,6 +199,15 @@ contract CSXTradeFactory is TradeFactoryBase {
         );
     }
 
+    /**
+     * @notice Change the contracts for trade
+     * @dev This function is used when the contracts for trade are upgraded
+     * @dev This function can only be called by a council member
+     * @param _paymentTokens Payment token type
+     * @param _referralRegistryAddress Referral registry address
+     * @param _sCSXTokenAddress Staked CSX token address
+     * @param _buyAssistoor BuyAssistoor contract address
+     */
     function changeContractsForTrade(
         PaymentTokens memory _paymentTokens,
         address _referralRegistryAddress,
@@ -195,6 +220,11 @@ contract CSXTradeFactory is TradeFactoryBase {
         buyAssistoor = _buyAssistoor;
     }
 
+    /**
+     * @notice Get Trade Details by Index
+     * @param index Index of the trade contract
+     * @return result TradeInfo
+     */
     function getTradeDetailsByIndex(
         uint256 index
     ) public view returns (TradeInfo memory result) {
@@ -251,6 +281,11 @@ contract CSXTradeFactory is TradeFactoryBase {
         return result;
     }
 
+    /**
+     * @notice Get Trade Details by Address
+     * @param tradeAddrs Address of the trade contract
+     * @return result TradeInfo
+     */
     function getTradeDetailsByAddress(
         address tradeAddrs
     ) public view returns (TradeInfo memory result) {
@@ -258,6 +293,12 @@ contract CSXTradeFactory is TradeFactoryBase {
         result = getTradeDetailsByIndex(i);
     }
 
+    /**
+     * @notice Get Trade Details by Address
+     * @param status Status of the trade contract
+     * @param indexFrom Index from which to start
+     * @param maxResults Max results to return
+     */
     function getTradeIndexesByStatus(
         TradeStatus status,
         uint256 indexFrom,
