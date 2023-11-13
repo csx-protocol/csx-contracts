@@ -326,20 +326,4 @@ contract CSXTradeFactory is TradeFactoryBase {
         }
         return tradeIndexes;
     }
-
-    // function getTradeCountByStatus(
-    //     TradeStatus status
-    // ) external view returns (uint256) {
-    //     uint256 count;
-    //     uint256 i = 0;
-    //     uint256 _tC = totalContracts();
-    //     while (i < _tC) {
-    //         TradeInfo memory _trade = getTradeDetailsByIndex(i);
-    //         if (_trade.status == status) {
-    //             ++count;
-    //         }
-    //         ++i;
-    //     }
-    //     return count;
-    // }
 }

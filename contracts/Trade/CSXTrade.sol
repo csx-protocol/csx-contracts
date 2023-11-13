@@ -605,12 +605,10 @@ contract CSXTrade {
             _affLink
         ) != address(0);
 
-        //uint256 ownerRatio;
         uint256 buyerRatio;
 
         if (hasReferral) {
-            (,/*uint256 _ownerRatio*/ uint256 _buyerRatio) = referralRegistryContract.getReferralCodeRatios(_affLink);
-            //ownerRatio = _ownerRatio;
+            (,uint256 _buyerRatio) = referralRegistryContract.getReferralCodeRatios(_affLink);
             buyerRatio = (_buyerRatio / 2);
         }(
             buyerNetPrice,

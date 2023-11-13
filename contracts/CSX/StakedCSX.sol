@@ -25,15 +25,13 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
 
     uint256 public constant DIVISION = 10 ** 33; // to prevent float calculation
 
-    //uint256 public lastRewardRate; // S = 0;
     // rewardToken -> lastRewardRate
     mapping(address => uint256) public lastRewardRate; // S0 = {};
 
     // rewardToken -> user -> rewardRate
-    mapping(address => mapping (address => uint256)) public rewardRate; // S0 = {};
-    //mapping(address => uint256) public rewardRate; // S0 = {};
+    mapping(address => mapping (address => uint256)) public rewardRate; // S0 = {};;
     
-    //mapping(address => uint256) public credit; // C = {};
+    // rewardToken -> user -> credit
     mapping(address => mapping(address => uint256)) credit; // C = {};
 
     event Stake(address indexed user, uint256 amount);
