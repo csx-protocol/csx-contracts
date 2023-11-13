@@ -121,9 +121,9 @@ contract UserProfileLevel {
         uint256 currentLevel,
         uint256 levels
     ) public pure returns (uint256) {
-        uint256 totalCost = 0;
+        uint256 totalCost;
 
-        for (uint256 i = 0; i < levels; i++) {
+        for (uint256 i; i < levels; i++) {
             uint256 cost = BASE_COST + ((currentLevel + i) * BASE_COST);
             totalCost += cost;
         }

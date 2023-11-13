@@ -139,7 +139,7 @@ contract CSXTrade {
         }
         hasInit = true;
         uint totalStickers = _stickers.length;
-        for (uint256 i = 0; i < totalStickers; i++) {
+        for (uint256 i; i < totalStickers; i++) {
             stickers.push(_stickers[i]);
         }
         weaponType = _weaponType;
