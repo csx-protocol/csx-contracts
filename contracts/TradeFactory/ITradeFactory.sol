@@ -1,5 +1,5 @@
 // //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity 0.8.18;
 
 import {Strings} from "../utils/Strings.sol";
 import {Role, TradeStatus} from "../Users/IUsers.sol";

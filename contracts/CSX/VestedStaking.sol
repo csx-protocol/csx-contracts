@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // StakedCSXContract v1
 
-pragma solidity ^0.8.18;
+pragma solidity 0.8.18;
 
 import {IERC20, IStakedCSX, IERC20Burnable} from "./Interfaces.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";

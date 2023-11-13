@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // CSX Escrow Contract v1
 
-pragma solidity ^0.8.18;
+pragma solidity 0.8.18;
 
 import {ERC20Burnable, ERC20} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";

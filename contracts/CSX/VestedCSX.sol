@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // CSX Vesting Contract v2
 
-pragma solidity ^0.8.18;
+pragma solidity 0.8.18;
 
 import {ERC20, IERC20, ReentrancyGuard, IWETH, IERC20Burnable, SafeERC20} from "./Interfaces.sol";
 import {ERC20Burnable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";

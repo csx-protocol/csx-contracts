@@ -1,5 +1,5 @@
 // //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity 0.8.18;
 
 import {CSXTrade, PriceType, TradeUrl, SkinInfo, Sticker} from "../Trade/CSXTrade.sol";
 import {TradeFactoryBase, TradeInfo, TradeStatus, Strings} from "./TradeFactoryBase.sol";
