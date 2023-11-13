@@ -110,7 +110,7 @@ describe("CSXTrade", async function() {
 
   describe("Initialization", async function() {
     it("should properly initialize the contract", async function() {      
-      expect(await csxTrade.seller()).to.equal(await seller.getAddress());
+      expect(await csxTrade.SELLER_ADDRESS()).to.equal(await seller.getAddress());
       expect(await csxTrade.itemMarketName()).to.equal(listingParams.itemMarketName);
       const sellerTradeUrl = await csxTrade.sellerTradeUrl();
       expect(sellerTradeUrl.partner.toString()).to.equal(listingParams.tradeUrl.partner);
