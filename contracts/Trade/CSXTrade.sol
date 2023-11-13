@@ -331,8 +331,10 @@ contract CSXTrade {
      * @dev The listing must be in status BuyerCommitted or SellerCommitted
      */
     function buyerConfirmReceived() external onlyAddress(buyer) {
-        if (status != TradeStatus.BuyerCommitted && status != TradeStatus.SellerCommitted) {
-            revert StatusNotBuyerCommitted();
+        if (status != TradeStatus.BuyerCommitted) {
+            if(status != TradeStatus.SellerCommitted){
+                revert StatusNotSellerCommitted();
+            }
         }
         string memory _data = string( abi.encodePacked(Strings.toString(weiPrice), "||", "MANUAL"));
         _changeStatus(TradeStatus.Completed, _data);
@@ -385,12 +387,12 @@ contract CSXTrade {
         if (!IKEEPERS_CONTRACT.isKeeperNode(msg.sender)) {
             revert NotKeeperNode();
         }
-        if (
-            status != TradeStatus.BuyerCommitted &&
-            status != TradeStatus.SellerCommitted &&
-            status != TradeStatus.ForSale
-        ) {
-            revert StatusNotBuyerCommitted();
+        if (status != TradeStatus.BuyerCommitted) {
+            if (status != TradeStatus.SellerCommitted) {
+                if (status != TradeStatus.ForSale) {
+                    revert StatusNotBuyerCommitted();
+                }
+            }
         }
         finalityResult = message;
         if (isTradeMade) {
@@ -444,8 +446,10 @@ contract CSXTrade {
     function openDispute(
         string memory _complaint
     ) external {
-        if (msg.sender != SELLER_ADDRESS && msg.sender != buyer) {
-            revert NotGroup();
+        if (msg.sender != SELLER_ADDRESS) {
+            if(msg.sender != buyer){
+                revert NotGroup();
+            }
         }
         if (status == TradeStatus.Disputed || status == TradeStatus.Resolved || status == TradeStatus.Clawbacked || status == TradeStatus.ForSale) {
             revert StatusNotDisputeReady();
@@ -476,8 +480,10 @@ contract CSXTrade {
         bool giveWarningToBuyer,
         bool isWithValue
     ) external {
-        if (!IKEEPERS_CONTRACT.isKeeperNode(msg.sender) && IKEEPERS_CONTRACT.indexOf(msg.sender) == 0) {
-            revert NotKeeperOrNode();
+        if (!IKEEPERS_CONTRACT.isKeeperNode(msg.sender)) {
+            if(IKEEPERS_CONTRACT.indexOf(msg.sender) == 0){
+                revert NotKeeperOrNode();
+            }
         }
         if (status != TradeStatus.Disputed) {
             revert StatusNotDisputeReady();

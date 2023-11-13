@@ -151,19 +151,31 @@ contract VestedStaking {
 
         ISTAKED_CSX.claim(claimUsdc, claimUsdt, claimWeth, convertWethToEth);
 
-        if (claimUsdc && usdcAmount != 0) {
-            IUSDC_TOKEN.safeTransfer(msg.sender, usdcAmount);
+        if (claimUsdc) {
+            if (usdcAmount != 0) {
+                IUSDC_TOKEN.safeTransfer(msg.sender, usdcAmount);
+            }
         }
-        if (claimUsdt && usdtAmount != 0) {
-            IUSDT_TOKEN.safeTransfer(msg.sender, usdtAmount);
+        if (claimUsdt) {
+            if (usdtAmount != 0) {
+                IUSDT_TOKEN.safeTransfer(msg.sender, usdtAmount);
+            }
         }
-        if (claimWeth && !convertWethToEth && wethAmount != 0) {
-            IERC20_WETH_TOKEN.safeTransfer(msg.sender, wethAmount);
+        if (claimWeth) {
+            if (!convertWethToEth) {
+                if (wethAmount != 0){
+                    IERC20_WETH_TOKEN.safeTransfer(msg.sender, wethAmount);
+                }
+            }
         }
-        if (claimWeth && convertWethToEth && wethAmount != 0) {
-            (bool success, ) = msg.sender.call{value: wethAmount}("");
-            if (!success) {
-                revert TransferFailed();
+        if (claimWeth) {
+            if (convertWethToEth) {
+                if (wethAmount != 0) {
+                    (bool success, ) = msg.sender.call{value: wethAmount}("");
+                    if (!success) {
+                        revert TransferFailed();
+                    }
+                }
             }
         }
         emit Claim(msg.sender, usdcAmount, usdtAmount, wethAmount, convertWethToEth);

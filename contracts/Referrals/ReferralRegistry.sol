@@ -42,7 +42,10 @@ contract ReferralRegistry is NetValueCalculator {
     }
 
     modifier onlyTradeContracts(address contractAddress) {
-        if (!(msg.sender == contractAddress && factory.isThisTradeContract(contractAddress))) {
+        if (msg.sender != contractAddress) {
+            revert NotTradeContract();            
+        }
+        if(factory.isThisTradeContract(contractAddress)){
             revert NotTradeContract();
         }
         _;

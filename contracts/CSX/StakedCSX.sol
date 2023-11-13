@@ -113,12 +113,12 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         if(_reward == 0) {
             revert AmountMustBeGreaterThanZero();
         }
-        if (
-            _token != address(TOKEN_WETH) &&
-            _token != address(TOKEN_USDC) &&
-            _token != address(TOKEN_USDT)
-        ) {
-            revert InvalidToken();
+        if (_token != address(TOKEN_WETH)) {
+            if (_token != address(TOKEN_USDC)) {
+                if (_token != address(TOKEN_USDT)) {
+                    revert InvalidToken();
+                }
+            }
         }
 
         nonDistributedRewardsPerToken[_token] += _reward;
@@ -138,8 +138,10 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
      * @param dUsdt distribute USDT?
      */
     function distribute(bool dWeth, bool dUsdc, bool dUsdt) external {
-        if(!KEEPERS_INTERFACE.isCouncil(msg.sender) && !KEEPERS_INTERFACE.isKeeperNode(msg.sender)) {
-            revert InvalidUser();
+        if(!KEEPERS_INTERFACE.isCouncil(msg.sender)) {
+            if(!KEEPERS_INTERFACE.isKeeperNode(msg.sender)){
+                revert InvalidUser();
+            }
         }
         if(totalSupply() == 0) {
             revert NoTokensMinted();
@@ -147,20 +149,30 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         uint256 rewardWETH = nonDistributedRewardsPerToken[address(TOKEN_WETH)];
         uint256 rewardUSDC = nonDistributedRewardsPerToken[address(TOKEN_USDC)];
         uint256 rewardUSDT = nonDistributedRewardsPerToken[address(TOKEN_USDT)];
-        if(rewardWETH == 0 && rewardUSDC == 0 && rewardUSDT == 0) {
-            revert NoTokensMinted();
+        if(rewardWETH == 0) {
+            if(rewardUSDC == 0){
+                if(rewardUSDT == 0){
+                    revert NoTokensMinted();
+                }
+            }
         }
-        if(rewardWETH > 0 && dWeth) {
-            nonDistributedRewardsPerToken[address(TOKEN_WETH)] = 0;
-            lastRewardRate[address(TOKEN_WETH)] += ((rewardWETH * DIVISION) / totalSupply());
+        if(rewardWETH > 0) {
+            if(dWeth){
+                nonDistributedRewardsPerToken[address(TOKEN_WETH)] = 0;
+                lastRewardRate[address(TOKEN_WETH)] += ((rewardWETH * DIVISION) / totalSupply());
+            }            
         }
-        if(rewardUSDC > 0 && dUsdc) {
-            nonDistributedRewardsPerToken[address(TOKEN_USDC)] = 0;
-            lastRewardRate[address(TOKEN_USDC)] += ((rewardUSDC * DIVISION) / totalSupply());
+        if(rewardUSDC > 0) {
+            if(dUsdc){
+              nonDistributedRewardsPerToken[address(TOKEN_USDC)] = 0;
+              lastRewardRate[address(TOKEN_USDC)] += ((rewardUSDC * DIVISION) / totalSupply());  
+            }
         }
-        if(rewardUSDT > 0 && dUsdt) {
-            nonDistributedRewardsPerToken[address(TOKEN_USDT)] = 0;
-            lastRewardRate[address(TOKEN_USDT)] += ((rewardUSDT * DIVISION) / totalSupply());
+        if(rewardUSDT > 0) {
+            if(dUsdt){
+              nonDistributedRewardsPerToken[address(TOKEN_USDT)] = 0;
+              lastRewardRate[address(TOKEN_USDT)] += ((rewardUSDT * DIVISION) / totalSupply());
+            }
         }
         emit Distribute(rewardWETH, rewardUSDC, rewardUSDT);
     }

@@ -98,8 +98,10 @@ contract Users is ReentrancyGuard {
         // Check if the sender is a trade contract
         bool isTradeContract = msg.sender == contractAddress && factory.isThisTradeContract(contractAddress);
         
-        if (!isKeeperOrKeeperNode && !isTradeContract) {
-            revert NotKeepersOrTradeContract();
+        if (!isKeeperOrKeeperNode) {
+            if(!isTradeContract){
+                revert NotKeepersOrTradeContract();
+            }
         }
         _;
     }
@@ -307,11 +309,10 @@ contract Users is ReentrancyGuard {
             revert TradeNotCompleted();
         }
 
-        if (
-            msg.sender != _tradeContract.buyer &&
-            msg.sender != _tradeContract.seller
-        ) {
-            revert NotPartOfTrade();
+        if (msg.sender != _tradeContract.buyer) {
+            if (msg.sender != _tradeContract.seller) {
+                revert NotPartOfTrade();
+            }
         }
 
         if (msg.sender == _tradeContract.buyer) {

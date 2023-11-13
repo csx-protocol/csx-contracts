@@ -101,12 +101,12 @@ contract CSXTradeFactory is TradeFactoryBase {
         ) {
             revert AssetIDAlreadyExists();
         }
-        if (
-            params.priceType != PriceType.WETH &&
-            params.priceType != PriceType.USDC &&
-            params.priceType != PriceType.USDT
-        ) {
-            revert InvalidPriceType();
+        if (params.priceType != PriceType.WETH) {
+            if (params.priceType != PriceType.USDC) {
+                if (params.priceType != PriceType.USDT) {
+                    revert InvalidPriceType();
+                }
+            }
         }
         if(params.weiPrice == 0) {
             revert InvalidPriceType();
