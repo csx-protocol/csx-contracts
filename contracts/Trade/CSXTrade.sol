@@ -10,22 +10,13 @@ import {IStakedCSX, SafeERC20} from "../CSX/Interfaces.sol";
 import {IReferralRegistry} from "../Referrals/IReferralRegistry.sol";
 
 error NotFactory();
-error NotForSale();
-error NotCommitted();
-error NotDisputed();
+error StatusIncorrect();
 error NotSeller();
-error NotBuyer();
 error NotKeeperNode();
 error NotKeeperOrNode();
 error NotParty();
-error NotGroup();
-error TransferFailed();
-error StatusNotBuyerCommitted();
-error StatusNotSellerCommitted();
 error StatusNotDisputeReady();
 error TradeIDNotRemoved();
-error SellerTransferFailed();
-error AffiliatorTransferFailed();
 error DividendDepositFailed();
 error TimeNotElapsed();
 
@@ -163,7 +154,7 @@ contract CSXTrade {
      */
     function changePrice(uint256 _newPrice) external onlyAddress(SELLER_ADDRESS) {
         if (status != TradeStatus.ForSale) {
-            revert NotForSale();
+            revert StatusIncorrect();
         }
         weiPrice = _newPrice;
     }
@@ -175,7 +166,7 @@ contract CSXTrade {
      */
     function sellerCancel() external onlyAddress(SELLER_ADDRESS) {
         if (status != TradeStatus.ForSale) {
-            revert NotForSale();
+            revert StatusIncorrect();
         }
         string memory _data = string(
             abi.encodePacked(
@@ -206,7 +197,7 @@ contract CSXTrade {
         address _buyerAddress
     ) external {
         if (status != TradeStatus.ForSale) {
-            revert NotForSale();
+            revert StatusIncorrect();
         }
 
         address _buyer;
@@ -264,7 +255,7 @@ contract CSXTrade {
      */
     function buyerCancel() external onlyAddress(buyer) {
         if (status != TradeStatus.BuyerCommitted) {
-            revert NotCommitted();
+            revert StatusIncorrect();
         }
         if (block.timestamp < buyerCommitTimestamp + 24 hours) {
            revert TimeNotElapsed();
@@ -290,7 +281,7 @@ contract CSXTrade {
         bool _sellerCommited
     ) external onlyAddress(SELLER_ADDRESS) {
         if (status != TradeStatus.BuyerCommitted) {
-            revert StatusNotBuyerCommitted();
+            revert StatusIncorrect();
         }
         if (_sellerCommited) {
             string memory _data = string(abi.encodePacked(Strings.toString(sellerTradeUrl.partner),
@@ -334,7 +325,7 @@ contract CSXTrade {
     function buyerConfirmReceived() external onlyAddress(buyer) {
         if (status != TradeStatus.BuyerCommitted) {
             if(status != TradeStatus.SellerCommitted){
-                revert StatusNotSellerCommitted();
+                revert StatusIncorrect();
             }
         }
         string memory _data = string( abi.encodePacked(Strings.toString(weiPrice), "||", "MANUAL"));
@@ -362,7 +353,7 @@ contract CSXTrade {
             revert TimeNotElapsed();
         }
         if (status != TradeStatus.SellerCommitted) {
-            revert StatusNotSellerCommitted();
+            revert StatusIncorrect();
         }
 
         string memory _data = string(
@@ -391,7 +382,7 @@ contract CSXTrade {
         if (status != TradeStatus.BuyerCommitted) {
             if (status != TradeStatus.SellerCommitted) {
                 if (status != TradeStatus.ForSale) {
-                    revert StatusNotBuyerCommitted();
+                    revert StatusIncorrect();
                 }
             }
         }
@@ -449,7 +440,7 @@ contract CSXTrade {
     ) external {
         if (msg.sender != SELLER_ADDRESS) {
             if(msg.sender != buyer){
-                revert NotGroup();
+                revert NotParty();
             }
         }
         if (status == TradeStatus.Disputed || status == TradeStatus.Resolved || status == TradeStatus.Clawbacked || status == TradeStatus.ForSale) {
@@ -563,7 +554,7 @@ contract CSXTrade {
                 affiliatorNetReward
             );
         }
-        
+
         if(priceType == PriceType.USDT){
             paymentToken.forceApprove(address(sCSXToken), tokenHoldersNetReward);
         } else {

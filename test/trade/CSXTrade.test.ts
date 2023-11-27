@@ -136,7 +136,7 @@ describe("CSXTrade", async function() {
       await weth.connect(buyer).approve(csxTrade.target, ethers.parseEther("1"));
       await weth.connect(seller).approve(csxTrade.target, ethers.parseEther("1"));      
       await csxTrade.connect(buyer).commitBuy(mockTradeUrl, affLink, sellerAddress);
-      await expect(csxTrade.connect(seller).changePrice(ethers.parseEther("0.01"))).to.be.revertedWithCustomError(csxTrade, "NotForSale");
+      await expect(csxTrade.connect(seller).changePrice(ethers.parseEther("0.01"))).to.be.revertedWithCustomError(csxTrade, "StatusIncorrect");
     });
   });
 
@@ -155,7 +155,7 @@ describe("CSXTrade", async function() {
       await weth.connect(buyer).deposit({value: ethers.parseEther("1")});
       await weth.connect(buyer).approve(csxTrade.target, ethers.parseEther("1"));
       await csxTrade.connect(buyer).commitBuy(mockTradeUrl, affLink, await buyer.getAddress());
-      await expect(csxTrade.connect(seller).sellerCancel()).to.be.revertedWithCustomError(csxTrade, "NotForSale");
+      await expect(csxTrade.connect(seller).sellerCancel()).to.be.revertedWithCustomError(csxTrade, "StatusIncorrect");
       const status = await csxTrade.status();
       const statusCount = await csxTrade.getStatusCount();
       expect(statusCount).to.equal(1);
@@ -269,7 +269,7 @@ describe("CSXTrade", async function() {
       await csxTrade.connect(seller).sellerTradeVeridict(false);
       const status = await csxTrade.status();
       expect(status).to.equal(TradeStatus.SellerCancelledAfterBuyerCommitted);
-      await expect(csxTrade.connect(seller).sellerTradeVeridict(true)).to.be.revertedWithCustomError(csxTrade, "StatusNotBuyerCommitted");
+      await expect(csxTrade.connect(seller).sellerTradeVeridict(true)).to.be.revertedWithCustomError(csxTrade, "StatusIncorrect");
     });
   });
 
@@ -362,7 +362,7 @@ describe("CSXTrade", async function() {
       await expect(csxTrade.connect(buyer).sellerConfirmsTrade()).to.be.revertedWithCustomError(csxTrade, "NotParty");
     });
     it("should not allow the seller to confirm the trade before seller verdict", async function() {
-      await expect(csxTrade.connect(seller).sellerConfirmsTrade()).to.be.revertedWithCustomError(csxTrade, "StatusNotSellerCommitted");
+      await expect(csxTrade.connect(seller).sellerConfirmsTrade()).to.be.revertedWithCustomError(csxTrade, "StatusIncorrect");
     });
   });
 
@@ -381,7 +381,7 @@ describe("CSXTrade", async function() {
       const status2 = await csxTrade.status();
       expect(status2).to.equal(TradeStatus.Disputed);
 
-      await expect(csxTrade.connect(keeperNode).keeperNodeConfirmsTrade(true, 'GG')).to.be.revertedWithCustomError(csxTrade, "StatusNotBuyerCommitted");
+      await expect(csxTrade.connect(keeperNode).keeperNodeConfirmsTrade(true, 'GG')).to.be.revertedWithCustomError(csxTrade, "StatusIncorrect");
       const status = await csxTrade.status();
       expect(status).to.equal(status2);    
     });
@@ -559,7 +559,7 @@ describe("CSXTrade", async function() {
       await weth.connect(seller).approve(csxTrade.target, ethers.parseEther("1"));      
       await csxTrade.connect(buyer).commitBuy(mockTradeUrl, affLink, buyerAddress);
       await csxTrade.connect(seller).openDispute("Item not received");
-      await expect(csxTrade.connect(keeperNode).openDispute("Item not received")).to.be.revertedWithCustomError(csxTrade, "NotGroup");
+      await expect(csxTrade.connect(keeperNode).openDispute("Item not received")).to.be.revertedWithCustomError(csxTrade, "NotParty");
     });
     it("should not allow seller to open a dispute if already disputed", async function() {
       const mockTradeUrl = listingParams.tradeUrl;
