@@ -381,6 +381,9 @@ describe("TradeFactory", function () {
       await tradeFactory.connect(council).changeBaseFee(newBaseFee);
       expect(await tradeFactory.baseFee()).to.equal(newBaseFee);
       await tradeFactory.connect(council).changeBaseFee(oldBaseFee);
+      await expect(
+        tradeFactory.connect(council).changeBaseFee("1001")
+      ).to.be.revertedWithCustomError(tradeFactory, "BaseFeeGreaterThan100Percent");      
     });
 
     it("should not allow unauthorized user to change the base fee", async function () {

@@ -115,6 +115,12 @@ describe("Staking", function () {
             await USDCToken.connect(deployer).approve(staking.target, distributeAmount);    
                     
             await staking.connect(deployer).depositDividend(USDCToken.target, distributeAmount);
+
+            // Test to distribute with no token.
+            await expect(
+                staking.connect(council).distribute(false, false, false)
+              ).to.be.revertedWithCustomError(staking, "InvalidToken");      
+
             await staking.connect(council).distribute(true, true, true);
             
             // Check reward balance of staking contract

@@ -10,6 +10,7 @@ import {TradeInfo, Strings} from "../TradeFactory/ITradeFactory.sol";
 
 error NotTradeContract();
 error NotCouncil();
+error BaseFeeGreaterThan100Percent();
 
 abstract contract TradeFactoryBase is ReentrancyGuard {
     uint256 public baseFee;
@@ -51,6 +52,9 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
      * @param _baseFee new base fee
      */
     function changeBaseFee(uint256 _baseFee) external isCouncil {
+        if(_baseFee > 1000) {
+            revert BaseFeeGreaterThan100Percent();
+        }
         baseFee = _baseFee;
     }
 

@@ -138,6 +138,13 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
      * @param dUsdt distribute USDT?
      */
     function distribute(bool dWeth, bool dUsdc, bool dUsdt) external {
+        if(dWeth == false) {
+            if(dUsdc == false) {
+                if(dUsdt == false) {
+                    revert InvalidToken();
+                }
+            }
+        }
         if(!KEEPERS_INTERFACE.isCouncil(msg.sender)) {
             if(!KEEPERS_INTERFACE.isKeeperNode(msg.sender)){
                 revert InvalidUser();
