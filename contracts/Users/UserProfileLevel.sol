@@ -21,7 +21,7 @@ contract UserProfileLevel {
     );
 
     // Set the base cost for leveling up (1 token)
-    uint256 private constant BASE_COST = 1 * 10 ** 18; // Assuming the token has 18 decimals
+    uint256 private constant _BASE_COST = 1e18; // Assuming the token has 18 decimals
 
     IERC20Burnable private immutable CSX_TOKEN;
     IUsers private usersContract;
@@ -124,7 +124,7 @@ contract UserProfileLevel {
         uint256 totalCost;
 
         for (uint256 i; i < levels; i++) {
-            uint256 cost = BASE_COST + ((currentLevel + i) * BASE_COST);
+            uint256 cost = _BASE_COST + ((currentLevel + i) * _BASE_COST);
             totalCost += cost;
         }
 

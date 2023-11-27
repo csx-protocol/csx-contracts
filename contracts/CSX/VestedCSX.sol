@@ -22,7 +22,7 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
     IERC20 public immutable USDT;
     address public immutable KEEPERS;
 
-    uint256 public constant MAX_SUPPLY = 100000000 ether;
+    uint256 public constant MAX_SUPPLY = 100_000_000 * 1e18;
 
     constructor(
         address _eCsxAddress,
