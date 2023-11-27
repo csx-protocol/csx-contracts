@@ -563,7 +563,13 @@ contract CSXTrade {
                 affiliatorNetReward
             );
         }
-        paymentToken.safeApprove(address(sCSXToken), tokenHoldersNetReward);
+        
+        if(priceType == PriceType.USDT){
+            paymentToken.forceApprove(address(sCSXToken), tokenHoldersNetReward);
+        } else {
+            paymentToken.safeIncreaseAllowance(address(sCSXToken), tokenHoldersNetReward);
+        }
+        
         if (!sCSXToken.depositDividend(address(paymentToken), tokenHoldersNetReward)) {
             revert DividendDepositFailed();
         }

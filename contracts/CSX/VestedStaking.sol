@@ -114,7 +114,7 @@ contract VestedStaking {
         }        
         vesting = Vesting(vesting.amount + amount, block.timestamp); // vesting time-lock (re)-starts when deposit is made
         ICSX_TOKEN.safeTransferFrom(msg.sender, address(this), amount);
-        ICSX_TOKEN.safeApprove(address(ISTAKED_CSX), amount);
+        ICSX_TOKEN.safeIncreaseAllowance(address(ISTAKED_CSX), amount);
         ISTAKED_CSX.stake(amount);
         emit Deposit(msg.sender, amount, vesting.amount, block.timestamp);
     }

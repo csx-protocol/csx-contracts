@@ -80,7 +80,7 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
         ESCROWED_CSX.burnFrom(msg.sender, amount);
 
         // Approve VestedStaking Contract to transfer CSX tokens
-        CSX.safeApprove(address(vestedStakingContractPerUser[msg.sender]), amount);
+        CSX.safeIncreaseAllowance(address(vestedStakingContractPerUser[msg.sender]), amount);
 
         // Deposit CSX tokens to VestedStaking Contract for the user
         vestedStakingContractPerUser[msg.sender].deposit(amount);
