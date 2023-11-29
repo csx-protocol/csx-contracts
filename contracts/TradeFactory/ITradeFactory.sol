@@ -12,12 +12,6 @@ struct Sticker {
     string imageLink;
 }
 
-// struct FloatInfo {
-//     string value;
-//     string min;
-//     string max;
-// }
-
 struct SkinInfo {
     string floatValues; // "[0.00, 0.00, 0.000000]" (max, min, value)
     uint256 paintSeed; // ranging from 1 to 1000, determines the unique pattern of a skin, such as the placement of the artwork, wear, and color distribution.

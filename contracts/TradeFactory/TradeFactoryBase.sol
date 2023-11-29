@@ -6,7 +6,6 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.
 import {ITradeFactoryBaseStorage} from "./storage/ITradeFactoryBaseStorage.sol";
 import {IKeepers} from "../Keepers/IKeepers.sol";
 import {IUsers, TradeStatus} from "../Users/IUsers.sol";
-import {TradeInfo, Strings} from "../TradeFactory/ITradeFactory.sol";
 
 error NotTradeContract();
 error NotCouncil();
@@ -14,10 +13,8 @@ error BaseFeeGreaterThan100Percent();
 
 abstract contract TradeFactoryBase is ReentrancyGuard {
     uint256 public baseFee;
-    //uint256 public totalContracts;
     mapping(address => uint256) contractAddressToIndex;
 
-    // mapping(uint256 => SMTrade) tradeContracts;
     mapping(address => bool) isTradeContract;
 
     IKeepers public keepersContract;
