@@ -352,7 +352,7 @@ contract Users is ReentrancyGuard {
     }
 
     mapping(string => mapping(address => address))
-        public assetIdFromUserAddrssToTradeAddrss;
+        public assetIdFromUserAddrssToTradeAddress;
 
     /**
      * @notice Remove an asset ID from a user's address mapping
@@ -364,7 +364,7 @@ contract Users is ReentrancyGuard {
         string memory _assetId,
         address sellerAddrss
     ) external onlyTradeContracts(msg.sender) returns (bool) {
-        assetIdFromUserAddrssToTradeAddrss[_assetId][sellerAddrss] = address(0);
+        assetIdFromUserAddrssToTradeAddress[_assetId][sellerAddrss] = address(0);
         return true;
     }
 
@@ -379,7 +379,7 @@ contract Users is ReentrancyGuard {
         address sellerAddrss
     ) external view returns (bool) {
         if (
-            assetIdFromUserAddrssToTradeAddrss[_assetId][sellerAddrss] ==
+            assetIdFromUserAddrssToTradeAddress[_assetId][sellerAddrss] ==
             address(0)
         ) {
             return false;
@@ -403,7 +403,7 @@ contract Users is ReentrancyGuard {
         if (msg.sender != address(factory)) {
             revert NotFactory();
         }
-        assetIdFromUserAddrssToTradeAddrss[_assetId][
+        assetIdFromUserAddrssToTradeAddress[_assetId][
             sellerAddrss
         ] = tradeAddrss;
         return true;
