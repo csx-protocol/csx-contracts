@@ -9,10 +9,12 @@ error NotAKeeper();
 
 contract Keepers {
     address public keeperOracleAddress;
-    address[] public keepers;
+    mapping(address => bool) public keepers;
+    uint256 public totalKeepers;
+    mapping(uint256 => address) public indexToKeeper;
+    mapping(address => uint256) public keeperToIndex;
     address public council;
-    address private nominatedCouncil;
-    mapping(address => uint256) public keepersIndex;
+    address private nominatedCouncil;    
     mapping(address => bool) public vesterUnderCouncilControl;
     mapping(address => uint256) private lastVesterUpdate;
 
@@ -38,8 +40,6 @@ contract Keepers {
             revert NotAKeeper();
         }
         council = _council;
-        // Mocks index 0 to require(indexOf(_keeper) == 0)
-        keepers.push(address(0));
         keeperOracleAddress = _keeperOracleAddress;
     }
 
@@ -51,47 +51,44 @@ contract Keepers {
     }
 
     /**
-     * @notice Returns the keeper at the specified index.
-     * @dev Returns the index of the keeper in the keepers array.
-     * @param _keeper The address of the keeper to check
-     */
-    function indexOf(address _keeper) public view returns (uint256) {
-        return keepersIndex[_keeper];
-    }
-
-    /**
      * @notice Adds a new keeper to the keepers array.
      * @dev Reverts if the keeper already exists.
      * @param _keeper The address of the keeper to add
      */
     function addKeeper(address _keeper) external onlyCouncil {
-        if (indexOf(_keeper) != 0) {
+        if(keepers[_keeper]) {
             revert KeeperAlreadyExists();
         }
-        keepers.push(_keeper);
-        keepersIndex[_keeper] = keepers.length - 1;
+        keepers[_keeper] = true;
+        keeperToIndex[_keeper] = totalKeepers;
+        indexToKeeper[totalKeepers] = _keeper;
+        totalKeepers++;
         emit KeeperAdded(_keeper);
     }
 
     /**
-     * @notice Removes a keeper from the keepers array.
+     * @notice Removes a keeper from the keepers mappings.
      * @dev Reverts if the keeper does not exist.
      * @param _keeper The address of the keeper to remove
      */
     function removeKeeper(address _keeper) external onlyCouncil {
-        uint256 index = keepersIndex[_keeper];
-        if (index == 0) {
+        if (!keepers[_keeper]) {
             revert NotAKeeper();
         }
+        keepers[_keeper] = false;
 
-        // Move the last element to the slot to be deleted
-        keepers[index] = keepers[keepers.length - 1];
-        // Update the index mapping for the moved keeper
-        keepersIndex[keepers[index]] = index;
-        // Delete the last element
-        keepers.pop();
-        // Delete the mapping for the removed keeper
-        delete keepersIndex[_keeper];
+        // Update the mappings to remove the keeper
+        uint256 index = keeperToIndex[_keeper];
+        if (index != totalKeepers - 1) {
+            // Move the last keeper to the deleted spot
+            address lastKeeper = indexToKeeper[totalKeepers - 1];
+            indexToKeeper[index] = lastKeeper;
+            keeperToIndex[lastKeeper] = index;
+        }
+        // Remove the last keeper and decrease the counter
+        delete keeperToIndex[_keeper];
+        delete indexToKeeper[totalKeepers - 1];
+        totalKeepers--;
 
         emit KeeperRemoved(_keeper);
     }
@@ -115,11 +112,7 @@ contract Keepers {
      * @return true if the address is a keeper, false otherwise
      */
     function isKeeper(address _address) external view returns (bool) {
-        if (indexOf(_address) != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return keepers[_address];
     }
 
     /**
@@ -202,13 +195,5 @@ contract Keepers {
         } else {
             return false;
         }
-    }
-
-    /**
-     * @notice Returns the number of keepers.
-     * @return The number of keepers
-     */
-    function getKeepersCount() external view returns (uint256) {
-        return keepers.length;
     }
 }
