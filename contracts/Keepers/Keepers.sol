@@ -16,12 +16,12 @@ contract Keepers {
     mapping(address => bool) public vesterUnderCouncilControl;
     mapping(address => uint256) private lastVesterUpdate;
 
-    event CouncilNominated(address nominatedCouncil);
-    event CouncilChanged(address newCouncil);
-    event KeeperAdded(address newKeeper);
-    event KeeperRemoved(address keeper);
-    event KeeperNodeChanged(address newKeeperNode);
-    event VesterUnderCouncilControl(address vesterAddress, bool underCouncilControl); 
+    event CouncilNominated(address indexed nominatedCouncil);
+    event CouncilChanged(address indexed newCouncil);
+    event KeeperAdded(address indexed newKeeper);
+    event KeeperRemoved(address indexed keeper);
+    event KeeperNodeChanged(address indexed newKeeperNode);
+    event VesterUnderCouncilControl(address indexed vesterAddress, bool underCouncilControl); 
 
     /**
      * @notice Initializes the Keepers contract.
