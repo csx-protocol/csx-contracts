@@ -14,10 +14,8 @@ error BaseFeeGreaterThan100Percent();
 
 abstract contract TradeFactoryBase is ReentrancyGuard {
     uint256 public baseFee;
-    //uint256 public totalContracts;
     mapping(address => uint256) contractAddressToIndex;
 
-    // mapping(uint256 => SMTrade) tradeContracts;
     mapping(address => bool) isTradeContract;
 
     IKeepers public keepersContract;
