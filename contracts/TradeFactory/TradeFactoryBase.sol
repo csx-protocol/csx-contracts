@@ -6,7 +6,6 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.
 import {ITradeFactoryBaseStorage} from "./storage/ITradeFactoryBaseStorage.sol";
 import {IKeepers} from "../Keepers/IKeepers.sol";
 import {IUsers, TradeStatus} from "../Users/IUsers.sol";
-import {TradeInfo, Strings} from "../TradeFactory/ITradeFactory.sol";
 
 error NotTradeContract();
 error NotCouncil();
