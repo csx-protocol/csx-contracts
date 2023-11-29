@@ -135,6 +135,12 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
         revert TokenTransfersDisabled();
     }
 
+    //=================================== PRIVATE ==============================================
+    /**
+     * @notice Check if the address is the zero address
+     * @param _address The address to check
+     * @return true if the address is the zero address else false
+     */
     function _isZeroAddress(address _address) private pure returns (bool) {
         return _address == address(0);
     }
