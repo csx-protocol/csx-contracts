@@ -93,7 +93,7 @@ contract Users is ReentrancyGuard {
 
     modifier onlyKeepersOrTradeContracts(address contractAddress) {
         // Check if the sender is a keeper
-        bool isKeeperOrKeeperNode = (keepers.indexOf(msg.sender) != 0 || keepers.indexOf(tx.origin) != 0 || keepers.isKeeperNode(msg.sender));
+        bool isKeeperOrKeeperNode = keepers.isKeeper(msg.sender) || keepers.isKeeperNode(msg.sender);
         
         // Check if the sender is a trade contract
         bool isTradeContract = msg.sender == contractAddress && factory.isThisTradeContract(contractAddress);

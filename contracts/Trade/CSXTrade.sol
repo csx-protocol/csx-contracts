@@ -474,7 +474,7 @@ contract CSXTrade is ReentrancyGuard {
         bool isWithValue
     ) external nonReentrant {
         if (!IKEEPERS_CONTRACT.isKeeperNode(msg.sender)) {
-            if(IKEEPERS_CONTRACT.indexOf(msg.sender) == 0){
+            if(!IKEEPERS_CONTRACT.isKeeper(msg.sender)){
                 revert NotKeeperOrNode();
             }
         }

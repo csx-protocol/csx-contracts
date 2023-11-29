@@ -27,10 +27,29 @@ describe("Keepers", async function () {
 
   it("should add and remove keeper", async function () {
     await keepersInstance.connect(council).addKeeper(await keeper1.getAddress());
-    expect(await keepersInstance.indexOf(await keeper1.getAddress())).to.equal(1);
+    expect(await keepersInstance.isKeeper(await keeper1.getAddress())).to.equal(true);
+    expect(await keepersInstance.keeperToIndex(await keeper1.getAddress())).to.equal(0);
+    expect(await keepersInstance.indexToKeeper(0)).to.equal(await keeper1.getAddress());
+
+    await keepersInstance.connect(council).addKeeper(await keeper2.getAddress());
+    expect(await keepersInstance.isKeeper(await keeper2.getAddress())).to.equal(true);
+    expect(await keepersInstance.keeperToIndex(await keeper2.getAddress())).to.equal(1);
+    expect(await keepersInstance.indexToKeeper(1)).to.equal(await keeper2.getAddress());
+    expect(await keepersInstance.totalKeepers()).to.equal(2);
 
     await keepersInstance.connect(council).removeKeeper(await keeper1.getAddress());
-    expect(await keepersInstance.indexOf(await keeper1.getAddress())).to.equal(0);
+    expect(await keepersInstance.isKeeper(await keeper1.getAddress())).to.equal(false);
+    expect(await keepersInstance.keeperToIndex(await keeper1.getAddress())).to.equal(0);
+    expect(await keepersInstance.indexToKeeper(0)).to.equal(await keeper2.getAddress());
+    expect(await keepersInstance.keeperToIndex(await keeper2.getAddress())).to.equal(0);
+    expect(await keepersInstance.isKeeper(await keeper2.getAddress())).to.equal(true);
+    expect(await keepersInstance.totalKeepers()).to.equal(1);
+
+    await keepersInstance.connect(council).removeKeeper(await keeper2.getAddress());
+    expect(await keepersInstance.isKeeper(await keeper2.getAddress())).to.equal(false);
+    expect(await keepersInstance.keeperToIndex(await keeper2.getAddress())).to.equal(0);
+    expect(await keepersInstance.indexToKeeper(0)).to.equal(ethers.ZeroAddress);
+    expect(await keepersInstance.totalKeepers()).to.equal(0);
   });
 
   it("should not add existing keeper", async function () {
