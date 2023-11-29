@@ -130,7 +130,7 @@ contract CSXTrade is ReentrancyGuard {
             revert NotFactory();
         }
         hasInit = true;
-        uint totalStickers = _stickers.length;
+        uint256 totalStickers = _stickers.length;
         for (uint256 i; i < totalStickers; i++) {
             stickers.push(_stickers[i]);
         }

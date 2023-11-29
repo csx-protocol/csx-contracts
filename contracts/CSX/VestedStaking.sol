@@ -27,7 +27,7 @@ contract VestedStaking is ReentrancyGuard {
     Vesting public vesting;
     uint256 public cliffedAmount;
 
-    uint256 public constant VESTING_PERIOD = 24 * 30 days; // 24 months
+    uint256 private constant _VESTING_PERIOD = 24 * 30 days; // 24 months
     
     address public immutable VESTER_ADDRESS;
     IStakedCSX public immutable ISTAKED_CSX;
@@ -201,7 +201,7 @@ contract VestedStaking is ReentrancyGuard {
         if (amount > vesting.amount || amount == 0) {
             revert NotEnoughTokens();
         }       
-        if (block.timestamp < vesting.startTime + VESTING_PERIOD) {
+        if (block.timestamp < vesting.startTime + _VESTING_PERIOD) {
             revert TokensAreStillLocked();
         }
         vesting.amount -= amount;

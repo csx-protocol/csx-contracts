@@ -23,7 +23,7 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
     // Keepers
     IKeepers public immutable KEEPERS_INTERFACE;
 
-    uint256 public constant DIVISION = 10 ** 33; // to prevent float calculation
+    uint256 private constant _DIVISION = 10 ** 33; // to prevent float calculation
 
     // rewardToken -> lastRewardRate
     mapping(address => uint256) public lastRewardRate; // S0 = {};
@@ -127,7 +127,7 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         return true;    
     }
 
-    mapping (address => uint) public nonDistributedRewardsPerToken;
+    mapping (address => uint256) public nonDistributedRewardsPerToken;
     /**
      * @notice Distributes funds to stakers
      * @dev Distributes funds to stakers as distributed rewards
@@ -164,19 +164,19 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         if(rewardWETH > 0) {
             if(dWeth){
                 nonDistributedRewardsPerToken[address(TOKEN_WETH)] = 0;
-                lastRewardRate[address(TOKEN_WETH)] += ((rewardWETH * DIVISION) / totalSupply());
+                lastRewardRate[address(TOKEN_WETH)] += ((rewardWETH * _DIVISION) / totalSupply());
             }            
         }
         if(rewardUSDC > 0) {
             if(dUsdc){
               nonDistributedRewardsPerToken[address(TOKEN_USDC)] = 0;
-              lastRewardRate[address(TOKEN_USDC)] += ((rewardUSDC * DIVISION) / totalSupply());  
+              lastRewardRate[address(TOKEN_USDC)] += ((rewardUSDC * _DIVISION) / totalSupply());  
             }
         }
         if(rewardUSDT > 0) {
             if(dUsdt){
               nonDistributedRewardsPerToken[address(TOKEN_USDT)] = 0;
-              lastRewardRate[address(TOKEN_USDT)] += ((rewardUSDT * DIVISION) / totalSupply());
+              lastRewardRate[address(TOKEN_USDT)] += ((rewardUSDT * _DIVISION) / totalSupply());
             }
         }
         emit Distribute(rewardWETH, rewardUSDC, rewardUSDT);
@@ -217,9 +217,9 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         uint256 deposited = balanceOf(_account);
         
         if(deposited != 0) {
-            wethAmount = (deposited * (lastRewardRate[address(TOKEN_WETH)] - rewardRate[address(TOKEN_WETH)][_account])) / DIVISION; // reward = deposited * (S - S0[address]);
-            usdcAmount = (deposited * (lastRewardRate[address(TOKEN_USDC)] - rewardRate[address(TOKEN_USDC)][_account])) / DIVISION; // reward = deposited * (S - S0[address]);
-            usdtAmount = (deposited * (lastRewardRate[address(TOKEN_USDT)] - rewardRate[address(TOKEN_USDT)][_account])) / DIVISION; // reward = deposited * (S - S0[address]);
+            wethAmount = (deposited * (lastRewardRate[address(TOKEN_WETH)] - rewardRate[address(TOKEN_WETH)][_account])) / _DIVISION; // reward = deposited * (S - S0[address]);
+            usdcAmount = (deposited * (lastRewardRate[address(TOKEN_USDC)] - rewardRate[address(TOKEN_USDC)][_account])) / _DIVISION; // reward = deposited * (S - S0[address]);
+            usdtAmount = (deposited * (lastRewardRate[address(TOKEN_USDT)] - rewardRate[address(TOKEN_USDT)][_account])) / _DIVISION; // reward = deposited * (S - S0[address]);
         }
         
         if(credit[address(TOKEN_WETH)][_account] > 0) {

@@ -128,7 +128,7 @@ contract CSXTradeFactory is TradeFactoryBase {
             revert NoTradeCreated();
         }
 
-        uint _tContracts = tradeFactoryBaseStorage.totalContracts();
+        uint256 _tContracts = tradeFactoryBaseStorage.totalContracts();
         address newAddress = tradeFactoryBaseStorage
             .getLastTradeContractAddress();
         

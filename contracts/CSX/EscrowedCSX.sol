@@ -15,8 +15,8 @@ error TransferFailed();
 
 contract EscrowedCSX is ERC20Burnable, ReentrancyGuard {
     using SafeERC20 for IERC20;
-    address immutable DEPLOYER = msg.sender;
-    bool public isInitialized = false;
+    address public immutable DEPLOYER;
+    bool private _isInitialized;
     IERC20 public immutable CSX_TOKEN;
     IERC20 public vestedCSX;
 
@@ -25,6 +25,7 @@ contract EscrowedCSX is ERC20Burnable, ReentrancyGuard {
 
     constructor(address _csxToken) ERC20("Escrowed CSX", "eCSX") {
         CSX_TOKEN = IERC20(_csxToken);
+        DEPLOYER = msg.sender;
     }
 
     /**
@@ -33,10 +34,10 @@ contract EscrowedCSX is ERC20Burnable, ReentrancyGuard {
      * @param _vCSXToken address of the VestedCSX contract
      */
     function init(address _vCSXToken) external {
-        if(isInitialized) revert AlreadyInitialized();
+        if(_isInitialized) revert AlreadyInitialized();
         if(msg.sender != DEPLOYER) revert OnlyDeployerCanInitialize();
 
-        isInitialized = true;
+        _isInitialized = true;
         vestedCSX = IERC20(_vCSXToken);
     }
 

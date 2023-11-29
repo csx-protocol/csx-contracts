@@ -29,9 +29,6 @@ describe("EscrowedCSX", async function () {
 
   describe("Initialization", function () {
     it("should not allow non-deployers to initialize", async function () {
-      const isInitializedBefore = await escrowedCSX.isInitialized();
-      expect(isInitializedBefore).to.be.false;
-
       const VestedCSX = await ethers.getContractFactory("VestedCSX");
       vestedCSX = await VestedCSX.deploy(
         escrowedCSX.target,
