@@ -25,6 +25,9 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
     ITradeFactoryBaseStorage tradeFactoryBaseStorage;
 
     constructor(address _keepers, address _users, address _tradeFactoryBaseStorage, uint256 _baseFee) {
+        if(_baseFee > 1000) {
+            revert BaseFeeGreaterThan100Percent();
+        }
         keepersContract = IKeepers(_keepers);
         usersContract = IUsers(_users);
         tradeFactoryBaseStorage = ITradeFactoryBaseStorage(_tradeFactoryBaseStorage);
