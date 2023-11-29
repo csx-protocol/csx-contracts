@@ -6,4 +6,5 @@ interface IKeepers {
     function isKeeperNode(address _address) external view returns (bool);
     function isCouncil(address _address) external view returns (bool);
     function council() external view returns (address);
+    function isVesterUnderCouncilControl(address _address) external view returns (bool);
 }

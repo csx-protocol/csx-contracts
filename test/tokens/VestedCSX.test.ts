@@ -153,11 +153,17 @@ describe("VestedCSX", async function() {
     const VestedStaking = await ethers.getContractFactory("VestedStaking");
     vestedStaking = VestedStaking.attach(vestedStakingAddress) as VestedStaking;
 
+    await keepers.connect(council).changeVesterUnderCouncilControl(userAddress, true);
+    await expect(vestedStaking.connect(council).cliff(fullAmount)).to.be.revertedWithCustomError(vestedStaking, "TokensAreStillLocked");
+
+    // increase 2 days for cliff grace period from council tagging
+    await ethers.provider.send("evm_increaseTime", [86400 * 2]);
+    await ethers.provider.send("evm_mine");
+
     await expect(vestedStaking.connect(user1).cliff(fullAmount)).to.be.revertedWithCustomError(vestedStaking, "InvalidSender");
 
     const beforeCliffedAmount = await vestedStaking.cliffedAmount();
-    expect(beforeCliffedAmount.toString()).to.equal("0");
-
+    expect(beforeCliffedAmount.toString()).to.equal("0");   
     await vestedStaking.connect(council).cliff(halfAmount);
 
     const cliffedAmount = await vestedStaking.cliffedAmount();
@@ -182,7 +188,7 @@ describe("VestedCSX", async function() {
     await expect(
       vestedStaking.connect(council).cliff(halfAmount)
     ).to.be.revertedWithCustomError(vestedStaking, "NotEnoughTokens");
-
+    
     await vestedStaking.connect(council).cliff(halfOfHalfAmount);
 
     await expect(

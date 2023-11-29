@@ -44,8 +44,11 @@ describe("Keepers", async function () {
   });
 
   it("should change council", async function () {
-    await keepersInstance.connect(council).changeCouncil(await newCouncil.getAddress());
+    await keepersInstance.connect(council).nominateNewCouncil(await newCouncil.getAddress());
+    await expect(keepersInstance.connect(council).acceptCouncilRole()).to.be.revertedWithCustomError(keepersInstance,"NotNominatedCouncil");
+    await keepersInstance.connect(newCouncil).acceptCouncilRole();
     expect(await keepersInstance.council()).to.equal(await newCouncil.getAddress());
+    await expect(keepersInstance.connect(council).nominateNewCouncil(await newCouncil.getAddress())).to.be.revertedWithCustomError(keepersInstance,"NotCouncil");
   });
 
   it("should let council change keeper node address", async function () {
@@ -58,12 +61,13 @@ describe("Keepers", async function () {
   });
 
   it("should let council change council", async function () {
-    await keepersInstance.connect(council).changeCouncil(await newCouncil.getAddress());
+    await keepersInstance.connect(council).nominateNewCouncil(await newCouncil.getAddress());
+    await keepersInstance.connect(newCouncil).acceptCouncilRole();
     expect(await keepersInstance.council()).to.equal(await newCouncil.getAddress());
   });
 
   it("should not let non-council change council", async function () {
-    await expect(keepersInstance.connect(keeper1).changeCouncil(await newCouncil.getAddress())).to.be.revertedWithCustomError(keepersInstance, "NotCouncil");
+    await expect(keepersInstance.connect(keeper1).nominateNewCouncil(await newCouncil.getAddress())).to.be.revertedWithCustomError(keepersInstance, "NotCouncil");
   });
 
   it("should not allow non-council to change or add keeper node", async function () {

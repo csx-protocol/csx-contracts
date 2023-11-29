@@ -211,6 +211,7 @@ contract VestedStaking {
     /**
      * @notice Withdraws tokens from the contract.
      * @dev Can only be called by the council to mitigate against malicious vesters.
+     * @dev Cliff is locked for 2 days after council control is given.
      * @param amount Amount of tokens to withdraw.
      */
     function cliff(uint256 amount) external {
@@ -219,7 +220,10 @@ contract VestedStaking {
         }
         if (amount > vesting.amount || amount == 0) {
             revert NotEnoughTokens();
-        }    
+        }
+        if (!IKEEPERS_CONTRACT.isVesterUnderCouncilControl(VESTER_ADDRESS)) {
+            revert TokensAreStillLocked();
+        }
         vesting.amount -= amount;
         cliffedAmount += amount;
         ISTAKED_CSX.unStake(amount);

@@ -1,7 +1,9 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.18;
 
+error ZeroAddress();
 error NotCouncil();
+error NotNominatedCouncil();
 error KeeperAlreadyExists();
 error NotAKeeper();
 
@@ -9,12 +11,17 @@ contract Keepers {
     address public keeperOracleAddress;
     address[] public keepers;
     address public council;
+    address private nominatedCouncil;
     mapping(address => uint256) public keepersIndex;
+    mapping(address => bool) public vesterUnderCouncilControl;
+    mapping(address => uint256) private lastVesterUpdate;
 
+    event CouncilNominated(address nominatedCouncil);
     event CouncilChanged(address newCouncil);
     event KeeperAdded(address newKeeper);
     event KeeperRemoved(address keeper);
     event KeeperNodeChanged(address newKeeperNode);
+    event VesterUnderCouncilControl(address vesterAddress, bool underCouncilControl); 
 
     /**
      * @notice Initializes the Keepers contract.
@@ -130,17 +137,58 @@ contract Keepers {
     }
 
     /**
-     * @notice Changes the council address.
-     * @param _newCouncil The address of the new council
+     * @notice Nominates a new council address.
+     * @param _newCouncil The address of the nominated council
      * @dev Reverts if the new address is the zero address.
+     * @dev Reverts if the sender is not the current council.
+     */
+    function nominateNewCouncil(address _newCouncil) external onlyCouncil {
+        if (_newCouncil == address(0)) {
+            revert ZeroAddress();
+        }
+        nominatedCouncil = _newCouncil;
+        emit CouncilNominated(_newCouncil);
+    }
+
+    /**
+     * @notice Accepts the role of council.
+     * @dev Reverts if the sender is not the nominated council.
+     */
+    function acceptCouncilRole() external {
+        if (msg.sender != nominatedCouncil) {
+            revert NotNominatedCouncil();
+        }
+        council = nominatedCouncil;
+        nominatedCouncil = address(0);
+        emit CouncilChanged(council);
+    }
+
+    /**
+     * @notice Changes the control of a vester.
+     * @param _address The address of the vester to change control
+     * @dev Reverts if the vester is a zero address.
      * @dev Reverts if the sender is not the council.
      */
-    function changeCouncil(address _newCouncil) external onlyCouncil {
-        if (_newCouncil == address(0)) {
-            revert NotCouncil();
+    function changeVesterUnderCouncilControl(address _address, bool _value) external onlyCouncil {
+        if (_address == address(0)) {
+            revert ZeroAddress();
         }
-        council = _newCouncil;
-        emit CouncilChanged(_newCouncil);
+        vesterUnderCouncilControl[_address] = _value;
+        lastVesterUpdate[_address] = block.timestamp;
+        emit VesterUnderCouncilControl(_address, _value);
+    }
+
+    /**
+     * @notice Checks if council has control of a vester.
+     * @param _address The address of the vester to check
+     * @dev Grace period before council control is 2 days.
+     */
+    function isVesterUnderCouncilControl(address _address) external view returns (bool) {
+        if (vesterUnderCouncilControl[_address] && block.timestamp > lastVesterUpdate[_address] + 2 days) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
