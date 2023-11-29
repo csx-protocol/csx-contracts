@@ -13,6 +13,7 @@ error NotCouncil();
 error BaseFeeGreaterThan100Percent();
 
 abstract contract TradeFactoryBase is ReentrancyGuard {
+    uint256 private constant _MAX_BASE_FEE = 1000; // 100%
     uint256 public baseFee;
     mapping(address => uint256) contractAddressToIndex;
 
@@ -23,7 +24,7 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
     ITradeFactoryBaseStorage tradeFactoryBaseStorage;
 
     constructor(address _keepers, address _users, address _tradeFactoryBaseStorage, uint256 _baseFee) {
-        if(_baseFee > 1000) {
+        if(_baseFee > _MAX_BASE_FEE) {
             revert BaseFeeGreaterThan100Percent();
         }
         keepersContract = IKeepers(_keepers);
@@ -53,7 +54,7 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
      * @param _baseFee new base fee
      */
     function changeBaseFee(uint256 _baseFee) external isCouncil {
-        if(_baseFee > 1000) {
+        if(_baseFee > _MAX_BASE_FEE) {
             revert BaseFeeGreaterThan100Percent();
         }
         baseFee = _baseFee;
