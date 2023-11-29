@@ -8,6 +8,7 @@ import {ITradeFactory, TradeUrl, Sticker, SkinInfo, PriceType} from "../TradeFac
 import {Strings} from "../utils/Strings.sol";
 import {IStakedCSX, SafeERC20} from "../CSX/Interfaces.sol";
 import {IReferralRegistry} from "../Referrals/IReferralRegistry.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 error NotFactory();
 error StatusIncorrect();
@@ -20,7 +21,7 @@ error TradeIDNotRemoved();
 error DividendDepositFailed();
 error TimeNotElapsed();
 
-contract CSXTrade {
+contract CSXTrade is ReentrancyGuard {
     using SafeERC20 for IERC20;
     IERC20 public paymentToken;
     bytes32 public referralCode;
@@ -195,7 +196,7 @@ contract CSXTrade {
         TradeUrl memory _buyerTradeUrl,
         bytes32 _affLink,
         address _buyerAddress
-    ) external {
+    ) external nonReentrant {
         if (status != TradeStatus.ForSale) {
             revert StatusIncorrect();
         }
@@ -218,12 +219,12 @@ contract CSXTrade {
         buyer = _buyer;
         buyerTradeUrl = _buyerTradeUrl;
 
-        (uint256 buyerNetValue, , , ) = getNetValue(_affLink);
-        depositedValue = buyerNetValue;        
+        (uint256 buyerNetValue, , , ) = getNetValue(_affLink, weiPrice);
+        depositedValue = _transferToken(msg.sender, address(this), buyerNetValue);
 
         string memory _data = string(
             abi.encodePacked(
-                Strings.toString(weiPrice),
+                Strings.toString(depositedValue),
                 "||",
                 Strings.toHexString(buyer)
             )
@@ -243,7 +244,6 @@ contract CSXTrade {
             status
         );
         IUSERS_CONTRACT.startDeliveryTimer(address(this), SELLER_ADDRESS);
-        paymentToken.safeTransferFrom(msg.sender, address(this), buyerNetValue);    
     }
 
     /**
@@ -253,7 +253,7 @@ contract CSXTrade {
      * @dev The buyer can only cancel the trade if the seller has not veridicted the trade.
      * @dev The buyer can only cancel the trade if 24 hours have passed since the buyer committed to buy.
      */
-    function buyerCancel() external onlyAddress(buyer) {
+    function buyerCancel() external onlyAddress(buyer) nonReentrant {
         if (status != TradeStatus.BuyerCommitted) {
             revert StatusIncorrect();
         }
@@ -268,7 +268,7 @@ contract CSXTrade {
         );
         IUSERS_CONTRACT.changeUserInteractionStatus(address(this), buyer, status);
 
-        paymentToken.safeTransfer(buyer, depositedValue);
+        _transferToken(address(this), buyer, depositedValue);
     }
 
     /**
@@ -279,7 +279,7 @@ contract CSXTrade {
      */
     function sellerTradeVeridict(
         bool _sellerCommited
-    ) external onlyAddress(SELLER_ADDRESS) {
+    ) external onlyAddress(SELLER_ADDRESS) nonReentrant {
         if (status != TradeStatus.BuyerCommitted) {
             revert StatusIncorrect();
         }
@@ -294,7 +294,7 @@ contract CSXTrade {
                     "||",
                     Strings.toHexString(buyer),
                     "||",
-                    Strings.toString(weiPrice)
+                    Strings.toString(depositedValue)
                 )
             );
             _changeStatus(TradeStatus.SellerCommitted, _data);
@@ -313,7 +313,7 @@ contract CSXTrade {
             _changeStatus(TradeStatus.SellerCancelledAfterBuyerCommitted, "SE_DEFAULT");
             IUSERS_CONTRACT.changeUserInteractionStatus(address(this), SELLER_ADDRESS, status);
             IUSERS_CONTRACT.changeUserInteractionStatus(address(this), buyer, status);
-            paymentToken.safeTransfer(buyer, depositedValue);
+            _transferToken(address(this), buyer, depositedValue);
         }
     }
 
@@ -322,14 +322,13 @@ contract CSXTrade {
      * @dev Only the buyer can confirm they have received the item.
      * @dev The listing must be in status BuyerCommitted or SellerCommitted
      */
-    function buyerConfirmReceived() external onlyAddress(buyer) {
+    function buyerConfirmReceived() external nonReentrant onlyAddress(buyer) {
         if (status != TradeStatus.BuyerCommitted) {
             if(status != TradeStatus.SellerCommitted){
                 revert StatusIncorrect();
             }
         }
-        string memory _data = string( abi.encodePacked(Strings.toString(weiPrice), "||", "MANUAL"));
-        _changeStatus(TradeStatus.Completed, _data);
+        
         IUSERS_CONTRACT.endDeliveryTimer(address(this), SELLER_ADDRESS);
         bool success = IUSERS_CONTRACT.removeAssetIdUsed(itemSellerAssetId, SELLER_ADDRESS);
 
@@ -338,6 +337,8 @@ contract CSXTrade {
         }
 
         _distributeProceeds();
+        string memory _data = string( abi.encodePacked(Strings.toString(weiPrice), "||", "MANUAL"));
+        _changeStatus(TradeStatus.Completed, _data);
 
         IUSERS_CONTRACT.changeUserInteractionStatus(address(this), SELLER_ADDRESS, status);
         IUSERS_CONTRACT.changeUserInteractionStatus(address(this), buyer, status);
@@ -348,7 +349,7 @@ contract CSXTrade {
      * @dev Only the seller can confirm the trade has been made.
      * @dev 8 days must have passed since the seller veridicted the trade.
      */
-    function sellerConfirmsTrade() external onlyAddress(SELLER_ADDRESS) {
+    function sellerConfirmsTrade() external onlyAddress(SELLER_ADDRESS) nonReentrant {
         if(block.timestamp < sellerAcceptedTimestamp + 8 days) {
             revert TimeNotElapsed();
         }
@@ -375,7 +376,7 @@ contract CSXTrade {
      * @param isTradeMade Whether the trade has been made or not
      * @param message The message to be emitted
      */
-    function keeperNodeConfirmsTrade(bool isTradeMade, string memory message) external {
+    function keeperNodeConfirmsTrade(bool isTradeMade, string memory message) external nonReentrant {
         if (!IKEEPERS_CONTRACT.isKeeperNode(msg.sender)) {
             revert NotKeeperNode();
         }
@@ -419,7 +420,7 @@ contract CSXTrade {
                     buyer,
                     status
                 );
-                paymentToken.safeTransfer(buyer, depositedValue);
+                _transferToken(address(this), buyer, depositedValue);
             }    
         }
 
@@ -471,7 +472,7 @@ contract CSXTrade {
         bool giveWarningToSeller,
         bool giveWarningToBuyer,
         bool isWithValue
-    ) external {
+    ) external nonReentrant {
         if (!IKEEPERS_CONTRACT.isKeeperNode(msg.sender)) {
             if(IKEEPERS_CONTRACT.indexOf(msg.sender) == 0){
                 revert NotKeeperOrNode();
@@ -483,7 +484,7 @@ contract CSXTrade {
         if (isFavourOfBuyer) {
             _changeStatus(TradeStatus.Clawbacked, "KO_CLAWBACK");
             if (isWithValue) {
-                paymentToken.safeTransfer(buyer, depositedValue);
+                _transferToken(address(this), buyer, depositedValue);
             }
         } else {
             _changeStatus(TradeStatus.Resolved, "KO_RESOLVE");
@@ -543,15 +544,15 @@ contract CSXTrade {
             }
         }
 
-        (uint256 buyerNetPrice, uint256 sellerNetProceeds, uint256 affiliatorNetReward, uint256 tokenHoldersNetReward) = getNetValue(referralCode);
-        paymentToken.safeTransfer(SELLER_ADDRESS, sellerNetProceeds);
+        (uint256 buyerNetPrice, uint256 sellerNetProceeds, uint256 affiliatorNetReward, uint256 tokenHoldersNetReward) = getNetValue(referralCode, depositedValue);
+        _transferToken(address(this), SELLER_ADDRESS, sellerNetProceeds);
         if (affiliatorNetReward > 0) {
-            paymentToken.safeTransfer(referralRegistryContract.getReferralCodeOwner(referralCode), affiliatorNetReward);
+            uint256 actualAmountTransferredToAff = _transferToken(address(this), referralRegistryContract.getReferralCodeOwner(referralCode), affiliatorNetReward);
             referralRegistryContract.emitReferralCodeRebateUpdated(
                 address(this),
                 address(paymentToken),
                 referralCode,
-                affiliatorNetReward
+                actualAmountTransferredToAff
             );
         }
 
@@ -571,6 +572,38 @@ contract CSXTrade {
             priceType,
             buyerNetPrice
         );
+    }
+
+    /**
+     * @notice Transfers tokens from the sender to the recipient
+     * @param from From address
+     * @param to To address
+     * @param amount Amount of tokens
+     * @return actualAmountTransferred
+     * @dev This function is used to transfer tokens from the sender to the recipient
+     * @dev If the token is a potential fee on transfer token, it will calculate the actual amount transferred
+     */
+    function _transferToken(address from, address to, uint256 amount) private returns (uint256) {
+        bool isFeeOnTransferToken = priceType == PriceType.USDT;
+        uint256 beforeBalance;
+
+        if (isFeeOnTransferToken) {
+            beforeBalance = paymentToken.balanceOf(to);
+        }
+
+        if (from == address(this)) {
+            paymentToken.safeTransfer(to, amount);
+        } else {
+            paymentToken.safeTransferFrom(from, to, amount);
+        }
+
+        uint256 actualAmountTransferred = amount;
+        if (isFeeOnTransferToken) {
+            uint256 afterBalance = paymentToken.balanceOf(to);
+            actualAmountTransferred = afterBalance - beforeBalance;
+        }
+
+        return actualAmountTransferred;
     }
 
     /**
@@ -594,7 +627,8 @@ contract CSXTrade {
      * @return tokenHoldersNetReward 
      */
     function getNetValue(
-        bytes32 _affLink
+        bytes32 _affLink,
+        uint256 _value
     )
         public
         view
@@ -620,7 +654,7 @@ contract CSXTrade {
             affiliatorNetReward,
             tokenHoldersNetReward
         ) = referralRegistryContract.calculateNetValue(
-            weiPrice,
+            _value,
             hasReferral,
             ITRADEFACTORY_CONTRACT.baseFee(),
             buyerRatio

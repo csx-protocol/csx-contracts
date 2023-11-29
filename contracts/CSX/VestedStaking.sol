@@ -6,6 +6,7 @@ pragma solidity 0.8.18;
 import {IERC20, IStakedCSX, IERC20Burnable} from "./Interfaces.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IKeepers} from "../Keepers/IKeepers.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 struct Vesting {
     uint256 amount;
@@ -20,7 +21,7 @@ error DepositFailed();
 error TransferFailed();
 error InvalidSender();
 
-contract VestedStaking {
+contract VestedStaking is ReentrancyGuard {
     using SafeERC20 for IERC20;
     
     Vesting public vesting;
@@ -145,7 +146,7 @@ contract VestedStaking {
         bool claimUsdt,
         bool claimWeth,
         bool convertWethToEth
-    ) external onlyVester {
+    ) external onlyVester nonReentrant {
         (uint256 usdcAmount, uint256 usdtAmount, uint256 wethAmount) = ISTAKED_CSX
             .rewardOf(address(this));
 
@@ -158,7 +159,9 @@ contract VestedStaking {
         }
         if (claimUsdt) {
             if (usdtAmount != 0) {
+                uint256 beforeBalance = IUSDT_TOKEN.balanceOf(address(this));
                 IUSDT_TOKEN.safeTransfer(msg.sender, usdtAmount);
+                usdtAmount = IUSDT_TOKEN.balanceOf(msg.sender) - beforeBalance;
             }
         }
         if (claimWeth) {

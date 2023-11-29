@@ -102,15 +102,15 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         emit Unstake(msg.sender, _amount);
     }
 
-    mapping(address => uint256) public roundingErrors;
     /**
      * @notice Deposits funds to stakers
      * @dev Deposits funds to stakers as non distributed rewards
+     * @dev Caching the balance before transfer for on-transfer fee tokens
      * @param _token The token to be deposited
      * @param _reward The amount of tokens to be deposited
      */
     function depositDividend(address _token, uint256 _reward) nonReentrant external returns (bool) {
-        if(_reward == 0) {
+        if (_reward == 0) {
             revert AmountMustBeGreaterThanZero();
         }
         if (_token != address(TOKEN_WETH)) {
@@ -121,11 +121,9 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
             }
         }
 
-        nonDistributedRewardsPerToken[_token] += _reward;
-
-        emit DepositedDividend(msg.sender, _token, _reward);
-
-        IERC20(_token).safeTransferFrom(msg.sender, address(this), _reward);    
+        uint256 actualAmountReceived = _transferToken(msg.sender, address(this), _token, _reward);
+        nonDistributedRewardsPerToken[_token] += actualAmountReceived;
+        emit DepositedDividend(msg.sender, _token, actualAmountReceived);
         return true;    
     }
 
@@ -324,8 +322,9 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
                     revert EthTransferFailed();
                 }
             } else {
-                IERC20(_token).safeTransfer(_to, reward);
-            }            
+                uint256 actualAmountTransferred = _transferToken(address(this), _to, _token, reward);
+                emit ClaimReward(msg.sender, actualAmountTransferred);
+            }           
         }
         emit ClaimReward(msg.sender, reward);
     }
@@ -338,4 +337,38 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
     function _updateRewardRate(address _to, address _token) private {
         rewardRate[_token][_to] = lastRewardRate[_token];
     }
+
+    /**
+     * @notice Transfers tokens from the sender to the recipient
+     * @param from From address
+     * @param to To address
+     * @param _token The token to be transferred
+     * @param amount Amount of tokens
+     * @return actualAmountTransferred
+     * @dev This function is used to transfer tokens from the sender to the recipient
+     * @dev If the token is a potential fee on transfer token, it will calculate the actual amount transferred
+     */
+    function _transferToken(address from, address to, address _token, uint256 amount) private returns (uint256) {
+        bool isFeeOnTransferToken = _token == address(TOKEN_USDT);
+        uint256 beforeBalance;
+
+        if (isFeeOnTransferToken) {
+            beforeBalance = IERC20(_token).balanceOf(to);
+        }
+
+        if (from == address(this)) {
+            IERC20(_token).safeTransfer(to, amount);
+        } else {
+            IERC20(_token).safeTransferFrom(from, to, amount);
+        }
+
+        uint256 actualAmountTransferred = amount;
+        if (isFeeOnTransferToken) {
+            uint256 afterBalance = IERC20(_token).balanceOf(to);
+            actualAmountTransferred = afterBalance - beforeBalance;
+        }
+
+        return actualAmountTransferred;
+    }
+
 }
