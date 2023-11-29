@@ -214,6 +214,9 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
      * @return wethAmount 
      */
     function rewardOf(address _account) public view returns (uint256 usdcAmount, uint256 usdtAmount, uint256 wethAmount) {
+        if(_account == address(0)) {
+            revert InvalidUser();
+        }
         uint256 deposited = balanceOf(_account);
         
         if(deposited != 0) {

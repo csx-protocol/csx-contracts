@@ -11,6 +11,7 @@ import {VestedStaking, IStakedCSX} from "./VestedStaking.sol";
 error AmountMustBeGreaterThanZero();
 error AmountSurpassesMaxSupply();
 error TokenTransfersDisabled();
+error ZeroAddress();
 
 contract VestedCSX is ReentrancyGuard, ERC20Burnable {
     using SafeERC20 for IERC20;
@@ -33,6 +34,27 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
         address _usdtAddress,
         address _keepersAddress
     ) ERC20("Vested CSX", "vCSX") {
+        if(_isZeroAddress(_eCsxAddress)) {
+            revert ZeroAddress();
+        }
+        if(_isZeroAddress(_sCsxAddress)) {
+            revert ZeroAddress();
+        }
+        if(_isZeroAddress(_wethAddress)) {
+            revert ZeroAddress();
+        }
+        if(_isZeroAddress(_usdcAddress)) {
+            revert ZeroAddress();
+        }
+        if(_isZeroAddress(_csxAddress)) {
+            revert ZeroAddress();
+        }
+        if(_isZeroAddress(_usdtAddress)) {
+            revert ZeroAddress();
+        }
+        if(_isZeroAddress(_keepersAddress)) {
+            revert ZeroAddress();
+        }
         ESCROWED_CSX = IERC20Burnable(_eCsxAddress);
         STAKED_CSX = IStakedCSX(_sCsxAddress);
         WETH = IWETH(_wethAddress);
@@ -111,5 +133,9 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
         super._beforeTokenTransfer(from, to, amount);
         if (from == address(0) || to == address(0)) return;
         revert TokenTransfersDisabled();
+    }
+
+    function _isZeroAddress(address _address) private pure returns (bool) {
+        return _address == address(0);
     }
 }
