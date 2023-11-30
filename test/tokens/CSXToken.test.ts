@@ -28,8 +28,9 @@ describe("CSXToken", async function () {
 
   describe("Token Supply", function () {
     it("should have a max supply of 100,000,000 CSX", async function () {
-      const maxSupply = await csxToken.MAX_SUPPLY();
-      expect(maxSupply.toString()).to.equal(ethers.parseEther("100000000").toString());
+      const maxSupply = ethers.parseEther("100000000").toString();
+      const balanceOfDeployer = await csxToken.balanceOf(await deployer.getAddress());
+      expect(maxSupply.toString()).to.equal(balanceOfDeployer);
     });
 
     it("should allocate the max supply to the deployer", async function () {

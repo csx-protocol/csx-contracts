@@ -6,7 +6,7 @@ import {ERC20Burnable, ERC20} from "@openzeppelin/contracts/token/ERC20/extensio
 
 contract CSXToken is ERC20Burnable {
     // ONE HUNDERED MILLION CSX TOKENS WITH 18 DECIMALS
-    uint256 public constant MAX_SUPPLY = 100_000_000 * 1e18;
+    uint256 private constant _MAX_SUPPLY = 100_000_000 * 1e18;
 
     /**
      * @notice Constructs the CSX ERC-20 contract.
@@ -16,6 +16,6 @@ contract CSXToken is ERC20Burnable {
      * @dev See {ERC20Burnable-constructor}.
      */
     constructor() ERC20("CSX Token", "CSX") {
-        _mint(msg.sender, MAX_SUPPLY);
+        _mint(msg.sender, _MAX_SUPPLY);
     }
 }
