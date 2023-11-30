@@ -277,8 +277,6 @@ contract CSXTradeFactory is TradeFactoryBase {
         result.priceType = _contract.priceType();
 
         result.assetId = _contract.itemSellerAssetId();
-
-        return result;
     }
 
     /**

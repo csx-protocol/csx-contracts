@@ -23,7 +23,7 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
     IERC20 public immutable USDT;
     address public immutable KEEPERS;
 
-    uint256 public constant MAX_SUPPLY = 100_000_000 * 1e18;
+    uint256 private constant _MAX_SUPPLY = 100_000_000 * 1e18;
 
     constructor(
         address _eCsxAddress,
@@ -74,7 +74,7 @@ contract VestedCSX is ReentrancyGuard, ERC20Burnable {
      * @param amount The amount of tokens to be vested
      */
     function vest(uint256 amount) external nonReentrant {
-        if (amount + totalSupply() > MAX_SUPPLY) {
+        if (amount + totalSupply() > _MAX_SUPPLY) {
             revert AmountSurpassesMaxSupply();
         }
         if (amount == 0) {

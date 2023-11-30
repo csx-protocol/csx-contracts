@@ -252,7 +252,7 @@ contract ReferralRegistry is NetValueCalculator {
      * @param code The referral code
      */
     function containsSpace(bytes32 code) private pure returns (bool) {
-        for (uint256 i = 0; i < 32; i++) {
+        for (uint256 i; i < 32; ++i) {
             if (code[i] == 0x20) {
                 return true;
             }
