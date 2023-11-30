@@ -11,6 +11,7 @@ import {TradeInfo, Strings} from "../TradeFactory/ITradeFactory.sol";
 error NotTradeContract();
 error NotCouncil();
 error BaseFeeGreaterThan100Percent();
+error ZeroAddress();
 
 abstract contract TradeFactoryBase is ReentrancyGuard {
     uint256 private constant _MAX_BASE_FEE = 1000; // 100%
@@ -26,6 +27,15 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
     constructor(address _keepers, address _users, address _tradeFactoryBaseStorage, uint256 _baseFee) {
         if(_baseFee > _MAX_BASE_FEE) {
             revert BaseFeeGreaterThan100Percent();
+        }
+        if(_keepers == address(0)) {
+            revert ZeroAddress();
+        }
+        if(_users == address(0)) {
+            revert ZeroAddress();
+        }
+        if(_tradeFactoryBaseStorage == address(0)) {
+            revert ZeroAddress();
         }
         keepersContract = IKeepers(_keepers);
         usersContract = IUsers(_users);

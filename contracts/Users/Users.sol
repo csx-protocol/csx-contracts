@@ -16,6 +16,7 @@ error NotPartOfTrade();
 error ZeroTradeAddress();
 error AlreadyRepresentedAsBuyer();
 error AlreadyRepresentedAsSeller();
+error ZeroAddress();
 
 contract Users is ReentrancyGuard {
     struct User {
@@ -63,6 +64,9 @@ contract Users is ReentrancyGuard {
     ITradeFactory public factory;
 
     constructor(address _keepers) {
+        if (_keepers == address(0)) {
+            revert ZeroAddress();
+        }
         keepers = IKeepers(_keepers);
     }
 
@@ -76,6 +80,12 @@ contract Users is ReentrancyGuard {
     function changeContracts(address _factoryAddress, address _keepers) external {
         if (!keepers.isCouncil(msg.sender)) {
             revert NotCouncil();
+        }
+        if (_factoryAddress == address(0)) {
+            revert ZeroAddress();
+        }
+        if (_keepers == address(0)) {
+            revert ZeroAddress();
         }
         factory = ITradeFactory(_factoryAddress);
         keepers = IKeepers(_keepers);

@@ -52,7 +52,7 @@ describe("TradeFactoryBaseStorage", async function () {
 
     it("should not allow initialization with zero address", async function () {
       await expect(instance.connect(council).init(ethers.ZeroAddress)).to.be.revertedWithCustomError(
-        instance, "NotFactory"
+        instance, "ZeroAddress"
       );
     });
   });

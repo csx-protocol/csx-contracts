@@ -20,6 +20,7 @@ error OnlyVCSXContract();
 error DepositFailed();
 error TransferFailed();
 error InvalidSender();
+error ZeroAddress();
 
 contract VestedStaking is ReentrancyGuard {
     using SafeERC20 for IERC20;
@@ -86,7 +87,14 @@ contract VestedStaking is ReentrancyGuard {
         address _wethTokenAddress,
         address _keepersAddress
     ) {
-        if(_vesterAddress == address(0)) revert InvalidSender();
+        if(_vesterAddress == address(0)) revert ZeroAddress();
+        if(_sCsxTokenAddress == address(0)) revert ZeroAddress();
+        if(_vCsxTokenAddress == address(0)) revert ZeroAddress();
+        if(_csxTokenAddress == address(0)) revert ZeroAddress();
+        if(_usdcTokenAddress == address(0)) revert ZeroAddress();
+        if(_usdtTokenAddress == address(0)) revert ZeroAddress();
+        if(_wethTokenAddress == address(0)) revert ZeroAddress();
+        if(_keepersAddress == address(0)) revert ZeroAddress();
         VESTER_ADDRESS = _vesterAddress;
         ISTAKED_CSX = IStakedCSX(_sCsxTokenAddress);
         IVESTED_CSX = IERC20Burnable(_vCsxTokenAddress);

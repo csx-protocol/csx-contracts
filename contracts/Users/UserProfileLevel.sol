@@ -11,6 +11,7 @@ import {IKeepers} from "../Keepers/IKeepers.sol";
 error ZeroLevels();
 error InsufficientTokens();
 error NotCouncil();
+error ZeroAddress();
 
 contract UserProfileLevel {
     // Event to be emitted when a user levels up their profile
@@ -36,6 +37,15 @@ contract UserProfileLevel {
     mapping(address => User) public users;
 
     constructor(address _tokenAddress, address _usersContractAddress, address _keepersContractAddress) {
+        if (_tokenAddress == address(0)) {
+            revert ZeroAddress();
+        }
+        if (_usersContractAddress == address(0)) {
+            revert ZeroAddress();
+        }
+        if (_keepersContractAddress == address(0)) {
+            revert ZeroAddress();
+        }
         CSX_TOKEN = IERC20Burnable(_tokenAddress);
         usersContract = IUsers(_usersContractAddress);
         keepersContract = IKeepers(_keepersContractAddress);
@@ -82,6 +92,12 @@ contract UserProfileLevel {
     function changeContracts(address _usersContractAddress, address _keepersContractAddress) external {
         if (!keepersContract.isCouncil(msg.sender)) {
             revert NotCouncil();
+        }
+        if (_usersContractAddress == address(0)) {
+            revert ZeroAddress();
+        }
+        if (_keepersContractAddress == address(0)) {
+            revert ZeroAddress();
         }
         usersContract = IUsers(_usersContractAddress);
         keepersContract = IKeepers(_keepersContractAddress);

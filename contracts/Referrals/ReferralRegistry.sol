@@ -5,6 +5,7 @@ import {NetValueCalculator} from "./NetValueCalculator.sol";
 import {ITradeFactory} from "../TradeFactory/ITradeFactory.sol";
 import {IKeepers} from "../Keepers/IKeepers.sol";
 
+error ZeroAddress();
 error InvalidReferralCode(string reason);
 error InvalidRatios(string reason);
 error Unauthorized(string reason);
@@ -74,6 +75,9 @@ contract ReferralRegistry is NetValueCalculator {
      * @param user The user address
      */
     function setReferralCodeAsTC(bytes32 referralCode, address user) external onlyTradeContracts(msg.sender) {
+        if(user == address(0)){
+            revert ZeroAddress();
+        }
         _setReferralCode(referralCode, user);
     }
 
@@ -100,6 +104,12 @@ contract ReferralRegistry is NetValueCalculator {
     function changeContracts(address _factory, address _keepers) external {
         if(!keepers.isCouncil(msg.sender)){
             revert Unauthorized("Only council can change contracts");
+        }
+        if(_factory == address(0)){
+            revert ZeroAddress();
+        }
+        if(_keepers == address(0)){
+            revert ZeroAddress();
         }
         factory = ITradeFactory(_factory);
         keepers = IKeepers(_keepers);

@@ -20,6 +20,7 @@ error StatusNotDisputeReady();
 error TradeIDNotRemoved();
 error DividendDepositFailed();
 error TimeNotElapsed();
+error ZeroAddress();
 
 contract CSXTrade is ReentrancyGuard {
     using SafeERC20 for IERC20;
@@ -86,11 +87,17 @@ contract CSXTrade is ReentrancyGuard {
         string memory _itemImageUrl,
         SkinInfo memory _skinInfo
     ) {
-        if (_factory == address(0)) {
-            revert NotFactory();
+        if(_factory == address(0)) {
+            revert ZeroAddress();
+        }
+        if(_keepers == address(0)) {
+            revert ZeroAddress();
+        }
+        if(_users == address(0)) {
+            revert ZeroAddress();
         }
         if(_seller == address(0)) {
-            revert NotSeller();
+            revert ZeroAddress();
         }
         ITRADEFACTORY_CONTRACT = ITradeFactory(_factory);
         IKEEPERS_CONTRACT = IKeepers(_keepers);
@@ -128,6 +135,15 @@ contract CSXTrade is ReentrancyGuard {
     ) external {
         if (msg.sender != address(ITRADEFACTORY_CONTRACT) || hasInit) {
             revert NotFactory();
+        }
+        if(_paymentToken == address(0)) {
+            revert ZeroAddress();
+        }
+        if(_referralRegistryContract == address(0)) {
+            revert ZeroAddress();
+        }
+        if(_sCSXToken == address(0)) {
+            revert ZeroAddress();
         }
         hasInit = true;
         uint256 totalStickers = _stickers.length;
@@ -203,6 +219,9 @@ contract CSXTrade is ReentrancyGuard {
 
         address _buyer;
         if (msg.sender == address(ITRADEFACTORY_CONTRACT.buyAssistoor())) {
+            if(_buyerAddress == address(0)) {
+                revert ZeroAddress();
+            }
             _buyer = _buyerAddress;
         } else {
             _buyer = msg.sender;

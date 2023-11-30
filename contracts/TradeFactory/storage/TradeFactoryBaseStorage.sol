@@ -6,6 +6,7 @@ import {IKeepers, ReentrancyGuard, CSXTrade, IUsers, TradeUrl, SkinInfo} from ".
 error NotFactory();
 error AlreadyInitialized();
 error NotCouncil();
+error ZeroAddress();
 
 contract TradeFactoryBaseStorage is ReentrancyGuard {
     uint256 public totalContracts;
@@ -16,6 +17,12 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
     bool public hasInit;
 
     constructor(address _keepers, address _users) {
+        if (_keepers == address(0)) {
+            revert ZeroAddress();
+        }
+        if (_users == address(0)) {
+            revert ZeroAddress();
+        }
         keepersContract = IKeepers(_keepers);
         usersContract = IUsers(_users);
     }
@@ -35,6 +42,12 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
      * @param _users new users contract address
      */
     function changeContracts(address _keepers, address _users) external isCouncil {
+        if (_keepers == address(0)) {
+            revert ZeroAddress();
+        }
+        if (_users == address(0)) {
+            revert ZeroAddress();
+        }
         keepersContract = IKeepers(_keepers);
         usersContract = IUsers(_users);
     }
@@ -53,7 +66,7 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
             revert AlreadyInitialized();
         }
         if(_factoryAddress == address(0)) {
-            revert NotFactory();
+            revert ZeroAddress();
         }
         hasInit = true;
         factoryAddress = _factoryAddress;

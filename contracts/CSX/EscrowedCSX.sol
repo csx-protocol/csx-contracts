@@ -12,6 +12,7 @@ error AlreadyInitialized();
 error OnlyDeployerCanInitialize();
 error AmountMustBeGreaterThanZero();
 error TransferFailed();
+error ZeroAddress();
 
 contract EscrowedCSX is ERC20Burnable, ReentrancyGuard {
     using SafeERC20 for IERC20;
@@ -24,6 +25,7 @@ contract EscrowedCSX is ERC20Burnable, ReentrancyGuard {
     event Claimed(address indexed user, uint256 amount);
 
     constructor(address _csxToken) ERC20("Escrowed CSX", "eCSX") {
+        if(_csxToken == address(0)) revert ZeroAddress();
         CSX_TOKEN = IERC20(_csxToken);
         DEPLOYER = msg.sender;
     }
@@ -36,6 +38,7 @@ contract EscrowedCSX is ERC20Burnable, ReentrancyGuard {
     function init(address _vCSXToken) external {
         if(_isInitialized) revert AlreadyInitialized();
         if(msg.sender != DEPLOYER) revert OnlyDeployerCanInitialize();
+        if(_vCSXToken == address(0)) revert ZeroAddress();
 
         _isInitialized = true;
         vestedCSX = IERC20(_vCSXToken);

@@ -49,6 +49,7 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
     error InsufficientBalance();
     error EthTransferFailed();
     error InvalidUser();
+    error ZeroAddress();
 
     constructor(
         address _csxToken,
@@ -57,6 +58,21 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         address _usdtToken,
         address _keepers
     ) ERC20("Staked CSX", "sCSX") {
+        if (_csxToken == address(0)) {
+            revert ZeroAddress();
+        }
+        if (_wethToken == address(0)) {
+            revert ZeroAddress();
+        }
+        if (_usdcToken == address(0)) {
+            revert ZeroAddress();
+        }
+        if (_usdtToken == address(0)) {
+            revert ZeroAddress();
+        }
+        if (_keepers == address(0)) {
+            revert ZeroAddress();
+        }
         TOKEN_CSX = IERC20(_csxToken);
         TOKEN_WETH = IWETH(_wethToken);
         TOKEN_USDC = IERC20(_usdcToken);

@@ -9,10 +9,11 @@ interface ITradeContract {
     function weiPrice() external view returns (uint256);
 }
 
-error InvalidTradeContract();
+error ZeroAddress();
 error InvalidPriceType();
 error EthDepositFailed();
 error WethApprovalFailed();
+
 
 import { TradeStatus, Role } from '../Users/IUsers.sol';
 import { TradeUrl, PriceType } from '../TradeFactory/ITradeFactory.sol';
@@ -21,6 +22,9 @@ contract BuyAssistoor {
     IWETH public immutable IWETH_CONTRACT;
 
     constructor(address _weth) {
+        if (_weth == address(0)) {
+            revert ZeroAddress();
+        }
         IWETH_CONTRACT = IWETH(_weth);
     }
 
@@ -33,7 +37,7 @@ contract BuyAssistoor {
      */
     function BuyWithEthToWeth(TradeUrl memory _buyerTradeUrl, bytes32 _affLink, address _tradeContract) external payable {
          if (_tradeContract == address(0)) {
-            revert InvalidTradeContract();
+            revert ZeroAddress();
         }
 
         ITradeContract tradeContract = ITradeContract(_tradeContract);

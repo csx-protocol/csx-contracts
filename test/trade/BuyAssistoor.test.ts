@@ -141,6 +141,6 @@ describe("BuyAssistoor", async function() {
     const zeroAddress = `0x${"0".repeat(40)}`;
     const _affLink = zeroBytes32;
     await expect(buyAssistoor.connect(buyer).BuyWithEthToWeth(_buyerTradeUrl, _affLink, zeroAddress, { value: value }))
-      .to.be.revertedWithCustomError(buyAssistoor, "InvalidTradeContract");
+      .to.be.revertedWithCustomError(buyAssistoor, "ZeroAddress");
   });
 });
