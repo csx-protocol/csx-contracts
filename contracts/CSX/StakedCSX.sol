@@ -89,10 +89,10 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
         if (_amount == 0) {
             revert AmountMustBeGreaterThanZero();
         }
-        _mint(msg.sender, _amount);
         _updateRewardRate(msg.sender, address(TOKEN_WETH));
         _updateRewardRate(msg.sender, address(TOKEN_USDC));
         _updateRewardRate(msg.sender, address(TOKEN_USDT));
+        _mint(msg.sender, _amount);
         TOKEN_CSX.safeTransferFrom(msg.sender, address(this), _amount);
         emit Stake(msg.sender, _amount);
     }
