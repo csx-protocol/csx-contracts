@@ -99,7 +99,7 @@ contract StakedCSX is ReentrancyGuard, ERC20 {
 
     /**
      * @notice Unstakes the user's sCSX tokens
-     * @dev Burns the user's sCSX tokens & Sends the user's CSX to this contract.
+     * @dev Burns the user's sCSX tokens & Sends the CSX tokens to the user.
      * @param _amount The amount of tokens to be unstaked
      */
     function unStake(uint256 _amount) external nonReentrant {
