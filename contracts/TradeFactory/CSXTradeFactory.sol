@@ -214,6 +214,15 @@ contract CSXTradeFactory is TradeFactoryBase {
         address _sCSXTokenAddress,
         address _buyAssistoor
     ) external isCouncil {
+        if(_referralRegistryAddress == address(0)) {
+            revert InvalidAddress(_referralRegistryAddress);
+        }
+        if(_sCSXTokenAddress == address(0)) {
+            revert InvalidAddress(_sCSXTokenAddress);
+        }
+        if(_buyAssistoor == address(0)) {
+            revert InvalidAddress(_buyAssistoor);
+        }
         paymentTokens = _paymentTokens;
         referralRegistryAddress = _referralRegistryAddress;
         sCSXTokenAddress = _sCSXTokenAddress;

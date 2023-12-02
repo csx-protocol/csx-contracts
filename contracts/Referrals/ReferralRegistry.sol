@@ -21,6 +21,9 @@ contract ReferralRegistry is NetValueCalculator {
     IKeepers private keepers;
 
     constructor(address _keepers) {
+        if (_keepers == address(0)) {
+            revert ZeroAddress();
+        }
         keepers = IKeepers(_keepers);
     }
 

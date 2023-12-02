@@ -79,6 +79,15 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
      * @param _tradeFactoryBaseStorage new tradeFactoryBaseStorage contract address
      */
     function changeContracts(address _keepers, address _users, address _tradeFactoryBaseStorage) external isCouncil {
+        if(_keepers == address(0)) {
+            revert ZeroAddress();
+        }
+        if(_users == address(0)) {
+            revert ZeroAddress();
+        }
+        if(_tradeFactoryBaseStorage == address(0)) {
+            revert ZeroAddress();
+        }
         keepersContract = IKeepers(_keepers);
         usersContract = IUsers(_users);
         tradeFactoryBaseStorage = ITradeFactoryBaseStorage(_tradeFactoryBaseStorage);
