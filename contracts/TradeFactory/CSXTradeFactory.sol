@@ -79,6 +79,15 @@ contract CSXTradeFactory is TradeFactoryBase {
         if(_buyAssistoor == address(0)) {
             revert InvalidAddress(_buyAssistoor);
         }
+        if(_paymentTokens.weth == address(0)) {
+            revert InvalidAddress(_paymentTokens.weth);
+        }
+        if(_paymentTokens.usdc == address(0)) {
+            revert InvalidAddress(_paymentTokens.usdc);
+        }
+        if(_paymentTokens.usdt == address(0)) {
+            revert InvalidAddress(_paymentTokens.usdt);
+        }
         paymentTokens = _paymentTokens;
         referralRegistryAddress = _referralRegistryAddress;
         sCSXTokenAddress = _sCSXTokenAddress;

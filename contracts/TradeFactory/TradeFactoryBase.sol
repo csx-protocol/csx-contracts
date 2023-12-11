@@ -51,6 +51,12 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
         address buyerAddress
     );
 
+    event TradePriceChange(
+        address indexed contractAddress,
+        address indexed sellerAddress,
+        uint256 weiPrice
+    );
+
     modifier isCouncil() {
         if (!keepersContract.isCouncil(msg.sender)) {
             revert NotCouncil();
@@ -135,6 +141,19 @@ abstract contract TradeFactoryBase is ReentrancyGuard {
             sellerAddress,
             buyerAddress
         );
+    }
+
+    /**
+     * @notice Called when the price of a trade contract changes
+     * @dev This function can only be called by a trade contract
+     * @param weiPrice new price
+     * @param sellerAddress the seller address
+     */
+    function onPriceChange(uint256 weiPrice, address sellerAddress) external {
+        if (!isTradeContract[msg.sender]) {
+            revert NotTradeContract();
+        }
+        emit TradePriceChange(msg.sender, sellerAddress, weiPrice);
     }
 
     /**

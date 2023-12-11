@@ -61,6 +61,8 @@ interface ITradeFactory {
 
     function onStatusChange(TradeStatus status, TradeStatus prevStatus, string memory data, address sellerAddress, address buyerAddress) external;
 
+    function onPriceChange(uint256 weiPrice, address sellerAddress) external;
+
     //Users
     function isThisTradeContract(address contractAddress)
         external

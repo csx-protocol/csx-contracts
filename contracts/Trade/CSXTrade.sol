@@ -136,15 +136,6 @@ contract CSXTrade is ReentrancyGuard {
         if (msg.sender != address(ITRADEFACTORY_CONTRACT) || hasInit) {
             revert NotFactory();
         }
-        if(_paymentToken == address(0)) {
-            revert ZeroAddress();
-        }
-        if(_referralRegistryContract == address(0)) {
-            revert ZeroAddress();
-        }
-        if(_sCSXToken == address(0)) {
-            revert ZeroAddress();
-        }
         hasInit = true;
         uint256 totalStickers = _stickers.length;
         for (uint256 i; i < totalStickers; i++) {
@@ -174,6 +165,7 @@ contract CSXTrade is ReentrancyGuard {
             revert StatusIncorrect();
         }
         weiPrice = _newPrice;
+        ITRADEFACTORY_CONTRACT.onPriceChange(_newPrice, SELLER_ADDRESS);
     }
    
     /**
