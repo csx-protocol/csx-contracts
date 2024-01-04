@@ -39,7 +39,7 @@ struct PaymentTokens {
 
 error UserBanned();
 error AssetIDAlreadyExists();
-error InvalidPriceType();
+error InvalidInput(string message);
 error NoTradeCreated();
 error InvalidAddress(address _address);
 
@@ -113,12 +113,16 @@ contract CSXTradeFactory is TradeFactoryBase {
         if (params.priceType != PriceType.WETH) {
             if (params.priceType != PriceType.USDC) {
                 if (params.priceType != PriceType.USDT) {
-                    revert InvalidPriceType();
+                    revert InvalidInput('price');
                 }
             }
         }
         if(params.weiPrice == 0) {
-            revert InvalidPriceType();
+            revert InvalidInput('zero');
+        }
+
+        if(params.stickers.length > 5) {
+            revert InvalidInput('stickers');
         }
 
         ++tradeCountByStatus[TradeStatus.ForSale];
