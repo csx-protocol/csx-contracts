@@ -595,7 +595,7 @@ contract CSXTrade is ReentrancyGuard {
      * @dev If the token is a potential fee on transfer token, it will calculate the actual amount transferred
      */
     function _transferToken(address from, address to, uint256 amount) private returns (uint256) {
-        bool isFeeOnTransferToken = priceType == PriceType.USDT;
+        bool isFeeOnTransferToken = priceType == PriceType.USDT || priceType == PriceType.USDC;
         uint256 beforeBalance;
 
         if (isFeeOnTransferToken) {
