@@ -4,9 +4,9 @@ pragma solidity 0.8.18;
 import {IKeepers, ReentrancyGuard, CSXTrade, IUsers, TradeUrl, SkinInfo} from "./ITradeFactoryBaseStorage.sol";
 
 error NotFactory();
-error AlreadyInitialized();
 error NotCouncil();
 error ZeroAddress();
+error InvalidInit();
 
 contract TradeFactoryBaseStorage is ReentrancyGuard {
     uint256 public totalContracts;
@@ -42,10 +42,7 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
      * @param _users new users contract address
      */
     function changeContracts(address _keepers, address _users) external isCouncil {
-        if (_keepers == address(0)) {
-            revert ZeroAddress();
-        }
-        if (_users == address(0)) {
+        if (_keepers == address(0) || _users == address(0)) {
             revert ZeroAddress();
         }
         keepersContract = IKeepers(_keepers);
@@ -58,16 +55,8 @@ contract TradeFactoryBaseStorage is ReentrancyGuard {
      * @dev This function can only be called once
      * @param _factoryAddress address of the factory contract
      */
-    function init(address _factoryAddress) external {
-        if (!keepersContract.isCouncil(msg.sender)) {
-            revert NotCouncil();
-        }
-        if (hasInit) {
-            revert AlreadyInitialized();
-        }
-        if(_factoryAddress == address(0)) {
-            revert ZeroAddress();
-        }
+    function init(address _factoryAddress) isCouncil external {
+        if (hasInit || _factoryAddress == address(0)) revert InvalidInit();
         hasInit = true;
         factoryAddress = _factoryAddress;
     }
