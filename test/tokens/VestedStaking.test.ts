@@ -77,6 +77,28 @@ describe("VestedStaking", function () {
         vestedStaking = VestedStaking.attach(vestedStakingAddress);
     });
 
+    it(
+        'should not revert reward claiming when the vester has a X USDT balance and the contract has a > X USDT balance', 
+        async () => {
+            const vesterUsdtBalance = ethers.parseUnits('2', 6); // Vester has a total of 2 USDT
+            await usdt.connect(deployer).transfer(vesterAddress, vesterUsdtBalance);
+
+            const depositAmount = ethers.parseUnits('1000', 6);
+            await usdt.connect(deployer).approve(stakedCSX.getAddress(), depositAmount);
+        
+            await stakedCSX.connect(deployer).depositDividend(await usdt.getAddress(), depositAmount);
+            await stakedCSX.connect(council).distribute(false, false, true);
+
+            // Transfer 0.000001 USDT more than the vester balance in order to attempt claimRewards revert
+            await usdt.connect(deployer).transfer(vestedStaking.getAddress(), vesterUsdtBalance + BigInt(1));
+
+            // await expect(vestedStaking.connect(vesterAddress).claimRewards(false, true, false, false))
+            // .to.be.revertedWithPanic('0x11'); // Arithmetic under/overflow panic code
+
+            // Fixed, Should not revert:
+            await vestedStaking.connect(vesterAddress).claimRewards(false, true, false, false);        
+    });
+
     it("should deposit CSX tokens into the staking contract", async function () {
         const blockNumBefore = await ethers.provider.getBlockNumber();
         const blockBefore = await ethers.provider.getBlock(blockNumBefore);

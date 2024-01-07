@@ -162,14 +162,14 @@ contract VestedStaking is ReentrancyGuard {
 
         if (claimUsdc) {
             if (usdcAmount != 0) {
-                uint256 beforeBalance = IUSDC_TOKEN.balanceOf(address(this));
+                uint256 beforeBalance = IUSDC_TOKEN.balanceOf(msg.sender);
                 IUSDC_TOKEN.safeTransfer(msg.sender, usdcAmount);
                 usdcAmount = IUSDC_TOKEN.balanceOf(msg.sender) - beforeBalance;
             }
         }
         if (claimUsdt) {
             if (usdtAmount != 0) {
-                uint256 beforeBalance = IUSDT_TOKEN.balanceOf(address(this));
+                uint256 beforeBalance = IUSDT_TOKEN.balanceOf(msg.sender);
                 IUSDT_TOKEN.safeTransfer(msg.sender, usdtAmount);
                 usdtAmount = IUSDT_TOKEN.balanceOf(msg.sender) - beforeBalance;
             }
