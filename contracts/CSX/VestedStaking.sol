@@ -195,7 +195,7 @@ contract VestedStaking is ReentrancyGuard {
     }
 
     receive() external payable {
-        if (address(IERC20_WETH_TOKEN) != msg.sender) {
+        if (address(ISTAKED_CSX) != msg.sender) {
             revert InvalidSender();
         }
     }
