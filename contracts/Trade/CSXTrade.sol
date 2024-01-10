@@ -189,7 +189,7 @@ contract CSXTrade is ReentrancyGuard {
             SELLER_ADDRESS,
             status
         );             
-        IUSERS_CONTRACT.removeAssetIdUsed(itemSellerAssetId, SELLER_ADDRESS);
+        _rmvAId();
     }
 
     /**
@@ -280,6 +280,8 @@ contract CSXTrade is ReentrancyGuard {
         IUSERS_CONTRACT.changeUserInteractionStatus(address(this), buyer, status);
 
         _transferToken(address(this), buyer, depositedValue);
+
+        _rmvAId();
     }
 
     /**
@@ -325,6 +327,7 @@ contract CSXTrade is ReentrancyGuard {
             IUSERS_CONTRACT.changeUserInteractionStatus(address(this), SELLER_ADDRESS, status);
             IUSERS_CONTRACT.changeUserInteractionStatus(address(this), buyer, status);
             _transferToken(address(this), buyer, depositedValue);
+            _rmvAId();
         }
     }
 
@@ -341,11 +344,7 @@ contract CSXTrade is ReentrancyGuard {
         }
         
         IUSERS_CONTRACT.endDeliveryTimer(address(this), SELLER_ADDRESS);
-        bool success = IUSERS_CONTRACT.removeAssetIdUsed(itemSellerAssetId, SELLER_ADDRESS);
-
-        if (!success) {
-            revert TradeIDNotRemoved();
-        }
+        _rmvAId();
 
         _distributeProceeds();
         string memory _data = string( abi.encodePacked(Strings.toString(weiPrice), "||", "MANUAL"));
@@ -378,6 +377,7 @@ contract CSXTrade is ReentrancyGuard {
         IUSERS_CONTRACT.changeUserInteractionStatus(address(this), buyer, status);
 
         _distributeProceeds();
+        _rmvAId();
     }
 
     /**
@@ -435,10 +435,7 @@ contract CSXTrade is ReentrancyGuard {
             }    
         }
 
-        bool raS = IUSERS_CONTRACT.removeAssetIdUsed(itemSellerAssetId, SELLER_ADDRESS);
-        if (!raS) {
-            revert TradeIDNotRemoved();
-        }
+        _rmvAId();
     }
 
     /**
@@ -503,10 +500,7 @@ contract CSXTrade is ReentrancyGuard {
                 _distributeProceeds();
             }
         }
-        bool success = IUSERS_CONTRACT.removeAssetIdUsed(itemSellerAssetId, SELLER_ADDRESS);
-        if (!success) {
-            revert TradeIDNotRemoved();
-        }
+        _rmvAId();
         if (giveWarningToSeller) {
             IUSERS_CONTRACT.warnUser(SELLER_ADDRESS);
         }
@@ -627,6 +621,18 @@ contract CSXTrade is ReentrancyGuard {
         status = _status;
         statusHistory.push(_status);
         ITRADEFACTORY_CONTRACT.onStatusChange(status, prevStatus, data, SELLER_ADDRESS, buyer);
+    }
+
+    /** Remove Asset Id
+     * @notice Remove the asset id from the used asset ids list by seller
+     * @dev This function is used to remove the asset id from the used asset ids list by seller
+     */
+    function _rmvAId() private {
+        bool _s = IUSERS_CONTRACT.removeAssetIdUsed(itemSellerAssetId, SELLER_ADDRESS);
+
+        if (!_s) {
+            revert TradeIDNotRemoved();
+        }
     }
 
     /**
