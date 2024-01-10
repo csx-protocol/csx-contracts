@@ -155,10 +155,13 @@ contract VestedStaking is ReentrancyGuard {
         bool claimWeth,
         bool convertWethToEth
     ) external onlyVester nonReentrant {
-        (uint256 usdcAmount, uint256 usdtAmount, uint256 wethAmount) = ISTAKED_CSX
+        (,,uint256 wethAmount) = ISTAKED_CSX
             .rewardOf(address(this));
 
         ISTAKED_CSX.claim(claimUsdc, claimUsdt, claimWeth, convertWethToEth);
+
+        uint256 usdcAmount = IUSDC_TOKEN.balanceOf(address(this));
+        uint256 usdtAmount = IUSDT_TOKEN.balanceOf(address(this));
 
         if (claimUsdc) {
             if (usdcAmount != 0) {
