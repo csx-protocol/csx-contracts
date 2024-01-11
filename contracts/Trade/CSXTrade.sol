@@ -44,6 +44,7 @@ contract CSXTrade is ReentrancyGuard {
     string public weaponType;
 
     uint256 public depositedValue;
+    uint256 public depositedValueWithFees;
     uint256 public weiPrice;
 
     uint256 public sellerAcceptedTimestamp;
@@ -232,6 +233,7 @@ contract CSXTrade is ReentrancyGuard {
 
         (uint256 buyerNetValue, , , ) = getNetValue(_affLink, weiPrice);
         depositedValue = _transferToken(msg.sender, address(this), buyerNetValue);
+        depositedValueWithFees = weiPrice * (depositedValue * 1e18 / buyerNetValue) / 1e18; // Will work for all ERC20 tokens that have decimals <= 18
 
         string memory _data = string(
             abi.encodePacked(
@@ -549,7 +551,7 @@ contract CSXTrade is ReentrancyGuard {
             }
         }
 
-        (uint256 buyerNetPrice, uint256 sellerNetProceeds, uint256 affiliatorNetReward, uint256 tokenHoldersNetReward) = getNetValue(referralCode, depositedValue);
+        (uint256 buyerNetPrice, uint256 sellerNetProceeds, uint256 affiliatorNetReward, uint256 tokenHoldersNetReward) = getNetValue(referralCode, depositedValueWithFees);
         _transferToken(address(this), SELLER_ADDRESS, sellerNetProceeds);
         if (affiliatorNetReward > 0) {
             uint256 actualAmountTransferredToAff = _transferToken(address(this), referralRegistryContract.getReferralCodeOwner(referralCode), affiliatorNetReward);
