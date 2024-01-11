@@ -231,7 +231,36 @@ contract CSXTrade is ReentrancyGuard {
         buyer = _buyer;
         buyerTradeUrl = _buyerTradeUrl;
 
-        (uint256 buyerNetValue, , , ) = getNetValue(_affLink, weiPrice);
+        // Fetch the referral code from the registry for the buyer
+        bytes32 storageRefCode = referralRegistryContract.getReferralCode(buyer);
+
+        // If the fetched referral code is not zero (i.e., it exists), then check if it's different from the current referral code.
+        // If it's different, then update the current referral code to the fetched one.
+        if (storageRefCode != bytes32(0)) {
+            if (storageRefCode != referralCode) {
+                referralCode = storageRefCode;
+            }
+            // If the fetched referral code is zero (i.e., it doesn't exist), then check if the current referral code is not zero.
+            // If the current referral code is not zero, then we need to validate it.
+        } else if (referralCode != bytes32(0)) {
+            // Check if the current referral code is registered. If it's not, then we set the referral code to zero and skip further checks.
+            if (!referralRegistryContract.isReferralCodeRegistered(referralCode)) {
+                referralCode = bytes32(0);
+            } else {
+                // If the referral code is valid, then we fetch the owner of the referral code.
+                address refOwner = referralRegistryContract.getReferralCodeOwner(referralCode);
+                // Check if the owner of the referral code is not the buyer.
+                // If it's the buyer, then we set the referral code to zero.
+                // If it's not the buyer, then we set the referral code as Primary for the buyer.
+                if (refOwner == buyer) {
+                    referralCode = bytes32(0);
+                } else {
+                    referralRegistryContract.setReferralCodeAsTC(referralCode, buyer);
+                }
+            }
+        }
+
+        (uint256 buyerNetValue, , , ) = getNetValue(referralCode, weiPrice);
         depositedValue = _transferToken(msg.sender, address(this), buyerNetValue);
         depositedValueWithFees = weiPrice * (depositedValue * 1e18 / buyerNetValue) / 1e18; // Will work for all ERC20 tokens that have decimals <= 18
 
@@ -522,35 +551,6 @@ contract CSXTrade is ReentrancyGuard {
      * @dev This function is used to distribute the proceeds of the listing
      */
     function _distributeProceeds() private {
-        // Fetch the referral code from the registry for the buyer
-        bytes32 storageRefCode = referralRegistryContract.getReferralCode(buyer);
-
-        // If the fetched referral code is not zero (i.e., it exists), then check if it's different from the current referral code.
-        // If it's different, then update the current referral code to the fetched one.
-        if (storageRefCode != bytes32(0)) {
-            if (storageRefCode != referralCode) {
-                referralCode = storageRefCode;
-            }
-            // If the fetched referral code is zero (i.e., it doesn't exist), then check if the current referral code is not zero.
-            // If the current referral code is not zero, then we need to validate it.
-        } else if (referralCode != bytes32(0)) {
-            // Check if the current referral code is registered. If it's not, then we set the referral code to zero and skip further checks.
-            if (!referralRegistryContract.isReferralCodeRegistered(referralCode)) {
-                referralCode = bytes32(0);
-            } else {
-                // If the referral code is valid, then we fetch the owner of the referral code.
-                address refOwner = referralRegistryContract.getReferralCodeOwner(referralCode);
-                // Check if the owner of the referral code is not the buyer.
-                // If it's the buyer, then we set the referral code to zero.
-                // If it's not the buyer, then we set the referral code as Primary for the buyer.
-                if (refOwner == buyer) {
-                    referralCode = bytes32(0);
-                } else {
-                    referralRegistryContract.setReferralCodeAsTC(referralCode, buyer);
-                }
-            }
-        }
-
         (uint256 buyerNetPrice, uint256 sellerNetProceeds, uint256 affiliatorNetReward, uint256 tokenHoldersNetReward) = getNetValue(referralCode, depositedValueWithFees);
         _transferToken(address(this), SELLER_ADDRESS, sellerNetProceeds);
         if (affiliatorNetReward > 0) {
