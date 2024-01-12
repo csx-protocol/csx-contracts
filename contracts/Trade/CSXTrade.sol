@@ -623,7 +623,7 @@ contract CSXTrade is ReentrancyGuard {
         TradeStatus prevStatus = status;
         status = _status;
         statusHistory.push(_status);
-        ITRADEFACTORY_CONTRACT.onStatusChange(status, prevStatus, data, SELLER_ADDRESS, buyer);
+        ITRADEFACTORY_CONTRACT.onStatusChange(_status, prevStatus, data, SELLER_ADDRESS, buyer);
     }
 
     /** Remove Asset Id
