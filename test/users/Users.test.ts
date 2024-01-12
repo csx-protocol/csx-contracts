@@ -63,7 +63,7 @@ describe("Users", function () {
         await scsx.waitForDeployment();
 
         const ReferralRegistry = await ethers.getContractFactory("ReferralRegistry");
-        referralRegistryInstance = await ReferralRegistry.deploy(keepers.target);
+        referralRegistryInstance = await ReferralRegistry.deploy(keepers.target, weth.target, usdc.target, usdt.target);
         
         await referralRegistryInstance.waitForDeployment();
 

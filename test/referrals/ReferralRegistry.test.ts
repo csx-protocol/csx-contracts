@@ -1,8 +1,10 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { Signer} from "ethers";
-import { PaymentTokensStruct } from "../../typechain-types/contracts/TradeFactory/CSXTradeFactory";
+import { PaymentTokensStruct, TradeUrlStruct } from "../../typechain-types/contracts/TradeFactory/CSXTradeFactory";
 import { InitParamsStruct } from "../../typechain-types/contracts/CSX/StakedCSX";
+import { CSXTrade } from "../../typechain-types";
+
 describe("ReferralRegistry", async function () {
   let referralRegistryInstance: any,
       csx: any,
@@ -14,13 +16,15 @@ describe("ReferralRegistry", async function () {
       users: any,
       buyAssistoor: any,
       tradeFactoryBaseStorage: any,
-      tradeFactory: any;
+      tradeFactory: any,
+      csxTrade: CSXTrade;
 
   let deployer: Signer,
       council: Signer,
       keeperNodeAddress: Signer,
       user1: Signer,
-      user2: Signer;
+      user2: Signer,
+      user3: Signer;
 
   const referralCode = ethers.encodeBytes32String("refCode123");
   const referralCodeWithSpace = ethers.encodeBytes32String("refCode 123");
@@ -28,7 +32,7 @@ describe("ReferralRegistry", async function () {
   const buyerRatio = 40;
 
   beforeEach(async function () {
-    [deployer, council, keeperNodeAddress, user1, user2] = await ethers.getSigners();
+    [deployer, council, keeperNodeAddress, user1, user2, user3] = await ethers.getSigners();
 
     const CSXToken = await ethers.getContractFactory("CSXToken");
     csx = await CSXToken.deploy();
@@ -62,7 +66,7 @@ describe("ReferralRegistry", async function () {
     await scsx.waitForDeployment();
 
     const ReferralRegistry = await ethers.getContractFactory("ReferralRegistry");
-    referralRegistryInstance = await ReferralRegistry.deploy(keepers.target);
+    referralRegistryInstance = await ReferralRegistry.deploy(keepers.target, weth.target, usdc.target, usdt.target);
     await referralRegistryInstance.waitForDeployment();
 
     const Users = await ethers.getContractFactory("Users");
@@ -91,9 +95,11 @@ describe("ReferralRegistry", async function () {
     await tradeFactory.waitForDeployment();
 
     await referralRegistryInstance.connect(council).changeContracts(tradeFactory.target, keepers.target);
-
     expect(await referralRegistryInstance.factory()).to.equal(tradeFactory.target);
     await users.connect(council).changeContracts(tradeFactory.target, keepers.target);
+
+    await tradeFactoryBaseStorage.connect(council).init(tradeFactory.target);
+
   });
 
   it("should register a referral code", async function () {
@@ -124,5 +130,78 @@ describe("ReferralRegistry", async function () {
   it("should not be able to register a code that already exists", async function () {
     await referralRegistryInstance.connect(user1).registerReferralCode(referralCode, ownerRatio, buyerRatio);
     await expect(referralRegistryInstance.connect(user2).registerReferralCode(referralCode, ownerRatio, buyerRatio)).to.be.revertedWithCustomError(referralRegistryInstance,"InvalidReferralCode").withArgs("Referral code already registered");
+  });
+
+  it("should receive the correct rebate amount after a trade", async function () {
+    // Item price (1 ETH, 18 decimals)
+    const itemFullPrice = ethers.parseUnits("1", 18);
+
+    // Create listing
+    const params = {
+      itemMarketName: 'TEST',
+      tradeUrl: ['0', 'TEST'],
+      assetId: 'TEST',
+      inspectLink: 'TEST',
+      itemImageUrl: 'TEST',
+      weiPrice: itemFullPrice,
+      skinInfo: [
+        "[0.8, 0.06, 0.35223010182380676]",
+        "8",
+        "27",
+      ],
+      stickers: [],
+      weaponType: 'TEST',
+      priceType: '0',
+    };
+    await tradeFactory.connect(deployer).createListingContract(params);
+
+    // get contract address
+    const tradeAddress = await tradeFactoryBaseStorage.getTradeContractByIndex('0');
+
+    // connect trade contract
+    const CSXTrade = await ethers.getContractFactory("CSXTrade");
+    csxTrade = CSXTrade.attach(tradeAddress) as CSXTrade;
+
+    // create referral code for user1
+    await referralRegistryInstance.connect(user1).registerReferralCode(referralCode, ownerRatio, buyerRatio);
+
+    // user3 buys item
+    await weth.connect(user3).deposit({value: itemFullPrice});
+    await weth.connect(user3).approve(csxTrade.target, itemFullPrice);
+    const tradeUrl: TradeUrlStruct = {
+      partner: "2",
+      token: ""
+    };
+    await csxTrade.connect(user3).commitBuy(tradeUrl, referralCode, await user3.getAddress());
+
+    // proceed to complete trade
+    await csxTrade.connect(user3).buyerConfirmReceived();
+
+    // 1. Get base fee
+    const baseFee = await tradeFactory.baseFee();
+    // 2. Calculate base fee value
+    const baseFeeValue = (itemFullPrice * baseFee) / 1000n;
+    // 3. Calculate half of base fee value
+    const halfBaseFeeValue = baseFeeValue / 2n;
+    // 4. Calculate ref rebate
+    const refRebate = halfBaseFeeValue * BigInt(ownerRatio) / 100n;
+    // 5. Get claimable rewards per user per payment token
+    const claimableRewardsPerUserPerPaymentToken = 
+      await referralRegistryInstance.claimableRewardsPerUserPerPaymentToken(await user1.getAddress(), weth.target);
+    // 6. Expect claimable rewards to equal ref rebate
+    expect(claimableRewardsPerUserPerPaymentToken).to.equal(refRebate);
+    // 7. Get weth balance before claiming
+    const wethBalanceBefore = await weth.balanceOf(await user1.getAddress());
+    // 8. Claim ref rebate
+    await referralRegistryInstance.connect(user1).claimReferralRewards(true, false, false);
+    // 9. Get weth balance after claiming
+    const wethBalanceAfter = await weth.balanceOf(await user1.getAddress());
+    // 10. Expect weth balance after to equal self calculated ref rebate
+    expect(wethBalanceAfter).to.equal(refRebate);
+    // 11. Get claimable rewards per user per payment token after claiming
+    const claimableRewardsPerUserPerPaymentTokenAfter = 
+      await referralRegistryInstance.claimableRewardsPerUserPerPaymentToken(await user1.getAddress(), weth.target);
+    // 12. Expect claimable rewards after to equal weth balance before (zero)
+    expect(claimableRewardsPerUserPerPaymentTokenAfter).to.equal(wethBalanceBefore);
   });
 });

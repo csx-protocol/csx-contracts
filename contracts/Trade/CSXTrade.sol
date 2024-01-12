@@ -18,7 +18,7 @@ error NotKeeperOrNode();
 error NotParty();
 error StatusNotDisputeReady();
 error TradeIDNotRemoved();
-error DividendDepositFailed();
+error DepositFailed(string _to);
 error TimeNotElapsed();
 error ZeroAddress();
 
@@ -552,26 +552,24 @@ contract CSXTrade is ReentrancyGuard {
      * @dev This function is used to distribute the proceeds of the listing
      */
     function _distributeProceeds() private {
-        (uint256 buyerNetPrice, uint256 sellerNetProceeds, uint256 affiliatorNetReward, uint256 tokenHoldersNetReward) = getNetValue(referralCode, depositedValueWithFees);
-        _transferToken(address(this), SELLER_ADDRESS, sellerNetProceeds);
-        if (affiliatorNetReward > 0) {
-            uint256 actualAmountTransferredToAff = _transferToken(address(this), referralRegistryContract.getReferralCodeOwner(referralCode), affiliatorNetReward);
-            referralRegistryContract.emitReferralCodeRebateUpdated(
-                address(this),
-                address(paymentToken),
-                referralCode,
-                actualAmountTransferredToAff
-            );
+        (uint256 buyerNetPrice, uint256 sellerNetValue, uint256 refNetReward, uint256 sCSXNetReward) = getNetValue(referralCode, depositedValueWithFees);
+        _transferToken(address(this), SELLER_ADDRESS, sellerNetValue);
+        if (refNetReward > 0) {
+            IERC20(paymentToken).safeIncreaseAllowance(address(referralRegistryContract), refNetReward); 
+            bool _rS = referralRegistryContract.rewardUser(referralCode, address(paymentToken), refNetReward);
+            if(!_rS) {
+                revert DepositFailed('refNetReward');
+            }
         }
 
         if(priceType == PriceType.USDT){
-            paymentToken.forceApprove(address(sCSXToken), tokenHoldersNetReward);
+            paymentToken.forceApprove(address(sCSXToken), sCSXNetReward);
         } else {
-            paymentToken.safeIncreaseAllowance(address(sCSXToken), tokenHoldersNetReward);
+            paymentToken.safeIncreaseAllowance(address(sCSXToken), sCSXNetReward);
         }
         
-        if (!sCSXToken.depositDividend(address(paymentToken), tokenHoldersNetReward)) {
-            revert DividendDepositFailed();
+        if (!sCSXToken.depositDividend(address(paymentToken), sCSXNetReward)) {
+            revert DepositFailed('sCSXNetReward');
         }
         IUSERS_CONTRACT.emitNewTrade(
             SELLER_ADDRESS,

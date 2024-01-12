@@ -22,12 +22,6 @@ interface IReferralRegistry {
         uint256 buyerRatio
     ) external;
 
-    function emitReferralCodeRebateUpdated(
-        address contractAddress,
-        address _paymentToken,
-        bytes32 referralCode,
-        uint256 rebate
-    ) external;
 
     function registerReferralCode(
         bytes32 referralCode,
@@ -69,4 +63,6 @@ interface IReferralRegistry {
     function setReferralCodeAsTC(bytes32 referralCode, address user) external;
 
     function getReferralCode(address user) external view returns (bytes32);
+    
+    function rewardUser(bytes32 referralCode, address paymentToken, uint256 amount) external returns (bool);
 }

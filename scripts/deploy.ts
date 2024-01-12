@@ -94,7 +94,13 @@ const main = async () => {
   addressMap.set("userProfileLevel", UserProfileLevel.target as string);
 
   // Deploy ReferralRegistry
-  const ReferralRegistry = await deployReferralRegistry(hre, addressMap.get("keepers")!);
+  const ReferralRegistry = await deployReferralRegistry(
+    hre, 
+    addressMap.get("keepers")!,
+    addressMap.get("weth")!,
+    addressMap.get("usdc")!,
+    addressMap.get("usdt")!
+  );
   addressMap.set("referralRegistry", ReferralRegistry.target as string); // Deploy the ReferralRegistry contract
 
   // Deploy TradeFactoryBaseStorage
