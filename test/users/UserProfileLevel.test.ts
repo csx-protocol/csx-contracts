@@ -65,7 +65,7 @@ describe("UserProfileLevel", function () {
         await users.waitForDeployment();        
 
         const UserProfileLevel = await ethers.getContractFactory("UserProfileLevel");
-        userProfileLevelInstance = await UserProfileLevel.deploy(csx.target, users.target, keepers.target);
+        userProfileLevelInstance = await UserProfileLevel.deploy(csx.target, keepers.target);
         await userProfileLevelInstance.waitForDeployment();
 
         const BuyAssistoor = await ethers.getContractFactory("BuyAssistoor");

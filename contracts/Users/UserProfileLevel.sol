@@ -25,7 +25,6 @@ contract UserProfileLevel {
     uint256 private constant _BASE_COST = 1e18; // Assuming the token has 18 decimals
 
     IERC20Burnable private immutable CSX_TOKEN;
-    IUsers private usersContract;
     IKeepers private keepersContract;
 
     // User struct to store user profile data
@@ -36,18 +35,14 @@ contract UserProfileLevel {
     // Mapping to store user profiles by their address
     mapping(address => User) public users;
 
-    constructor(address _tokenAddress, address _usersContractAddress, address _keepersContractAddress) {
+    constructor(address _tokenAddress, address _keepersContractAddress) {
         if (_tokenAddress == address(0)) {
-            revert ZeroAddress();
-        }
-        if (_usersContractAddress == address(0)) {
             revert ZeroAddress();
         }
         if (_keepersContractAddress == address(0)) {
             revert ZeroAddress();
         }
         CSX_TOKEN = IERC20Burnable(_tokenAddress);
-        usersContract = IUsers(_usersContractAddress);
         keepersContract = IKeepers(_keepersContractAddress);
     }
 
@@ -83,23 +78,18 @@ contract UserProfileLevel {
     }
 
     /**
-     * @notice Function to change the keepers and users contracts
-     * @dev This is used when the keepers or users contracts are upgraded
+     * @notice Function to change the keepers contract address
+     * @dev This is used when the keepers are upgraded
      * @dev This function can only be called by a council member
-     * @param _usersContractAddress The address of the new users contract
      * @param _keepersContractAddress The address of the new keepers contract
      */
-    function changeContracts(address _usersContractAddress, address _keepersContractAddress) external {
+    function changeKeepers(address _keepersContractAddress) external {
         if (!keepersContract.isCouncil(msg.sender)) {
             revert NotCouncil();
-        }
-        if (_usersContractAddress == address(0)) {
-            revert ZeroAddress();
         }
         if (_keepersContractAddress == address(0)) {
             revert ZeroAddress();
         }
-        usersContract = IUsers(_usersContractAddress);
         keepersContract = IKeepers(_keepersContractAddress);
     }
 
