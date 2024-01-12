@@ -123,7 +123,7 @@ contract Keepers {
      */
     function changeKeeperNode(address _newAddres) external onlyCouncil {
         if (_newAddres == address(0)) {
-            revert NotCouncil();
+            revert ZeroAddress();
         }
         keeperOracleAddress = _newAddres;
         emit KeeperNodeChanged(_newAddres);
