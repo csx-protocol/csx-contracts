@@ -9,6 +9,7 @@ error NotFactory();
 error NotCouncil();
 error NotTradeContract();
 error NotKeepersOrTradeContract();
+error NotKeepers();
 error TradeNotCompleted();
 error AlreadyReppedAsBuyer();
 error AlreadyReppedAsSeller();
@@ -101,17 +102,20 @@ contract Users is ReentrancyGuard {
         _;
     }
 
-    modifier onlyKeepersOrTradeContracts(address contractAddress) {
+    modifier onlyKeepersOrTradeContracts(address contractAddress, bool isWithTCs) {
         // Check if the sender is a keeper
         bool isKeeperOrKeeperNode = keepers.isKeeper(msg.sender) || keepers.isKeeperNode(msg.sender);
         
-        // Check if the sender is a trade contract
-        bool isTradeContract = msg.sender == contractAddress && factory.isThisTradeContract(contractAddress);
-        
         if (!isKeeperOrKeeperNode) {
-            if(!isTradeContract){
-                revert NotKeepersOrTradeContract();
-            }
+            if(isWithTCs){
+                // Check if the sender is a trade contract
+                bool isTradeContract = msg.sender == contractAddress && factory.isThisTradeContract(contractAddress);
+                if(!isTradeContract){
+                    revert NotKeepersOrTradeContract();
+                }
+            } else {
+                revert NotKeepers();
+            }            
         }
         _;
     }
@@ -121,7 +125,7 @@ contract Users is ReentrancyGuard {
      * @dev This function can only be called by a keeper or a trade contract
      * @param _user The address of the user to warn
      */
-    function warnUser(address _user) external onlyKeepersOrTradeContracts(msg.sender) {
+    function warnUser(address _user) external onlyKeepersOrTradeContracts(msg.sender, true) {
         User storage user = users[_user];
         user.reputationNeg += 3;
         ++user.warnings;
@@ -132,10 +136,10 @@ contract Users is ReentrancyGuard {
 
     /**
      * @notice Ban a user
-     * @dev This function can only be called by a keeper or a trade contract
+     * @dev This function can only be called by a keepers
      * @param _user The address of the user to ban
      */
-    function banUser(address _user) external onlyKeepersOrTradeContracts(msg.sender) {
+    function banUser(address _user) external onlyKeepersOrTradeContracts(msg.sender, false) {
         User storage user = users[_user];
         user.isBanned = true;
     }
@@ -143,9 +147,9 @@ contract Users is ReentrancyGuard {
     /**
      * @notice Unban a user
      * @param _user The address of the user to unban
-     * @dev This function can only be called by a keeper or a trade contract
+     * @dev This function can only be called by a keepers
      */
-    function unbanUser(address _user) external onlyKeepersOrTradeContracts(msg.sender) {
+    function unbanUser(address _user) external onlyKeepersOrTradeContracts(msg.sender, false) {
         User storage user = users[_user];
         user.isBanned = false;
     }
