@@ -127,8 +127,8 @@ contract CSXTrade is ReentrancyGuard {
      * @param _sCSXToken The staked CSX token address
      */
     function initExtraInfo(
-        Sticker[] memory _stickers,
-        string memory _weaponType,
+        Sticker[] calldata _stickers,
+        string calldata _weaponType,
         address _paymentToken,
         PriceType _priceType,
         address _referralRegistryContract,
@@ -202,7 +202,7 @@ contract CSXTrade is ReentrancyGuard {
      * @param _buyerAddress The buyer's address (if the buyer is a proxy from BuyAssistoor contract)
      */
     function commitBuy(
-        TradeUrl memory _buyerTradeUrl,
+        TradeUrl calldata _buyerTradeUrl,
         bytes32 _affLink,
         address _buyerAddress
     ) external nonReentrant {
@@ -418,7 +418,7 @@ contract CSXTrade is ReentrancyGuard {
      * @param isTradeMade Whether the trade has been made or not
      * @param message The message to be emitted
      */
-    function keeperNodeConfirmsTrade(bool isTradeMade, string memory message) external nonReentrant {
+    function keeperNodeConfirmsTrade(bool isTradeMade, string calldata message) external nonReentrant {
         if (!IKEEPERS_CONTRACT.isKeeperNode(msg.sender)) {
             revert NotKeeperNode();
         }
@@ -476,7 +476,7 @@ contract CSXTrade is ReentrancyGuard {
      * @param _complaint The complaint of the dispute
      */
     function openDispute(
-        string memory _complaint
+        string calldata _complaint
     ) external {
         if (msg.sender != SELLER_ADDRESS) {
             if(msg.sender != buyer){
