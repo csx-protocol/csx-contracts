@@ -529,6 +529,7 @@ contract CSXTrade is ReentrancyGuard {
             _changeStatus(TradeStatus.Resolved, "KO_RESOLVE");
             if (isWithValue) {
                 _distributeProceeds();
+                IUSERS_CONTRACT.endDeliveryTimer(address(this), SELLER_ADDRESS);
             }
         }
         _rmvAId();
