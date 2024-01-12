@@ -378,7 +378,7 @@ contract Users is ReentrancyGuard {
         string memory _assetId,
         address sellerAddrss
     ) external onlyTradeContracts(msg.sender) returns (bool) {
-        assetIdFromUserAddrssToTradeAddress[_assetId][sellerAddrss] = address(0);
+        delete assetIdFromUserAddrssToTradeAddress[_assetId][sellerAddrss];
         return true;
     }
 
