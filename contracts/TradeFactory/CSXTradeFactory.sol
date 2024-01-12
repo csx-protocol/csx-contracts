@@ -227,6 +227,15 @@ contract CSXTradeFactory is TradeFactoryBase {
         address _sCSXTokenAddress,
         address _buyAssistoor
     ) external isCouncil {
+        if(_paymentTokens.weth == address(0)) {
+            revert InvalidAddress(_paymentTokens.weth);
+        }
+        if(_paymentTokens.usdc == address(0)) {
+            revert InvalidAddress(_paymentTokens.usdc);
+        }
+        if(_paymentTokens.usdt == address(0)) {
+            revert InvalidAddress(_paymentTokens.usdt);
+        }
         if(_referralRegistryAddress == address(0)) {
             revert InvalidAddress(_referralRegistryAddress);
         }
