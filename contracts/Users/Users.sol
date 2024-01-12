@@ -388,14 +388,7 @@ contract Users is ReentrancyGuard {
         string memory _assetId,
         address sellerAddrss
     ) external view returns (bool) {
-        if (
-            assetIdFromUserAddrssToTradeAddress[_assetId][sellerAddrss] ==
-            address(0)
-        ) {
-            return false;
-        } else {
-            return true;
-        }
+        return assetIdFromUserAddrssToTradeAddress[_assetId][sellerAddrss] != address(0);
     }
 
     /**

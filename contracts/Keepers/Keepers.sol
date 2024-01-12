@@ -99,11 +99,7 @@ contract Keepers {
      * @return true if the address is a keeper, false otherwise
      */
     function isKeeperNode(address _address) external view returns (bool) {
-        if (_address == keeperOracleAddress) {
-            return true;
-        } else {
-            return false;
-        }
+        return _address == keeperOracleAddress;
     }
 
     /**
@@ -177,11 +173,7 @@ contract Keepers {
      * @dev Grace period before council control is 2 days.
      */
     function isVesterUnderCouncilControl(address _address) external view returns (bool) {
-        if (vesterUnderCouncilControl[_address] && block.timestamp > lastVesterUpdate[_address] + 2 days) {
-            return true;
-        } else {
-            return false;
-        }
+        return vesterUnderCouncilControl[_address] && block.timestamp > lastVesterUpdate[_address] + 2 days;
     }
 
     /**
@@ -190,10 +182,6 @@ contract Keepers {
      * @return true if the address is the council, false otherwise
      */
     function isCouncil(address _address) external view returns (bool) {
-        if (_address == council) {
-            return true;
-        } else {
-            return false;
-        }
+        return _address == council;
     }
 }
