@@ -129,13 +129,31 @@ const main = async () => {
   addressMap.set("tradeFactory", TradeFactory.target as string);
 
   if (INIT_CONTRACTS) {
+    await CSXToken.init(Keepers.target);
+
     await EscrowedCSX.init(VestedCSX.target);
 
     await TradeFactoryBaseStorage.init(TradeFactory.target);
 
-    await ReferralRegistry.changeContracts(TradeFactory.target, Keepers.target);
+    // Council Actions
+    if (
+      hre.network.name === "hardhat" ||
+      hre.network.name === "localhost" ||
+      hre.network.name === "ganache" ||
+      hre.network.name === "goerli"
+    ) {
+      await ReferralRegistry.changeContracts(TradeFactory.target, Keepers.target);
+      await Users.changeContracts(TradeFactory.target, Keepers.target);
+    } else {
+      // TODO: Implement optional hardware wallet signing for production networks
+      // https://hardhat.org/hardhat-runner/plugins/nomicfoundation-hardhat-ledger.html
+      console.warn(
+        `Please call changeContracts() on ReferralRegistry and Users contracts with the following params:
+        \n\nReferralRegistry.changeContracts(${TradeFactory.target}, ${Keepers.target});
+        \nUsers.changeContracts(${TradeFactory.target}, ${Keepers.target});\n\n`
+      )
+    }
 
-    await Users.changeContracts(TradeFactory.target, Keepers.target);
   }
 
   // Logging contract addresses

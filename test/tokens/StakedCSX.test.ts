@@ -57,6 +57,8 @@ describe("Staking", function () {
         staking = (await Staking.deploy(init)) as StakedCSX;
 
         await staking.waitForDeployment();
+        await CSXToken.connect(deployer).init(keepers.target);
+        await CSXToken.connect(council).mint(await deployer.getAddress(), ethers.parseEther("100000000"));
     });
 
     describe("StakedCSX Tests >", function () { 

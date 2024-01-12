@@ -72,6 +72,8 @@ describe("VestedCSX", async function() {
     );
     await vestedCSX.waitForDeployment();        
     await escrowedCSX.init(vestedCSX.target);   
+    await csx.connect(deployer).init(keepers.target);
+    await csx.connect(council).mint(await deployer.getAddress(), ethers.parseEther("100000000"));
   });
 
   it("should vest amount and create VestedStaking contract", async function() {

@@ -96,10 +96,10 @@ describe("UserProfileLevel", function () {
         await referralRegistryInstance.connect(council).changeContracts(tradeFactory.target, keepers.target);
         await users.connect(council).changeContracts(tradeFactory.target, keepers.target);
         await tradeFactoryBaseStorage.connect(council).init(tradeFactory.target);
-
-        await csx.transfer(await user1.getAddress(), ethers.parseEther('40000000'));
-        await csx.transfer(await user2.getAddress(), ethers.parseEther('40000000'));
-
+        await csx.connect(deployer).init(keepers.target);
+        await csx.connect(council).mint(await deployer.getAddress(), ethers.parseEther("100000000"));
+        await csx.connect(deployer).transfer(await user1.getAddress(), ethers.parseEther('40000000'));
+        await csx.connect(deployer).transfer(await user2.getAddress(), ethers.parseEther('40000000'));
         await csx.connect(user1).approve(userProfileLevelInstance.target, ethers.parseEther('40000000'));
         await csx.connect(user2).approve(userProfileLevelInstance.target, ethers.parseEther('40000000'));
     });

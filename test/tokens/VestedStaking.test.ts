@@ -74,7 +74,8 @@ describe("VestedStaking", function () {
         await vestedCSX.waitForDeployment();
 
         await escrowedCSX.init(vestedCSX.target);
-
+        await csx.connect(deployer).init(keepers.target);
+        await csx.connect(council).mint(await deployer.getAddress(), ethers.parseEther("100000000"));
         await csx.connect(deployer).transfer(await vesterAddress.getAddress(), amount);
         await csx.connect(vesterAddress).approve(escrowedCSX.target, amount);
         await escrowedCSX.connect(vesterAddress).mintEscrow(amount);

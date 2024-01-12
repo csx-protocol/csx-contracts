@@ -5,6 +5,7 @@ import { Keepers } from "../../typechain-types";
 
 describe("EscrowedCSX", async function () {
   let deployer: Signer,
+      council: Signer,
       user1: Signer;
   let csxToken: any,
       escrowedCSX: any,
@@ -12,7 +13,7 @@ describe("EscrowedCSX", async function () {
       keepers: Keepers;
 
   beforeEach(async function () {
-    [deployer, user1] = await ethers.getSigners();
+    [deployer, council, user1] = await ethers.getSigners();
   
     const CSXToken = await ethers.getContractFactory("CSXToken");
     csxToken = await CSXToken.deploy();
@@ -23,8 +24,11 @@ describe("EscrowedCSX", async function () {
     await escrowedCSX.waitForDeployment();
 
     const Keepers = await ethers.getContractFactory("Keepers");
-    keepers = await Keepers.deploy(await deployer.getAddress(), await deployer.getAddress());
+    keepers = await Keepers.deploy(await council.getAddress(), await deployer.getAddress());
     await keepers.waitForDeployment();
+
+    await csxToken.connect(deployer).init(keepers.target);
+    await csxToken.connect(council).mint(await deployer.getAddress(), ethers.parseEther("100000000"));
   });
 
   describe("Initialization", function () {
