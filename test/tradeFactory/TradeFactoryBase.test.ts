@@ -40,7 +40,7 @@ describe("TradeFactoryBaseStorage", async function () {
     it("should not allow re-initialization", async function () {
       await instance.connect(council).init(await factory.getAddress());
       await expect(instance.connect(council).init(await factory.getAddress())).to.be.revertedWithCustomError(
-        instance, "AlreadyInitialized"
+        instance, "InvalidInit"
       );
     });
 
@@ -52,7 +52,7 @@ describe("TradeFactoryBaseStorage", async function () {
 
     it("should not allow initialization with zero address", async function () {
       await expect(instance.connect(council).init(ethers.ZeroAddress)).to.be.revertedWithCustomError(
-        instance, "ZeroAddress"
+        instance, "InvalidInit"
       );
     });
   });

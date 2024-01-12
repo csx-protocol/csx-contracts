@@ -3,6 +3,7 @@ import { ethers } from "hardhat";
 import { Signer } from "ethers";
 import { BuyAssistoor, CSXToken, CSXTradeFactory, Keepers, ReferralRegistry, StakedCSX, TradeFactoryBaseStorage, UserProfileLevel, Users } from "../../typechain-types";
 import { PaymentTokensStruct } from "../../typechain-types/contracts/TradeFactory/CSXTradeFactory";
+import { InitParamsStruct } from "../../typechain-types/contracts/CSX/StakedCSX";
 
 describe("UserProfileLevel", function () {
     let userProfileLevelInstance: UserProfileLevel;
@@ -49,7 +50,14 @@ describe("UserProfileLevel", function () {
         await keepers.waitForDeployment();
 
         const StakedCSX = await ethers.getContractFactory("StakedCSX");
-        scsx = await StakedCSX.deploy(csx.target, weth.target, usdc.target, usdt.target, keepers.target);
+        const stakedInitParams = {
+            KEEPERS_INTERFACE: keepers.target,
+            TOKEN_CSX: csx.target,
+            TOKEN_WETH: weth.target,
+            TOKEN_USDC: usdc.target,
+            TOKEN_USDT: usdt.target,
+        } as InitParamsStruct;
+        scsx = await StakedCSX.deploy(stakedInitParams);
         await scsx.waitForDeployment();
 
         const Users = await ethers.getContractFactory("Users");

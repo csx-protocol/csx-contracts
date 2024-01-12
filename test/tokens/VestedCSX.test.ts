@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { Signer } from "ethers";
 import { VestedCSX, VestedStaking } from "../../typechain-types";
+import { InitParamsStruct } from "../../typechain-types/contracts/CSX/StakedCSX";
 
 describe("VestedCSX", async function() {
   let vestedCSX: VestedCSX;
@@ -49,7 +50,14 @@ describe("VestedCSX", async function() {
     await keepers.waitForDeployment();
    
     const StakedCSX = await ethers.getContractFactory("StakedCSX");
-    stakedCSX = await StakedCSX.deploy(csx.target, weth.target, usdc.target, usdt.target, keepers.target);
+    const stakedInitParams = {
+      KEEPERS_INTERFACE: keepers.target,
+      TOKEN_CSX: csx.target,
+      TOKEN_WETH: weth.target,
+      TOKEN_USDC: usdc.target,
+      TOKEN_USDT: usdt.target,
+    } as InitParamsStruct;
+    stakedCSX = await StakedCSX.deploy(stakedInitParams);
     await stakedCSX.waitForDeployment();
     
     const VestedCSXContract = await ethers.getContractFactory("VestedCSX");

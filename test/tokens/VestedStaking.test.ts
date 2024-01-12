@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { ethers, network } from "hardhat";
 import { Signer } from "ethers";
+import { InitParamsStruct } from "../../typechain-types/contracts/CSX/StakedCSX";
 // import { time } from "@openzeppelin/test-helpers";
 
 describe("VestedStaking", function () {
@@ -20,6 +21,7 @@ describe("VestedStaking", function () {
         keeperNodeAddress: Signer;
 
     const amount = ethers.parseEther("1000"); // 1000 ether
+    const DAY = 24 * 60 * 60;
 
     beforeEach(async function () {
         [deployer, council, keeperNodeAddress, vesterAddress] = await ethers.getSigners();
@@ -45,7 +47,14 @@ describe("VestedStaking", function () {
         await keepers.waitForDeployment();
 
         const StakedCSX = await ethers.getContractFactory("StakedCSX");
-        stakedCSX = await StakedCSX.deploy(csx.target, weth.target, usdc.target, usdt.target, keepers.target);
+        const stakedInitParams = {
+            KEEPERS_INTERFACE: keepers.target,
+            TOKEN_CSX: csx.target,
+            TOKEN_WETH: weth.target,
+            TOKEN_USDC: usdc.target,
+            TOKEN_USDT: usdt.target,
+        } as InitParamsStruct;
+        stakedCSX = await StakedCSX.deploy(stakedInitParams);
         await stakedCSX.waitForDeployment();
 
         const EscrowedCSX = await ethers.getContractFactory("EscrowedCSX");
@@ -85,8 +94,8 @@ describe("VestedStaking", function () {
 
             const depositAmount = ethers.parseUnits('1000', 6);
             await usdt.connect(deployer).approve(stakedCSX.getAddress(), depositAmount);
-        
             await stakedCSX.connect(deployer).depositDividend(await usdt.getAddress(), depositAmount);
+            await stakedCSX.connect(council).setRewardsDuration(7 * DAY, await usdt.getAddress());
             await stakedCSX.connect(council).distribute(false, false, true);
 
             // Transfer 0.000001 USDT more than the vester balance in order to attempt claimRewards revert
@@ -113,15 +122,25 @@ describe("VestedStaking", function () {
         await usdt.connect(deployer).approve(stakedCSX.getAddress(), depositAmount);
         
         await stakedCSX.connect(deployer).depositDividend(await usdt.getAddress(), depositAmount);
+        await stakedCSX.connect(council).setRewardsDuration(7 * DAY, await usdt.getAddress());
         await stakedCSX.connect(council).distribute(true, true, true);
         
+        const extendTime = 7 * DAY;
+        await network.provider.send("evm_increaseTime", [extendTime]);
+        await network.provider.send("evm_mine");
+
         const claimableAndTime = await vestedStaking.getClaimableAmountAndVestTimeStart();
-        const claimableAmount = claimableAndTime[1];
-        expect(claimableAmount.toString()).to.equal(depositAmount.toString());
+        const claimableAmount: bigint = claimableAndTime[1];
+
+        const deviationPercentage = 800n; // 0.80% in basis points
+        const basisPointDivisor = 100_000n; // Basis points divisor for 6 decimal places
+        const mayDeviateWith = (depositAmount * deviationPercentage) / basisPointDivisor; // 0.80% of deposit amount
+
+        expect(claimableAmount).to.be.closeTo(depositAmount, mayDeviateWith);
 
         await vestedStaking.connect(vesterAddress).claimRewards(true, true, true, true);
         const usdtBalance = await usdt.balanceOf(await vesterAddress.getAddress());
-        expect(usdtBalance.toString()).to.equal(depositAmount.toString());
+        expect(usdtBalance).to.be.closeTo(depositAmount, mayDeviateWith);
     });
 
     it("should not allow withdrawal before vesting period ends", async function () {

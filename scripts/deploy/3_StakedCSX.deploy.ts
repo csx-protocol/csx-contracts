@@ -1,5 +1,6 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { StakedCSX } from '../../typechain-types';
+import { InitParamsStruct } from '../../typechain-types/contracts/CSX/StakedCSX';
 
 const deployStakedCSX = async (
   hre: HardhatRuntimeEnvironment, 
@@ -40,7 +41,14 @@ const deployStakedCSX = async (
   }
 
   const StakedCSX = await hre.ethers.getContractFactory("StakedCSX");
-  const stakedCSX: any = await StakedCSX.deploy(csxTokenAddress, wethAddress, usdcAddress, usdtAddress, keepersAddress);
+  const init: InitParamsStruct = {
+    KEEPERS_INTERFACE: keepersAddress,
+    TOKEN_CSX: csxTokenAddress,
+    TOKEN_WETH: wethAddress,
+    TOKEN_USDC: usdcAddress,
+    TOKEN_USDT: usdtAddress,
+  };
+  const stakedCSX: StakedCSX = await StakedCSX.deploy(init);
   await stakedCSX.waitForDeployment();
 
   return [stakedCSX, wethAddress, usdcAddress, usdtAddress];

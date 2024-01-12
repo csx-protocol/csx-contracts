@@ -4,6 +4,7 @@ import { Signer } from "ethers";
 import { PaymentTokensStruct } from "../../typechain-types/contracts/TradeFactory/CSXTradeFactory";
 import { listingParams } from "../../scripts/deploy/utils/list-demo";
 import { CSXTrade } from "../../typechain-types";
+import { InitParamsStruct } from "../../typechain-types/contracts/CSX/StakedCSX";
 
 describe("Users", function () {
     let council: Signer,
@@ -51,7 +52,14 @@ describe("Users", function () {
         keepers.connect(council).addKeeper(await keeperUser.getAddress());
 
         const StakedCSX = await ethers.getContractFactory("StakedCSX");
-        scsx = await StakedCSX.deploy(csx.target, weth.target, usdc.target, usdt.target, keepers.target);
+        const stakedInitParams = {
+            KEEPERS_INTERFACE: keepers.target,
+            TOKEN_CSX: csx.target,
+            TOKEN_WETH: weth.target,
+            TOKEN_USDC: usdc.target,
+            TOKEN_USDT: usdt.target,
+        } as InitParamsStruct;
+        scsx = await StakedCSX.deploy(stakedInitParams);
         await scsx.waitForDeployment();
 
         const ReferralRegistry = await ethers.getContractFactory("ReferralRegistry");
