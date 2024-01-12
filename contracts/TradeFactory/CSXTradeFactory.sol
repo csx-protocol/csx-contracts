@@ -151,9 +151,7 @@ contract CSXTradeFactory is TradeFactoryBase {
 
         usersContract.setAssetIdUsed(params.assetId, msg.sender, newAddress);
 
-        CSXTrade _contract = tradeFactoryBaseStorage.getTradeContractByIndex(
-            _tContracts - 1
-        );
+        CSXTrade _contract = CSXTrade(newAddress);
 
         if (params.priceType == PriceType.WETH) {
             _contract.initExtraInfo(
