@@ -82,9 +82,6 @@ contract CSXToken is ERC20Burnable {
      * @dev Reverts if the contract has not been initialized.
      */
     function mint(address account, uint256 amount) external onlyC {
-        if(account == address(0)) {
-            revert ZeroAddress();
-        }
         if(amount == 0) {
             revert ZeroAmount();
         }
