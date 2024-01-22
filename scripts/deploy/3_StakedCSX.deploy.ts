@@ -17,7 +17,7 @@ const deployStakedCSX = async (
     network.name === 'ganache' || 
     network.name === 'hardhat' || 
     network.name === 'localhost' ||
-    network.name === 'goerli') {
+    network.name === 'arbitrumSepolia') {
     const WETH9Mock = await hre.ethers.getContractFactory("WETH9Mock");
     const weth9Mock: any = await WETH9Mock.deploy();
     await weth9Mock.waitForDeployment();

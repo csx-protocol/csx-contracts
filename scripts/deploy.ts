@@ -48,6 +48,9 @@ const main = async () => {
   const hre: HardhatRuntimeEnvironment = await import("hardhat");
   const addressMap: Map<string, string> = new Map();
 
+  console.log(`\n\n${"=".repeat(50)}\n\n`);
+  console.log(`Deploying contracts to ${hre.network.name}...`);
+
   // Deploy CSX Token
   const CSXToken = await deployCSXToken(hre);
   addressMap.set("csxToken", CSXToken.target as string);
@@ -134,6 +137,8 @@ const main = async () => {
   addressMap.set("tradeFactory", TradeFactory.target as string);
 
   if (INIT_CONTRACTS) {
+    console.log(`Initializing contracts...`);
+
     await CSXToken.init(Keepers.target);
 
     await EscrowedCSX.init(VestedCSX.target);
@@ -145,7 +150,7 @@ const main = async () => {
       hre.network.name === "hardhat" ||
       hre.network.name === "localhost" ||
       hre.network.name === "ganache" ||
-      hre.network.name === "goerli"
+      hre.network.name === "arbitrumSepolia"
     ) {
       await ReferralRegistry.changeContracts(TradeFactory.target, Keepers.target);
       await Users.changeContracts(TradeFactory.target, Keepers.target);
@@ -196,19 +201,21 @@ const main = async () => {
   }
 
   if(VERIFY_ON_ETHERSCAN){
+    console.log(`\n\n${"=".repeat(50)}\n\n`);
+    console.log(`Verifying on Etherscan...`);
     await hre.run("verify:verify", {
       address: addressMap.get("csxToken"),
       constructorArguments: [],
     });    
     await hre.run("verify:verify", {
       address: addressMap.get("stakedCSX")!,
-      constructorArguments: [
-        addressMap.get("csxToken"),
-        addressMap.get("weth"),
-        addressMap.get("usdc"),
-        addressMap.get("usdt"),
-        addressMap.get("keepers"),
-      ],
+      constructorArguments: [{
+        KEEPERS_INTERFACE: addressMap.get("keepers"),
+        TOKEN_CSX: addressMap.get("csxToken"),
+        TOKEN_WETH: addressMap.get("weth"),
+        TOKEN_USDC: addressMap.get("usdc"),
+        TOKEN_USDT: addressMap.get("usdt"),
+      }],
     });
     await hre.run("verify:verify", {
       address: addressMap.get("escrowedCSX"),
@@ -241,13 +248,17 @@ const main = async () => {
       address: addressMap.get("userProfileLevel"),
       constructorArguments: [
         addressMap.get("csxToken"),
-        addressMap.get("users"),
         addressMap.get("keepers"),
       ],
     });
     await hre.run("verify:verify", {
       address: addressMap.get("referralRegistry"),
-      constructorArguments: [addressMap.get("keepers")],
+      constructorArguments: [
+        addressMap.get("keepers"),
+        addressMap.get("weth"),
+        addressMap.get("usdc"),
+        addressMap.get("usdt")
+      ],
     });
     await hre.run("verify:verify", {
       address: addressMap.get("tradeFactoryBaseStorage"),
@@ -274,8 +285,8 @@ const main = async () => {
         addressMap.get("buyAssistoor"),
       ],
     });
-    console.log(`\n\n${"=".repeat(50)}\n\n`);
     console.log(`Verify on Etherscan completed!`);
+    console.log(`\n\n${"=".repeat(50)}\n\n`);
   }
 };
 

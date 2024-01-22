@@ -22,7 +22,7 @@ npm run test
 Env file in root .env:
 ```shell
 HEXKEY=''
-RPCURL=''
+RPCURL_ARB_SEPOLIA=''
 COUNCIL_ADDRESS=''
 ORACLE_NODE_ADDRESS=''
 ARBSCAN_API_KEY=''
